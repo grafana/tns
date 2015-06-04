@@ -1,7 +1,7 @@
 #!/usr/bin/env fish
 
 function usage
-	echo (basename (status -f)) "(build, clean)"
+	echo (basename (status -f)) "(clean, build, run)"
 end
 
 if set -q $argv
