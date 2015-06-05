@@ -29,10 +29,8 @@ switch $argv
 
 	case run
 		weave run --with-dns --hostname=db.weave.local $prefix-db
-		weave run --with-dns --hostname=db.weave.local $prefix-db
 		weave run --with-dns --hostname=app.weave.local $prefix-app
 		weave run --with-dns --hostname=app.weave.local $prefix-app
-		weave run --with-dns --hostname=lb.weave.local $prefix-lb
 		weave run --with-dns --hostname=lb.weave.local $prefix-lb
 
 	case '*'
