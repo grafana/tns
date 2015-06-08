@@ -1,7 +1,7 @@
 all: db/db app/app lb/lb
-	docker-compose kill || true
-	docker-compose rm -f || true
 	docker-compose build
+
+run:
 	docker-compose up -d
 
 db/db:
