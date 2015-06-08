@@ -2,9 +2,8 @@ package main
 
 import (
 	"crypto/md5"
-	"flag"
 	"fmt"
-	"io/ioutil"
+	"io"
 	"log"
 	"math/rand"
 	"net"
@@ -12,27 +11,56 @@ import (
 	"net/url"
 	"os"
 	"os/signal"
-	"strings"
 	"syscall"
 	"time"
 )
 
-func main() {
-	var (
-		addr = flag.String("addr", ":8080", "listen address")
-		db   = flag.String("db", "db.weave.local", "database address")
-	)
-	flag.Parse()
+const (
+	dbPort  = ":9000"
+	appPort = ":8080"
+)
 
-	id := makeID()
-	http.HandleFunc("/", func(w http.ResponseWriter, _ *http.Request) {
-		fmt.Fprintf(w, "%s\n%s\n", id, catNodes(*db))
+func main() {
+	databases := []*url.URL{}
+	for _, host := range os.Args[1:] {
+		if _, _, err := net.SplitHostPort(host); err != nil {
+			host = host + dbPort
+		}
+		u, err := url.Parse(fmt.Sprintf("http://%s", host))
+		if err != nil {
+			log.Fatal(err)
+		}
+		log.Printf("database %s", u.String())
+		databases = append(databases, u)
+	}
+	log.Printf("%d peer(s)", len(databases))
+
+	rand.Seed(time.Now().UnixNano())
+	h := md5.New()
+	fmt.Fprintf(h, "%d", rand.Int63())
+	id := fmt.Sprintf("app-%x", h.Sum(nil))
+	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
+		db := databases[rand.Intn(len(databases))].String()
+		defer func(begin time.Time) {
+			log.Printf("served request from %s via %s in %s", r.RemoteAddr, db, time.Since(begin))
+		}(time.Now())
+
+		resp, err := http.Get(db)
+		if err != nil {
+			w.WriteHeader(http.StatusServiceUnavailable)
+			fmt.Fprintf(w, "%v\n", err)
+			return
+		}
+
+		fmt.Fprintf(w, "%s via %s\n", id, db)
+		io.Copy(w, resp.Body)
+		resp.Body.Close()
 	})
 
 	errc := make(chan error)
-	go func() { errc <- http.ListenAndServe(*addr, nil) }()
+	go func() { errc <- http.ListenAndServe(appPort, nil) }()
 	go func() { errc <- interrupt() }()
-	log.Print(<-errc)
+	log.Fatal(<-errc)
 }
 
 func makeID() string {
@@ -40,33 +68,6 @@ func makeID() string {
 	h := md5.New()
 	fmt.Fprint(h, rand.Int63())
 	return fmt.Sprintf("%x", h.Sum(nil)[:8])
-}
-
-func catNodes(db string) string {
-	if !strings.HasPrefix(db, "http") {
-		db = "http://" + db
-	}
-	u, err := url.Parse(db)
-	if err != nil {
-		return err.Error()
-	}
-	if _, port, err := net.SplitHostPort(u.Host); err != nil || port == "" {
-		u.Host = u.Host + ":9200"
-	}
-	u.Path = "_cat/nodes"
-
-	resp, err := http.Get(u.String())
-	if err != nil {
-		return err.Error()
-	}
-	defer resp.Body.Close()
-
-	buf, err := ioutil.ReadAll(resp.Body)
-	if err != nil {
-		return err.Error()
-	}
-
-	return string(buf)
 }
 
 func interrupt() error {

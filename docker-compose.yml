@@ -1,0 +1,39 @@
+db1:
+  build: db
+db2:
+  build: db
+  links:
+    - db1
+db3:
+  build: db
+  links:
+    - db1
+    - db2
+
+app1:
+  build: app
+  links:
+    - db1
+    - db2
+    - db3
+app2:
+  build: app
+  links:
+    - db1
+    - db2
+    - db3
+
+lb1:
+  build: nginx
+  links:
+    - app1
+    - app2
+  ports:
+    - 0.0.0.0::80
+lb2:
+  build: nginx
+  links:
+    - app1
+    - app2
+  ports:
+    - 0.0.0.0::80
