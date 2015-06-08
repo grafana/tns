@@ -24,14 +24,14 @@ app2:
     - db3
 
 lb1:
-  build: nginx
+  build: lb
   links:
     - app1
     - app2
   ports:
     - 0.0.0.0::80
 lb2:
-  build: nginx
+  build: lb
   links:
     - app1
     - app2

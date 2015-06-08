@@ -38,7 +38,7 @@ func main() {
 	fmt.Fprintf(h, "%d", rand.Int63())
 	id := fmt.Sprintf("%x", h.Sum(nil))
 	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
-		fmt.Fprintf(w, id+" OK\n")
+		fmt.Fprintf(w, "db-%s OK\n", id)
 	})
 
 	errc := make(chan error)
