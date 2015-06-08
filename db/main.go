@@ -19,6 +19,8 @@ const (
 )
 
 func main() {
+	rand.Seed(time.Now().UnixNano())
+
 	peers := []*url.URL{}
 	for _, host := range os.Args[1:] {
 		if _, _, err := net.SplitHostPort(host); err != nil {
@@ -33,7 +35,6 @@ func main() {
 	}
 	log.Printf("%d peer(s)", len(peers))
 
-	rand.Seed(time.Now().UnixNano())
 	h := md5.New()
 	fmt.Fprintf(h, "%d", rand.Int63())
 	id := fmt.Sprintf("%x", h.Sum(nil))

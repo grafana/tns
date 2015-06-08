@@ -21,6 +21,8 @@ const (
 )
 
 func main() {
+	rand.Seed(time.Now().UnixNano())
+
 	apps := []*url.URL{}
 	for _, host := range os.Args[1:] {
 		if _, _, err := net.SplitHostPort(host); err != nil {
@@ -35,7 +37,6 @@ func main() {
 	}
 	log.Printf("%d peer(s)", len(apps))
 
-	rand.Seed(time.Now().UnixNano())
 	h := md5.New()
 	fmt.Fprintf(h, "%d", rand.Int63())
 	id := fmt.Sprintf("lb-%x", h.Sum(nil))
@@ -59,8 +60,22 @@ func main() {
 
 	errc := make(chan error)
 	go func() { errc <- http.ListenAndServe(lbPort, nil) }()
+	go func() { errc <- loop(apps) }()
 	go func() { errc <- interrupt() }()
 	log.Fatal(<-errc)
+}
+
+func loop(apps []*url.URL) error {
+	// Simulate traffic.
+	for range time.Tick(time.Second) {
+		resp, err := http.Get("http://localhost" + lbPort)
+		if err != nil {
+			log.Print(err)
+			continue
+		}
+		resp.Body.Close()
+	}
+	return nil
 }
 
 func makeID() string {
