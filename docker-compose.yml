@@ -29,11 +29,11 @@ lb1:
     - app1
     - app2
   ports:
-    - 0.0.0.0::80
+    - 0.0.0.0:8001:80
 lb2:
   image: peterbourgon/tns-lb
   links:
     - app1
     - app2
   ports:
-    - 0.0.0.0::80
+    - 0.0.0.0:8002:80
