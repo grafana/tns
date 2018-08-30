@@ -8,7 +8,7 @@
 	<version>0.0.1-SNAPSHOT</version>
 	<packaging>war</packaging>
 
-	<name>TianMeow</name>
+	<name>TianMiao</name>
 	<description>Demo project for Online Shopping</description>
 
 	<parent>
