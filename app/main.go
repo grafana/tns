@@ -16,6 +16,7 @@ import (
 	"time"
 
 	"github.com/felixge/httpsnoop"
+	kitlog "github.com/go-kit/kit/log"
 	"github.com/prometheus/client_golang/prometheus"
 	"github.com/prometheus/client_golang/prometheus/promauto"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
@@ -32,13 +33,15 @@ var (
 		Help:    "Time (in seconds) spent serving HTTP requests",
 		Buckets: prometheus.DefBuckets,
 	}, []string{"method", "route", "status_code"})
+
+	logger = kitlog.NewLogfmtLogger(kitlog.NewSyncWriter(os.Stderr))
 )
 
 func main() {
 	rand.Seed(time.Now().UnixNano())
 
 	databases := getDatabases()
-	log.Printf("%d database(s)", len(databases))
+	logger.Log("database(s)", len(databases))
 
 	h := md5.New()
 	fmt.Fprintf(h, "%d", rand.Int63())
@@ -48,7 +51,7 @@ func main() {
 	http.HandleFunc("/", wrap(func(w http.ResponseWriter, r *http.Request) {
 		db := databases[rand.Intn(len(databases))].String()
 		defer func(begin time.Time) {
-			log.Printf("served request from %s via %s in %s", r.RemoteAddr, db, time.Since(begin))
+			logger.Log("msg", "served request", "from", r.RemoteAddr, "via", db, "duration", time.Since(begin))
 		}(time.Now())
 
 		resp, err := http.Get(db)
@@ -92,7 +95,7 @@ func getDatabases() []*url.URL {
 		if err != nil {
 			log.Fatal(err)
 		}
-		log.Printf("database %s", u.String())
+		logger.Log("database", u.String())
 		databases = append(databases, u)
 	}
 

@@ -15,6 +15,7 @@ import (
 	"time"
 
 	"github.com/felixge/httpsnoop"
+	kitlog "github.com/go-kit/kit/log"
 	"github.com/prometheus/client_golang/prometheus"
 	"github.com/prometheus/client_golang/prometheus/promauto"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
@@ -30,13 +31,15 @@ var (
 		Help:    "Time (in seconds) spent serving HTTP requests",
 		Buckets: prometheus.DefBuckets,
 	}, []string{"method", "route", "status_code"})
+
+	logger = kitlog.NewLogfmtLogger(kitlog.NewSyncWriter(os.Stderr))
 )
 
 func main() {
 	rand.Seed(time.Now().UnixNano())
 
 	peers := getPeers()
-	log.Printf("%d peer(s)", len(peers))
+	logger.Log("msg", "peer(s)", "num", len(peers))
 
 	h := md5.New()
 	fmt.Fprintf(h, "%d", rand.Int63())
@@ -75,7 +78,7 @@ func loop(peers []*url.URL) error {
 			count++
 
 		case <-report:
-			log.Printf("%d successful GET(s)", count)
+			logger.Log("msg", "successful GET(s)", "len", count)
 		}
 	}
 }
@@ -104,7 +107,7 @@ func getPeers() []*url.URL {
 		if err != nil {
 			log.Fatal(err)
 		}
-		log.Printf("peer %s", u.String())
+		logger.Log("peer", u.String())
 		peers = append(peers, u)
 	}
 

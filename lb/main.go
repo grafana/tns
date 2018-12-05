@@ -16,6 +16,7 @@ import (
 	"time"
 
 	"github.com/felixge/httpsnoop"
+	kitlog "github.com/go-kit/kit/log"
 	"github.com/prometheus/client_golang/prometheus"
 	"github.com/prometheus/client_golang/prometheus/promauto"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
@@ -32,13 +33,15 @@ var (
 		Help:    "Time (in seconds) spent serving HTTP requests",
 		Buckets: prometheus.DefBuckets,
 	}, []string{"method", "route", "status_code"})
+
+	logger = kitlog.NewLogfmtLogger(kitlog.NewSyncWriter(os.Stderr))
 )
 
 func main() {
 	rand.Seed(time.Now().UnixNano())
 
 	apps := getApps()
-	log.Printf("%d peer(s)", len(apps))
+	logger.Log("msg", "peer(s)", "num", len(apps))
 
 	h := md5.New()
 	fmt.Fprintf(h, "%d", rand.Int63())
@@ -49,7 +52,7 @@ func main() {
 		app := apps[rand.Intn(len(apps))].String()
 
 		defer func(begin time.Time) {
-			log.Printf("served request from %s via %s in %s", r.RemoteAddr, app, time.Since(begin))
+			logger.Log("msg", "served request", "from", r.RemoteAddr, "via", app, "duration", time.Since(begin))
 		}(time.Now())
 
 		resp, err := http.Get(app)
@@ -107,7 +110,7 @@ func getApps() []*url.URL {
 		if err != nil {
 			log.Fatal(err)
 		}
-		log.Printf("app %s", u.String())
+		logger.Log("app", u.String())
 		apps = append(apps, u)
 	}
 
