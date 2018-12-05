@@ -23,6 +23,8 @@ import (
 
 const (
 	dbPort = ":80"
+
+	failPercent = 3
 )
 
 var (
@@ -33,6 +35,8 @@ var (
 	}, []string{"method", "route", "status_code"})
 
 	logger = kitlog.NewLogfmtLogger(kitlog.NewSyncWriter(os.Stderr))
+
+	fail = false
 )
 
 func main() {
@@ -45,8 +49,22 @@ func main() {
 	fmt.Fprintf(h, "%d", rand.Int63())
 	id := fmt.Sprintf("%x", h.Sum(nil))
 
+	http.HandleFunc("/fail", func(w http.ResponseWriter, r *http.Request) {
+		fail = !fail
+	})
 	http.Handle("/metrics", promhttp.Handler())
 	http.HandleFunc("/", wrap(func(w http.ResponseWriter, r *http.Request) {
+		// Randomly fail x% of the requests.
+		if fail {
+			if rand.Intn(100) <= failPercent {
+				time.Sleep(1 * time.Second)
+				logger.Log("error", "query lock timeout")
+				w.WriteHeader(http.StatusInternalServerError)
+
+				return
+			}
+		}
+
 		fmt.Fprintf(w, "db-%s OK\n", id)
 	}))
 

@@ -62,6 +62,7 @@ func main() {
 			return
 		}
 
+		w.WriteHeader(resp.StatusCode)
 		fmt.Fprintf(w, "%s via %s\n", id, app)
 		io.Copy(w, resp.Body)
 		resp.Body.Close()

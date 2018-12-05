@@ -60,6 +60,7 @@ func main() {
 			fmt.Fprintf(w, "%v\n", err)
 			return
 		}
+		w.WriteHeader(resp.StatusCode)
 
 		fmt.Fprintf(w, "%s via %s\n", id, db)
 		io.Copy(w, resp.Body)
