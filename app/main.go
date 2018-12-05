@@ -11,13 +11,27 @@ import (
 	"net/url"
 	"os"
 	"os/signal"
+	"strconv"
 	"syscall"
 	"time"
+
+	"github.com/felixge/httpsnoop"
+	"github.com/prometheus/client_golang/prometheus"
+	"github.com/prometheus/client_golang/prometheus/promauto"
+	"github.com/prometheus/client_golang/prometheus/promhttp"
 )
 
 const (
 	dbPort  = ":80"
 	appPort = ":80"
+)
+
+var (
+	requestDuration = promauto.NewHistogramVec(prometheus.HistogramOpts{
+		Name:    "request_duration_seconds",
+		Help:    "Time (in seconds) spent serving HTTP requests",
+		Buckets: prometheus.DefBuckets,
+	}, []string{"method", "route", "status_code"})
 )
 
 func main() {
@@ -30,7 +44,8 @@ func main() {
 	fmt.Fprintf(h, "%d", rand.Int63())
 	id := fmt.Sprintf("app-%x", h.Sum(nil))
 
-	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
+	http.Handle("/metrics", promhttp.Handler())
+	http.HandleFunc("/", wrap(func(w http.ResponseWriter, r *http.Request) {
 		db := databases[rand.Intn(len(databases))].String()
 		defer func(begin time.Time) {
 			log.Printf("served request from %s via %s in %s", r.RemoteAddr, db, time.Since(begin))
@@ -46,7 +61,7 @@ func main() {
 		fmt.Fprintf(w, "%s via %s\n", id, db)
 		io.Copy(w, resp.Body)
 		resp.Body.Close()
-	})
+	}))
 
 	errc := make(chan error)
 	go func() { errc <- http.ListenAndServe(appPort, nil) }()
@@ -82,4 +97,11 @@ func getDatabases() []*url.URL {
 	}
 
 	return databases
+}
+
+func wrap(h http.HandlerFunc) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		m := httpsnoop.CaptureMetrics(h, w, r)
+		requestDuration.WithLabelValues(r.Method, r.URL.Path, strconv.Itoa(m.Code)).Observe(m.Duration.Seconds())
+	}
 }

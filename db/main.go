@@ -10,12 +10,26 @@ import (
 	"net/url"
 	"os"
 	"os/signal"
+	"strconv"
 	"syscall"
 	"time"
+
+	"github.com/felixge/httpsnoop"
+	"github.com/prometheus/client_golang/prometheus"
+	"github.com/prometheus/client_golang/prometheus/promauto"
+	"github.com/prometheus/client_golang/prometheus/promhttp"
 )
 
 const (
 	dbPort = ":80"
+)
+
+var (
+	requestDuration = promauto.NewHistogramVec(prometheus.HistogramOpts{
+		Name:    "request_duration_seconds",
+		Help:    "Time (in seconds) spent serving HTTP requests",
+		Buckets: prometheus.DefBuckets,
+	}, []string{"method", "route", "status_code"})
 )
 
 func main() {
@@ -27,9 +41,11 @@ func main() {
 	h := md5.New()
 	fmt.Fprintf(h, "%d", rand.Int63())
 	id := fmt.Sprintf("%x", h.Sum(nil))
-	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
+
+	http.Handle("/metrics", promhttp.Handler())
+	http.HandleFunc("/", wrap(func(w http.ResponseWriter, r *http.Request) {
 		fmt.Fprintf(w, "db-%s OK\n", id)
-	})
+	}))
 
 	errc := make(chan error)
 	go func() { errc <- http.ListenAndServe(dbPort, nil) }()
@@ -93,4 +109,11 @@ func getPeers() []*url.URL {
 	}
 
 	return peers
+}
+
+func wrap(h http.HandlerFunc) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		m := httpsnoop.CaptureMetrics(h, w, r)
+		requestDuration.WithLabelValues(r.Method, r.URL.Path, strconv.Itoa(m.Code)).Observe(m.Duration.Seconds())
+	}
 }

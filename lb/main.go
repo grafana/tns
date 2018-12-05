@@ -11,13 +11,27 @@ import (
 	"net/url"
 	"os"
 	"os/signal"
+	"strconv"
 	"syscall"
 	"time"
+
+	"github.com/felixge/httpsnoop"
+	"github.com/prometheus/client_golang/prometheus"
+	"github.com/prometheus/client_golang/prometheus/promauto"
+	"github.com/prometheus/client_golang/prometheus/promhttp"
 )
 
 const (
 	appPort = ":80"
 	lbPort  = ":80"
+)
+
+var (
+	requestDuration = promauto.NewHistogramVec(prometheus.HistogramOpts{
+		Name:    "request_duration_seconds",
+		Help:    "Time (in seconds) spent serving HTTP requests",
+		Buckets: prometheus.DefBuckets,
+	}, []string{"method", "route", "status_code"})
 )
 
 func main() {
@@ -30,7 +44,8 @@ func main() {
 	fmt.Fprintf(h, "%d", rand.Int63())
 	id := fmt.Sprintf("lb-%x", h.Sum(nil))
 
-	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
+	http.Handle("/metrics", promhttp.Handler())
+	http.HandleFunc("/", wrap(func(w http.ResponseWriter, r *http.Request) {
 		app := apps[rand.Intn(len(apps))].String()
 
 		defer func(begin time.Time) {
@@ -47,7 +62,7 @@ func main() {
 		fmt.Fprintf(w, "%s via %s\n", id, app)
 		io.Copy(w, resp.Body)
 		resp.Body.Close()
-	})
+	}))
 
 	errc := make(chan error)
 	go func() { errc <- http.ListenAndServe(lbPort, nil) }()
@@ -97,4 +112,11 @@ func getApps() []*url.URL {
 	}
 
 	return apps
+}
+
+func wrap(h http.HandlerFunc) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		m := httpsnoop.CaptureMetrics(h, w, r)
+		requestDuration.WithLabelValues(r.Method, r.URL.Path, strconv.Itoa(m.Code)).Observe(m.Duration.Seconds())
+	}
 }
