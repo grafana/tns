@@ -24,7 +24,7 @@ import (
 const (
 	dbPort = ":80"
 
-	failPercent = 3
+	failPercent = 10
 )
 
 var (
