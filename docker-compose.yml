@@ -1,37 +1,37 @@
 db1:
-  image: peterbourgon/tns-db
+  image: gouthamve/tns-db
 db2:
-  image: peterbourgon/tns-db
+  image: gouthamve/tns-db
   links:
     - db1
 db3:
-  image: peterbourgon/tns-db
+  image: gouthamve/tns-db
   links:
     - db1
     - db2
 
 app1:
-  image: peterbourgon/tns-app
+  image: gouthamve/tns-app
   links:
     - db1
     - db2
     - db3
 app2:
-  image: peterbourgon/tns-app
+  image: gouthamve/tns-app
   links:
     - db1
     - db2
     - db3
 
 lb1:
-  image: peterbourgon/tns-lb
+  image: gouthamve/tns-lb
   links:
     - app1
     - app2
   ports:
     - 0.0.0.0:8001:80
 lb2:
-  image: peterbourgon/tns-lb
+  image: gouthamve/tns-lb
   links:
     - app1
     - app2

@@ -15,24 +15,13 @@ import (
 )
 
 const (
-	dbPort = ":9000"
+	dbPort = ":80"
 )
 
 func main() {
 	rand.Seed(time.Now().UnixNano())
 
-	peers := []*url.URL{}
-	for _, host := range os.Args[1:] {
-		if _, _, err := net.SplitHostPort(host); err != nil {
-			host = host + dbPort
-		}
-		u, err := url.Parse(fmt.Sprintf("http://%s", host))
-		if err != nil {
-			log.Fatal(err)
-		}
-		log.Printf("peer %s", u.String())
-		peers = append(peers, u)
-	}
+	peers := getPeers()
 	log.Printf("%d peer(s)", len(peers))
 
 	h := md5.New()
@@ -87,4 +76,21 @@ func id() string {
 		hostname = "unknown-host"
 	}
 	return hostname
+}
+
+func getPeers() []*url.URL {
+	peers := []*url.URL{}
+	for _, host := range os.Args[1:] {
+		if _, _, err := net.SplitHostPort(host); err != nil {
+			host = host + dbPort
+		}
+		u, err := url.Parse(fmt.Sprintf("http://%s", host))
+		if err != nil {
+			log.Fatal(err)
+		}
+		log.Printf("peer %s", u.String())
+		peers = append(peers, u)
+	}
+
+	return peers
 }

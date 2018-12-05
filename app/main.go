@@ -16,30 +16,20 @@ import (
 )
 
 const (
-	dbPort  = ":9000"
-	appPort = ":8080"
+	dbPort  = ":80"
+	appPort = ":80"
 )
 
 func main() {
 	rand.Seed(time.Now().UnixNano())
 
-	databases := []*url.URL{}
-	for _, host := range os.Args[1:] {
-		if _, _, err := net.SplitHostPort(host); err != nil {
-			host = host + dbPort
-		}
-		u, err := url.Parse(fmt.Sprintf("http://%s", host))
-		if err != nil {
-			log.Fatal(err)
-		}
-		log.Printf("database %s", u.String())
-		databases = append(databases, u)
-	}
-	log.Printf("%d peer(s)", len(databases))
+	databases := getDatabases()
+	log.Printf("%d database(s)", len(databases))
 
 	h := md5.New()
 	fmt.Fprintf(h, "%d", rand.Int63())
 	id := fmt.Sprintf("app-%x", h.Sum(nil))
+
 	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
 		db := databases[rand.Intn(len(databases))].String()
 		defer func(begin time.Time) {
@@ -75,4 +65,21 @@ func interrupt() error {
 	c := make(chan os.Signal)
 	signal.Notify(c, syscall.SIGINT, syscall.SIGTERM)
 	return fmt.Errorf("%s", <-c)
+}
+
+func getDatabases() []*url.URL {
+	databases := []*url.URL{}
+	for _, host := range os.Args[1:] {
+		if _, _, err := net.SplitHostPort(host); err != nil {
+			host = host + dbPort
+		}
+		u, err := url.Parse(fmt.Sprintf("http://%s", host))
+		if err != nil {
+			log.Fatal(err)
+		}
+		log.Printf("database %s", u.String())
+		databases = append(databases, u)
+	}
+
+	return databases
 }
