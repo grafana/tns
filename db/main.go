@@ -65,15 +65,18 @@ func main() {
 	})
 	http.Handle("/metrics", promhttp.Handler())
 	http.HandleFunc("/", wrap(func(w http.ResponseWriter, r *http.Request) {
-		// Randomly fail x% of the requests.
-		if fail {
-			if rand.Intn(100) <= failPercent {
-				time.Sleep(1 * time.Second)
-				logger.Log("error", "query lock timeout")
-				w.WriteHeader(http.StatusInternalServerError)
+		since := time.Now()
+		defer func() {
+			logger.Log("msg", "query executed OK", "duration", time.Since(since))
+		}()
 
-				return
-			}
+		// Randomly fail x% of the requests.
+		if fail && rand.Intn(100) <= failPercent {
+			time.Sleep(1 * time.Second)
+			logger.Log("error", "query lock timeout")
+			w.WriteHeader(http.StatusInternalServerError)
+
+			return
 		}
 
 		fmt.Fprintf(w, "db-%s OK\n", id)

@@ -123,7 +123,20 @@ func wrap(h http.HandlerFunc) http.HandlerFunc {
 }
 
 func tracedGet(ctx context.Context, url string) (*http.Response, error) {
-	client := &http.Client{Transport: &nethttp.Transport{}}
+	client := &http.Client{Transport: &nethttp.Transport{
+		&http.Transport{
+			DialContext: (&net.Dialer{
+				Timeout:   30 * time.Second,
+				KeepAlive: 30 * time.Second,
+				DualStack: true,
+			}).DialContext,
+			MaxIdleConns:          1,
+			IdleConnTimeout:       10 * time.Millisecond,
+			TLSHandshakeTimeout:   10 * time.Second,
+			ExpectContinueTimeout: 1 * time.Second,
+			DisableKeepAlives:     true,
+		},
+	}}
 	req, err := http.NewRequest("GET", url, nil)
 	if err != nil {
 		return nil, err
