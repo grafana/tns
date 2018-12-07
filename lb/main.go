@@ -18,6 +18,7 @@ import (
 
 	"github.com/felixge/httpsnoop"
 	kitlog "github.com/go-kit/kit/log"
+	"github.com/go-kit/kit/log/level"
 	"github.com/opentracing-contrib/go-stdlib/nethttp"
 	opentracing "github.com/opentracing/opentracing-go"
 	"github.com/prometheus/client_golang/prometheus"
@@ -38,7 +39,7 @@ var (
 		Buckets: prometheus.DefBuckets,
 	}, []string{"method", "route", "status_code"})
 
-	logger = kitlog.NewLogfmtLogger(kitlog.NewSyncWriter(os.Stderr))
+	logger = level.NewFilter(kitlog.NewLogfmtLogger(kitlog.NewSyncWriter(os.Stderr)), level.AllowDebug())
 )
 
 func main() {
@@ -51,7 +52,7 @@ func main() {
 	rand.Seed(time.Now().UnixNano())
 
 	apps := getApps()
-	logger.Log("msg", "peer(s)", "num", len(apps))
+	level.Info(logger).Log("msg", "peer(s)", "num", len(apps))
 
 	h := md5.New()
 	fmt.Fprintf(h, "%d", rand.Int63())
@@ -62,7 +63,7 @@ func main() {
 		app := apps[rand.Intn(len(apps))].String()
 
 		defer func(begin time.Time) {
-			logger.Log("msg", "served request", "from", r.RemoteAddr, "via", app, "duration", time.Since(begin))
+			level.Debug(logger).Log("msg", "served request", "from", r.RemoteAddr, "via", app, "duration", time.Since(begin))
 		}(time.Now())
 
 		resp, err := tracedGet(r.Context(), app)
@@ -92,7 +93,7 @@ func loop(apps []*url.URL) error {
 	for range time.Tick(100 * time.Millisecond) {
 		resp, err := http.Get("http://localhost" + lbPort)
 		if err != nil {
-			logger.Log("error", err)
+			level.Error(logger).Log("msg", err)
 			continue
 		}
 		resp.Body.Close()
@@ -123,7 +124,7 @@ func getApps() []*url.URL {
 		if err != nil {
 			log.Fatal(err)
 		}
-		logger.Log("app", u.String())
+		level.Info(logger).Log("app", u.String())
 		apps = append(apps, u)
 	}
 

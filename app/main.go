@@ -18,6 +18,7 @@ import (
 
 	"github.com/felixge/httpsnoop"
 	kitlog "github.com/go-kit/kit/log"
+	"github.com/go-kit/kit/log/level"
 	"github.com/opentracing-contrib/go-stdlib/nethttp"
 	opentracing "github.com/opentracing/opentracing-go"
 	"github.com/prometheus/client_golang/prometheus"
@@ -38,7 +39,7 @@ var (
 		Buckets: prometheus.DefBuckets,
 	}, []string{"method", "route", "status_code"})
 
-	logger = kitlog.NewLogfmtLogger(kitlog.NewSyncWriter(os.Stderr))
+	logger = level.NewFilter(kitlog.NewLogfmtLogger(kitlog.NewSyncWriter(os.Stderr)), level.AllowDebug())
 )
 
 func main() {
@@ -51,7 +52,7 @@ func main() {
 	rand.Seed(time.Now().UnixNano())
 
 	databases := getDatabases()
-	logger.Log("database(s)", len(databases))
+	level.Info(logger).Log("database(s)", len(databases))
 
 	h := md5.New()
 	fmt.Fprintf(h, "%d", rand.Int63())
@@ -61,12 +62,13 @@ func main() {
 	http.HandleFunc("/", wrap(func(w http.ResponseWriter, r *http.Request) {
 		db := databases[rand.Intn(len(databases))].String()
 		defer func(begin time.Time) {
-			logger.Log("msg", "served request", "from", r.RemoteAddr, "via", db, "duration", time.Since(begin))
+			level.Debug(logger).Log("msg", "served request", "from", r.RemoteAddr, "via", db, "duration", time.Since(begin))
 		}(time.Now())
 
 		resp, err := tracedGet(r.Context(), db)
 		if err != nil {
 			w.WriteHeader(http.StatusServiceUnavailable)
+			level.Error(logger).Log("msg", err)
 			fmt.Fprintf(w, "%v\n", err)
 			return
 		}
@@ -108,7 +110,7 @@ func getDatabases() []*url.URL {
 		if err != nil {
 			log.Fatal(err)
 		}
-		logger.Log("database", u.String())
+		level.Info(logger).Log("database", u.String())
 		databases = append(databases, u)
 	}
 

@@ -16,6 +16,7 @@ import (
 
 	"github.com/felixge/httpsnoop"
 	kitlog "github.com/go-kit/kit/log"
+	"github.com/go-kit/kit/log/level"
 	"github.com/opentracing-contrib/go-stdlib/nethttp"
 	opentracing "github.com/opentracing/opentracing-go"
 	"github.com/prometheus/client_golang/prometheus"
@@ -37,7 +38,7 @@ var (
 		Buckets: prometheus.DefBuckets,
 	}, []string{"method", "route", "status_code"})
 
-	logger = kitlog.NewLogfmtLogger(kitlog.NewSyncWriter(os.Stderr))
+	logger = level.NewFilter(kitlog.NewLogfmtLogger(kitlog.NewSyncWriter(os.Stderr)), level.AllowDebug())
 
 	fail = false
 )
@@ -52,7 +53,7 @@ func main() {
 	rand.Seed(time.Now().UnixNano())
 
 	peers := getPeers()
-	logger.Log("msg", "peer(s)", "num", len(peers))
+	level.Info(logger).Log("msg", "peer(s)", "num", len(peers))
 
 	h := md5.New()
 	fmt.Fprintf(h, "%d", rand.Int63())
@@ -67,13 +68,13 @@ func main() {
 	http.HandleFunc("/", wrap(func(w http.ResponseWriter, r *http.Request) {
 		since := time.Now()
 		defer func() {
-			logger.Log("msg", "query executed OK", "duration", time.Since(since))
+			level.Debug(logger).Log("msg", "query executed OK", "duration", time.Since(since))
 		}()
 
 		// Randomly fail x% of the requests.
 		if fail && rand.Intn(100) <= failPercent {
 			time.Sleep(1 * time.Second)
-			logger.Log("error", "query lock timeout")
+			level.Error(logger).Log("msg", "query lock timeout")
 			w.WriteHeader(http.StatusInternalServerError)
 
 			return
@@ -114,7 +115,7 @@ func getPeers() []*url.URL {
 		if err != nil {
 			log.Fatal(err)
 		}
-		logger.Log("peer", u.String())
+		level.Info(logger).Log("peer", u.String())
 		peers = append(peers, u)
 	}
 
