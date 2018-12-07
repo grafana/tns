@@ -70,35 +70,8 @@ func main() {
 
 	errc := make(chan error)
 	go func() { errc <- http.ListenAndServe(dbPort, nil) }()
-	go func() { errc <- loop(peers) }()
 	go func() { errc <- interrupt() }()
 	log.Fatal(<-errc)
-}
-
-func loop(peers []*url.URL) error {
-	var (
-		count  = 0
-		get    = time.Tick(time.Second)
-		report = time.Tick(10 * time.Second)
-	)
-	for {
-		select {
-		case <-get:
-			if len(peers) <= 0 {
-				continue
-			}
-			resp, err := http.Get(peers[rand.Intn(len(peers))].String())
-			if err != nil {
-				log.Print(err)
-				continue
-			}
-			resp.Body.Close()
-			count++
-
-		case <-report:
-			logger.Log("msg", "successful GET(s)", "len", count)
-		}
-	}
 }
 
 func interrupt() error {

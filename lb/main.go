@@ -77,7 +77,7 @@ func main() {
 
 func loop(apps []*url.URL) error {
 	// Simulate traffic.
-	for range time.Tick(time.Second) {
+	for range time.Tick(100 * time.Millisecond) {
 		resp, err := http.Get("http://localhost" + lbPort)
 		if err != nil {
 			log.Print(err)
