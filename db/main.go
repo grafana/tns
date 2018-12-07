@@ -60,6 +60,8 @@ func main() {
 
 	http.HandleFunc("/fail", func(w http.ResponseWriter, r *http.Request) {
 		fail = !fail
+
+		fmt.Fprintf(w, "failing: %t\n", fail)
 	})
 	http.Handle("/metrics", promhttp.Handler())
 	http.HandleFunc("/", wrap(func(w http.ResponseWriter, r *http.Request) {
