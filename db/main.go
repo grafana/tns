@@ -16,9 +16,12 @@ import (
 
 	"github.com/felixge/httpsnoop"
 	kitlog "github.com/go-kit/kit/log"
+	"github.com/opentracing-contrib/go-stdlib/nethttp"
+	opentracing "github.com/opentracing/opentracing-go"
 	"github.com/prometheus/client_golang/prometheus"
 	"github.com/prometheus/client_golang/prometheus/promauto"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
+	jaegercfg "github.com/uber/jaeger-client-go/config"
 )
 
 const (
@@ -40,6 +43,12 @@ var (
 )
 
 func main() {
+	cfg, err := jaegercfg.FromEnv()
+	if err != nil {
+		log.Fatalln("err", err)
+	}
+	cfg.InitGlobalTracer("db")
+
 	rand.Seed(time.Now().UnixNano())
 
 	peers := getPeers()
@@ -69,7 +78,9 @@ func main() {
 	}))
 
 	errc := make(chan error)
-	go func() { errc <- http.ListenAndServe(dbPort, nil) }()
+	go func() {
+		errc <- http.ListenAndServe(dbPort, nethttp.Middleware(opentracing.GlobalTracer(), http.DefaultServeMux))
+	}()
 	go func() { errc <- interrupt() }()
 	log.Fatal(<-errc)
 }

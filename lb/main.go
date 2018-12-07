@@ -1,6 +1,7 @@
 package main
 
 import (
+	"context"
 	"crypto/md5"
 	"fmt"
 	"io"
@@ -17,9 +18,12 @@ import (
 
 	"github.com/felixge/httpsnoop"
 	kitlog "github.com/go-kit/kit/log"
+	"github.com/opentracing-contrib/go-stdlib/nethttp"
+	opentracing "github.com/opentracing/opentracing-go"
 	"github.com/prometheus/client_golang/prometheus"
 	"github.com/prometheus/client_golang/prometheus/promauto"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
+	jaegercfg "github.com/uber/jaeger-client-go/config"
 )
 
 const (
@@ -38,6 +42,12 @@ var (
 )
 
 func main() {
+	cfg, err := jaegercfg.FromEnv()
+	if err != nil {
+		log.Fatalln("err", err)
+	}
+	cfg.InitGlobalTracer("lb")
+
 	rand.Seed(time.Now().UnixNano())
 
 	apps := getApps()
@@ -55,7 +65,7 @@ func main() {
 			logger.Log("msg", "served request", "from", r.RemoteAddr, "via", app, "duration", time.Since(begin))
 		}(time.Now())
 
-		resp, err := http.Get(app)
+		resp, err := tracedGet(r.Context(), app)
 		if err != nil {
 			w.WriteHeader(http.StatusServiceUnavailable)
 			fmt.Fprintf(w, "%v\n", err)
@@ -69,7 +79,9 @@ func main() {
 	}))
 
 	errc := make(chan error)
-	go func() { errc <- http.ListenAndServe(lbPort, nil) }()
+	go func() {
+		errc <- http.ListenAndServe(lbPort, nethttp.Middleware(opentracing.GlobalTracer(), http.DefaultServeMux))
+	}()
 	go func() { errc <- loop(apps) }()
 	go func() { errc <- interrupt() }()
 	log.Fatal(<-errc)
@@ -80,7 +92,7 @@ func loop(apps []*url.URL) error {
 	for range time.Tick(100 * time.Millisecond) {
 		resp, err := http.Get("http://localhost" + lbPort)
 		if err != nil {
-			log.Print(err)
+			logger.Log("error", err)
 			continue
 		}
 		resp.Body.Close()
@@ -123,4 +135,18 @@ func wrap(h http.HandlerFunc) http.HandlerFunc {
 		m := httpsnoop.CaptureMetrics(h, w, r)
 		requestDuration.WithLabelValues(r.Method, r.URL.Path, strconv.Itoa(m.Code)).Observe(m.Duration.Seconds())
 	}
+}
+
+func tracedGet(ctx context.Context, url string) (*http.Response, error) {
+	client := &http.Client{Transport: &nethttp.Transport{}}
+	req, err := http.NewRequest("GET", url, nil)
+	if err != nil {
+		return nil, err
+	}
+
+	req = req.WithContext(ctx)
+	req, ht := nethttp.TraceRequest(opentracing.GlobalTracer(), req)
+	defer ht.Finish()
+
+	return client.Do(req)
 }
