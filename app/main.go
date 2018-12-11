@@ -21,6 +21,7 @@ import (
 	"github.com/go-kit/kit/log/level"
 	"github.com/opentracing-contrib/go-stdlib/nethttp"
 	opentracing "github.com/opentracing/opentracing-go"
+	otlog "github.com/opentracing/opentracing-go/log"
 	"github.com/prometheus/client_golang/prometheus"
 	"github.com/prometheus/client_golang/prometheus/promauto"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
@@ -65,13 +66,35 @@ func main() {
 			level.Debug(logger).Log("msg", "served request", "from", r.RemoteAddr, "via", db, "duration", time.Since(begin))
 		}(time.Now())
 
-		resp, err := tracedGet(r.Context(), db)
+		ctx := r.Context()
+		resp, err := tracedGet(ctx, db, "query")
 		if err != nil {
 			w.WriteHeader(http.StatusServiceUnavailable)
 			level.Error(logger).Log("msg", err)
 			fmt.Fprintf(w, "%v\n", err)
 			return
 		}
+
+		if resp.StatusCode == 500 {
+			resp.Body.Close()
+
+			span := opentracing.SpanFromContext(ctx)
+			if span != nil {
+				span.LogFields(otlog.String("msg", "db responded with error, backing off 500ms before retrying"))
+			}
+
+			level.Info(logger).Log("msg", "db responded with error, backing off before retrying")
+			time.Sleep(500 * time.Millisecond)
+
+			resp, err = tracedGet(ctx, db, "query-retry")
+			if err != nil {
+				w.WriteHeader(http.StatusServiceUnavailable)
+				level.Error(logger).Log("msg", err)
+				fmt.Fprintf(w, "%v\n", err)
+				return
+			}
+		}
+
 		w.WriteHeader(resp.StatusCode)
 
 		fmt.Fprintf(w, "%s via %s\n", id, db)
@@ -124,7 +147,7 @@ func wrap(h http.HandlerFunc) http.HandlerFunc {
 	}
 }
 
-func tracedGet(ctx context.Context, url string) (*http.Response, error) {
+func tracedGet(ctx context.Context, url, opName string) (*http.Response, error) {
 	client := &http.Client{Transport: &nethttp.Transport{
 		&http.Transport{
 			DialContext: (&net.Dialer{
@@ -145,7 +168,7 @@ func tracedGet(ctx context.Context, url string) (*http.Response, error) {
 	}
 
 	req = req.WithContext(ctx)
-	req, ht := nethttp.TraceRequest(opentracing.GlobalTracer(), req)
+	req, ht := nethttp.TraceRequest(opentracing.GlobalTracer(), req, nethttp.ClientTrace(false), nethttp.OperationName(opName))
 	defer ht.Finish()
 
 	return client.Do(req)

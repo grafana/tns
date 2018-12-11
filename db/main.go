@@ -73,8 +73,13 @@ func main() {
 
 		// Randomly fail x% of the requests.
 		if fail && rand.Intn(100) <= failPercent {
-			time.Sleep(1 * time.Second)
-			level.Error(logger).Log("msg", "query lock timeout")
+			time.Sleep(50 * time.Millisecond)
+			// Log two different errors..
+			if rand.Intn(10) <= 1 {
+				level.Error(logger).Log("msg", "too many open connections")
+			} else {
+				level.Error(logger).Log("msg", "query lock timeout")
+			}
 			w.WriteHeader(http.StatusInternalServerError)
 
 			return

@@ -91,12 +91,14 @@ func main() {
 func loop(apps []*url.URL) error {
 	// Simulate traffic.
 	for range time.Tick(100 * time.Millisecond) {
-		resp, err := http.Get("http://localhost" + lbPort)
-		if err != nil {
-			level.Error(logger).Log("msg", err)
-			continue
-		}
-		resp.Body.Close()
+		go func() {
+			resp, err := http.Get("http://localhost" + lbPort)
+			if err != nil {
+				level.Error(logger).Log("msg", err)
+				return
+			}
+			resp.Body.Close()
+		}()
 	}
 	return nil
 }
@@ -159,7 +161,7 @@ func tracedGet(ctx context.Context, url string) (*http.Response, error) {
 	}
 
 	req = req.WithContext(ctx)
-	req, ht := nethttp.TraceRequest(opentracing.GlobalTracer(), req)
+	req, ht := nethttp.TraceRequest(opentracing.GlobalTracer(), req, nethttp.ClientTrace(false))
 	defer ht.Finish()
 
 	return client.Do(req)
