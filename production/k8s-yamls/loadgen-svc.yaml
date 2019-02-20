@@ -1,0 +1,11 @@
+kind: Service
+apiVersion: v1
+metadata:
+  name: loadgen
+spec:
+  selector:
+    name: loadgen
+  ports:
+  - protocol: TCP
+    port: 80
+    targetPort: 80

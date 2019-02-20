@@ -1,14 +1,12 @@
 package main
 
 import (
-	"crypto/md5"
 	"flag"
-	"fmt"
-	"io"
 	"math/rand"
 	"net/http"
 	"net/url"
 	"os"
+	"sync"
 	"time"
 
 	"github.com/go-kit/kit/log"
@@ -51,55 +49,41 @@ func main() {
 	}
 	level.Info(logger).Log("msg", "peer(s)", "num", len(apps))
 
-	h := md5.New()
-	fmt.Fprintf(h, "%d", rand.Int63())
-	id := fmt.Sprintf("lb-%x", h.Sum(nil))
-
 	c := client.New(logger)
 
-	s.HTTP.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
-		app := apps[rand.Intn(len(apps))].String()
+	quit := make(chan struct{})
+	var wg sync.WaitGroup
+	wg.Add(10)
+	for i := 0; i < 10; i++ {
+		go func() {
+			defer wg.Done()
+			ticker := time.NewTicker(1 * time.Second)
 
-		defer func(begin time.Time) {
-			level.Debug(logger).Log("msg", "served request", "from", r.RemoteAddr, "via", app, "duration", time.Since(begin))
-		}(time.Now())
+			for {
+				select {
+				case <-quit:
+					return
+				case <-ticker.C:
+					req, err := http.NewRequest("GET", apps[0].String(), nil)
+					if err != nil {
+						level.Error(logger).Log("msg", "error building request", "err", err)
+						continue
+					}
 
-		req, err := http.NewRequest("GET", app, nil)
-		if err != nil {
-			level.Error(logger).Log("msg", "error making http request", "err", err)
-			w.WriteHeader(http.StatusInternalServerError)
-			fmt.Fprintf(w, "%v\n", err)
-			return
-		}
-		req = req.WithContext(r.Context())
-
-		resp, err := c.Do(req)
-		if err != nil {
-			w.WriteHeader(http.StatusServiceUnavailable)
-			fmt.Fprintf(w, "%v\n", err)
-			return
-		}
-		defer resp.Body.Close()
-
-		w.WriteHeader(resp.StatusCode)
-		fmt.Fprintf(w, "%s via %s\n", id, app)
-		io.Copy(w, resp.Body)
-	})
-
-	go func() {
-		// Simulate traffic.
-		for range time.Tick(100 * time.Millisecond) {
-			go func() {
-				resp, err := http.Get("http://localhost")
-				if err != nil {
-					level.Error(logger).Log("msg", err)
+					resp, err := c.Do(req)
+					if err != nil {
+						level.Error(logger).Log("msg", "error doing request", "err", err)
+						continue
+					}
+					resp.Body.Close()
 				}
-				resp.Body.Close()
-			}()
-		}
-	}()
+			}
+		}()
+	}
 
 	s.Run()
+	close(quit)
+	wg.Wait()
 }
 
 func getApps(args []string) ([]*url.URL, error) {

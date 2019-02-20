@@ -1,0 +1,11 @@
+kind: Service
+apiVersion: v1
+metadata:
+  name: db
+spec:
+  selector:
+    name: db
+  ports:
+  - protocol: TCP
+    port: 80
+    targetPort: 80

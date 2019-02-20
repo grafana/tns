@@ -1,4 +1,5 @@
 db/db
 app/app
-lb/lb
+loadgen/loadgen
 vendor
+*/.uptodate

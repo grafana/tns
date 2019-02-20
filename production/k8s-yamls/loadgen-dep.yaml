@@ -1,0 +1,23 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: loadgen
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      name: loadgen
+  template:
+    metadata:
+      labels:
+        name: loadgen
+    spec:
+      containers:
+      - name: loadgen
+        image: grafana/tns-loadgen:latest
+        imagePullPolicy: IfNotPresent
+        args:
+        - http://app
+        ports:
+        - name: http-metrics
+          containerPort: 80

@@ -1,0 +1,21 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: app
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      name: app
+  template:
+    metadata:
+      labels:
+        name: app
+    spec:
+      containers:
+      - name: app
+        image: grafana/tns-app:latest
+        imagePullPolicy: IfNotPresent
+        ports:
+        - name: http-metrics
+          containerPort: 80

@@ -59,7 +59,7 @@ func (c *Client) Do(req *http.Request) (*http.Response, error) {
 	duration := time.Since(start)
 
 	if err != nil {
-		level.Info(c.logger).Log("msg", "HTTP client error", "error", err, "url", req.URL, "duration", duration)
+		level.Error(c.logger).Log("msg", "HTTP client error", "error", err, "url", req.URL, "duration", duration)
 		requestDuration.WithLabelValues(req.Method, "error").Observe(duration.Seconds())
 	} else {
 		level.Info(c.logger).Log("msg", "HTTP client success", "status", resp.StatusCode, "url", req.URL, "duration", duration)

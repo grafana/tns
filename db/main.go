@@ -6,7 +6,6 @@ import (
 	"fmt"
 	"math/rand"
 	"net/http"
-	"net/url"
 	"os"
 	"time"
 
@@ -46,13 +45,6 @@ func main() {
 
 	rand.Seed(time.Now().UnixNano())
 
-	peers, err := getPeers(flag.Args())
-	if err != nil {
-		level.Error(logger).Log("msg", "error parsing peers", "err", err)
-		os.Exit(1)
-	}
-	level.Info(logger).Log("msg", "peer(s)", "num", len(peers))
-
 	h := md5.New()
 	fmt.Fprintf(h, "%d", rand.Int63())
 	id := fmt.Sprintf("%x", h.Sum(nil))
@@ -86,17 +78,4 @@ func main() {
 	})
 
 	s.Run()
-}
-
-func getPeers(args []string) ([]*url.URL, error) {
-	peers := []*url.URL{}
-	for _, host := range args {
-		u, err := url.Parse(host)
-		if err != nil {
-			return nil, err
-		}
-		peers = append(peers, u)
-	}
-
-	return peers, nil
 }

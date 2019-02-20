@@ -1,0 +1,21 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: db
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      name: db
+  template:
+    metadata:
+      labels:
+        name: db
+    spec:
+      containers:
+      - name: db
+        image: grafana/tns-db:latest
+        imagePullPolicy: IfNotPresent
+        ports:
+        - name: http-metrics
+          containerPort: 80
