@@ -1,12 +1,13 @@
 package main
 
 import (
-	"crypto/md5"
+	"encoding/json"
 	"flag"
 	"fmt"
 	"math/rand"
 	"net/http"
 	"os"
+	"sync"
 	"time"
 
 	"github.com/go-kit/kit/log"
@@ -17,8 +18,6 @@ import (
 )
 
 const failPercent = 10
-
-var fail = false
 
 func main() {
 	serverConfig := server.Config{
@@ -45,37 +44,90 @@ func main() {
 
 	rand.Seed(time.Now().UnixNano())
 
-	h := md5.New()
-	fmt.Fprintf(h, "%d", rand.Int63())
-	id := fmt.Sprintf("%x", h.Sum(nil))
+	db := New(logger)
 
-	s.HTTP.HandleFunc("/fail", func(w http.ResponseWriter, r *http.Request) {
-		fail = !fail
-
-		fmt.Fprintf(w, "failing: %t\n", fail)
-	})
-	s.HTTP.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
-		since := time.Now()
-		defer func() {
-			level.Debug(logger).Log("msg", "query executed OK", "duration", time.Since(since))
-		}()
-
-		// Randomly fail x% of the requests.
-		if fail && rand.Intn(100) <= failPercent {
-			time.Sleep(50 * time.Millisecond)
-			// Log two different errors..
-			if rand.Intn(10) <= 1 {
-				level.Error(logger).Log("msg", "too many open connections")
-			} else {
-				level.Error(logger).Log("msg", "query lock timeout")
-			}
-			w.WriteHeader(http.StatusInternalServerError)
-
-			return
-		}
-
-		fmt.Fprintf(w, "db-%s OK\n", id)
-	})
+	s.HTTP.HandleFunc("/fail", db.Fail)
+	s.HTTP.HandleFunc("/", db.Fetch)
+	s.HTTP.HandleFunc("/post", db.Post)
 
 	s.Run()
+}
+
+type db struct {
+	logger log.Logger
+
+	mtx   sync.Mutex
+	fail  bool
+	links map[int]Link
+}
+
+type Link struct {
+	ID    int
+	Rank  string
+	URL   string
+	Title string
+}
+
+func New(logger log.Logger) *db {
+	return &db{
+		logger: logger,
+		links:  map[int]Link{},
+	}
+}
+
+func (db *db) Fail(w http.ResponseWriter, r *http.Request) {
+	db.mtx.Lock()
+	defer db.mtx.Unlock()
+
+	db.fail = !db.fail
+	level.Info(db.logger).Log("msg", "toggled fail flag", "fail", db.fail)
+
+	w.WriteHeader(http.StatusOK)
+	fmt.Fprintf(w, "failing: %t\n", db.fail)
+}
+
+func (db *db) Fetch(w http.ResponseWriter, r *http.Request) {
+	db.mtx.Lock()
+	defer db.mtx.Unlock()
+
+	// Randomly fail x% of the requests.
+	if db.fail && rand.Intn(100) <= failPercent {
+		time.Sleep(50 * time.Millisecond)
+		if rand.Intn(10) <= 1 {
+			level.Error(db.logger).Log("err", "too many open connections")
+		} else {
+			level.Error(db.logger).Log("err", "query lock timeout")
+		}
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+
+	links := make([]Link, 0, len(db.links))
+	for _, link := range db.links {
+		links = append(links, link)
+	}
+
+	w.WriteHeader(http.StatusOK)
+	if err := json.NewEncoder(w).Encode(struct {
+		Links []Link
+	}{
+		Links: links,
+	}); err != nil {
+		level.Error(db.logger).Log("msg", "error encoding response", "err", err)
+	}
+}
+
+func (db *db) Post(w http.ResponseWriter, r *http.Request) {
+	var link Link
+	if err := json.NewDecoder(r.Body).Decode(&link); err != nil {
+		level.Error(db.logger).Log("msg", "error decoding link", "err", err)
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	db.mtx.Lock()
+	defer db.mtx.Unlock()
+	db.links[link.ID] = link
+
+	w.WriteHeader(http.StatusNoContent)
 }
