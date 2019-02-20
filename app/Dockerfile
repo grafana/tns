@@ -1,5 +1,4 @@
-FROM gliderlabs/alpine:3.1
-MAINTAINER Weaveworks Inc <help@weave.works>
+FROM alpine:3.9
 ADD app /
 EXPOSE 80
 CMD ["/app", "db"]

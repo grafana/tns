@@ -1,84 +1,87 @@
 package main
 
 import (
-	"context"
 	"crypto/md5"
+	"flag"
 	"fmt"
 	"io"
-	"log"
 	"math/rand"
-	"net"
 	"net/http"
 	"net/url"
 	"os"
-	"os/signal"
-	"strconv"
-	"syscall"
 	"time"
 
-	"github.com/felixge/httpsnoop"
-	kitlog "github.com/go-kit/kit/log"
+	"github.com/go-kit/kit/log"
 	"github.com/go-kit/kit/log/level"
-	"github.com/opentracing-contrib/go-stdlib/nethttp"
+	"github.com/grafana/tns/client"
 	opentracing "github.com/opentracing/opentracing-go"
 	otlog "github.com/opentracing/opentracing-go/log"
-	"github.com/prometheus/client_golang/prometheus"
-	"github.com/prometheus/client_golang/prometheus/promauto"
-	"github.com/prometheus/client_golang/prometheus/promhttp"
-	jaegercfg "github.com/uber/jaeger-client-go/config"
-)
-
-const (
-	dbPort  = ":80"
-	appPort = ":80"
-)
-
-var (
-	requestDuration = promauto.NewHistogramVec(prometheus.HistogramOpts{
-		Name:    "request_duration_seconds",
-		Help:    "Time (in seconds) spent serving HTTP requests",
-		Buckets: prometheus.DefBuckets,
-	}, []string{"method", "route", "status_code"})
-
-	logger = level.NewFilter(kitlog.NewLogfmtLogger(kitlog.NewSyncWriter(os.Stderr)), level.AllowDebug())
+	"github.com/weaveworks/common/logging"
+	"github.com/weaveworks/common/server"
+	"github.com/weaveworks/common/tracing"
 )
 
 func main() {
-	cfg, err := jaegercfg.FromEnv()
-	if err != nil {
-		log.Fatalln("err", err)
+	serverConfig := server.Config{
+		MetricsNamespace:    "tns",
+		ExcludeRequestInLog: true,
 	}
-	cfg.InitGlobalTracer("app")
+	serverConfig.RegisterFlags(flag.CommandLine)
+	flag.Parse()
 
-	rand.Seed(time.Now().UnixNano())
+	// Use a gokit logger, and tell the server to use it.
+	logger := level.NewFilter(log.NewLogfmtLogger(log.NewSyncWriter(os.Stdout)), serverConfig.LogLevel.Gokit)
+	serverConfig.Log = logging.GoKit(logger)
 
-	databases := getDatabases()
+	// Setting the environment variable JAEGER_AGENT_HOST enables tracing
+	trace := tracing.NewFromEnv("app")
+	defer trace.Close()
+
+	s, err := server.New(serverConfig)
+	if err != nil {
+		level.Error(logger).Log("msg", "error starting server", "err", err)
+		os.Exit(1)
+	}
+	defer s.Shutdown()
+
+	databases, err := getDatabases(flag.Args())
+	if err != nil {
+		level.Error(logger).Log("msg", "error parsing databases", "err", err)
+		os.Exit(1)
+	}
 	level.Info(logger).Log("database(s)", len(databases))
 
+	rand.Seed(time.Now().UnixNano())
 	h := md5.New()
 	fmt.Fprintf(h, "%d", rand.Int63())
 	id := fmt.Sprintf("app-%x", h.Sum(nil))
 
-	http.Handle("/metrics", promhttp.Handler())
-	http.HandleFunc("/", wrap(func(w http.ResponseWriter, r *http.Request) {
+	c := client.New(logger)
+
+	s.HTTP.HandleFunc("/", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		db := databases[rand.Intn(len(databases))].String()
 		defer func(begin time.Time) {
 			level.Debug(logger).Log("msg", "served request", "from", r.RemoteAddr, "via", db, "duration", time.Since(begin))
 		}(time.Now())
 
-		ctx := r.Context()
-		resp, err := tracedGet(ctx, db, "query")
+		req, err := http.NewRequest("GET", db, nil)
 		if err != nil {
-			w.WriteHeader(http.StatusServiceUnavailable)
-			level.Error(logger).Log("msg", err)
+			w.WriteHeader(http.StatusInternalServerError)
 			fmt.Fprintf(w, "%v\n", err)
 			return
 		}
+		req = req.WithContext(r.Context())
 
-		if resp.StatusCode == 500 {
-			resp.Body.Close()
+		resp, err := c.Do(req)
+		if err != nil {
+			w.WriteHeader(http.StatusServiceUnavailable)
+			fmt.Fprintf(w, "%v\n", err)
+			return
+		}
+		defer resp.Body.Close()
 
-			span := opentracing.SpanFromContext(ctx)
+		if resp.StatusCode/100 == 5 {
+			span := opentracing.SpanFromContext(r.Context())
 			if span != nil {
 				span.LogFields(otlog.String("msg", "db responded with error, backing off 500ms before retrying"))
 			}
@@ -86,28 +89,21 @@ func main() {
 			level.Info(logger).Log("msg", "db responded with error, backing off before retrying")
 			time.Sleep(500 * time.Millisecond)
 
-			resp, err = tracedGet(ctx, db, "query-retry")
+			resp, err = c.Do(req)
 			if err != nil {
 				w.WriteHeader(http.StatusServiceUnavailable)
-				level.Error(logger).Log("msg", err)
 				fmt.Fprintf(w, "%v\n", err)
 				return
 			}
+			defer resp.Body.Close()
 		}
 
 		w.WriteHeader(resp.StatusCode)
-
 		fmt.Fprintf(w, "%s via %s\n", id, db)
 		io.Copy(w, resp.Body)
-		resp.Body.Close()
 	}))
 
-	errc := make(chan error)
-	go func() {
-		errc <- http.ListenAndServe(appPort, nethttp.Middleware(opentracing.GlobalTracer(), http.DefaultServeMux))
-	}()
-	go func() { errc <- interrupt() }()
-	log.Fatal(<-errc)
+	s.Run()
 }
 
 func makeID() string {
@@ -117,59 +113,15 @@ func makeID() string {
 	return fmt.Sprintf("%x", h.Sum(nil)[:8])
 }
 
-func interrupt() error {
-	c := make(chan os.Signal)
-	signal.Notify(c, syscall.SIGINT, syscall.SIGTERM)
-	return fmt.Errorf("%s", <-c)
-}
-
-func getDatabases() []*url.URL {
+func getDatabases(args []string) ([]*url.URL, error) {
 	databases := []*url.URL{}
-	for _, host := range os.Args[1:] {
-		if _, _, err := net.SplitHostPort(host); err != nil {
-			host = host + dbPort
-		}
-		u, err := url.Parse(fmt.Sprintf("http://%s", host))
+	for _, host := range args {
+		u, err := url.Parse(host)
 		if err != nil {
-			log.Fatal(err)
+			return nil, err
 		}
-		level.Info(logger).Log("database", u.String())
 		databases = append(databases, u)
 	}
 
-	return databases
-}
-
-func wrap(h http.HandlerFunc) http.HandlerFunc {
-	return func(w http.ResponseWriter, r *http.Request) {
-		m := httpsnoop.CaptureMetrics(h, w, r)
-		requestDuration.WithLabelValues(r.Method, r.URL.Path, strconv.Itoa(m.Code)).Observe(m.Duration.Seconds())
-	}
-}
-
-func tracedGet(ctx context.Context, url, opName string) (*http.Response, error) {
-	client := &http.Client{Transport: &nethttp.Transport{
-		&http.Transport{
-			DialContext: (&net.Dialer{
-				Timeout:   30 * time.Second,
-				KeepAlive: 30 * time.Second,
-				DualStack: true,
-			}).DialContext,
-			MaxIdleConns:          1,
-			IdleConnTimeout:       10 * time.Millisecond,
-			TLSHandshakeTimeout:   10 * time.Second,
-			ExpectContinueTimeout: 1 * time.Second,
-			DisableKeepAlives:     true,
-		},
-	}}
-	req, err := http.NewRequest("GET", url, nil)
-	if err != nil {
-		return nil, err
-	}
-
-	req = req.WithContext(ctx)
-	req, ht := nethttp.TraceRequest(opentracing.GlobalTracer(), req, nethttp.ClientTrace(false), nethttp.OperationName(opName))
-	defer ht.Finish()
-
-	return client.Do(req)
+	return databases, nil
 }

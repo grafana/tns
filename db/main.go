@@ -2,70 +2,67 @@ package main
 
 import (
 	"crypto/md5"
+	"flag"
 	"fmt"
-	"log"
 	"math/rand"
-	"net"
 	"net/http"
 	"net/url"
 	"os"
-	"os/signal"
-	"strconv"
-	"syscall"
 	"time"
 
-	"github.com/felixge/httpsnoop"
-	kitlog "github.com/go-kit/kit/log"
+	"github.com/go-kit/kit/log"
 	"github.com/go-kit/kit/log/level"
-	"github.com/opentracing-contrib/go-stdlib/nethttp"
-	opentracing "github.com/opentracing/opentracing-go"
-	"github.com/prometheus/client_golang/prometheus"
-	"github.com/prometheus/client_golang/prometheus/promauto"
-	"github.com/prometheus/client_golang/prometheus/promhttp"
-	jaegercfg "github.com/uber/jaeger-client-go/config"
+	"github.com/weaveworks/common/logging"
+	"github.com/weaveworks/common/server"
+	"github.com/weaveworks/common/tracing"
 )
 
-const (
-	dbPort = ":80"
+const failPercent = 10
 
-	failPercent = 10
-)
-
-var (
-	requestDuration = promauto.NewHistogramVec(prometheus.HistogramOpts{
-		Name:    "request_duration_seconds",
-		Help:    "Time (in seconds) spent serving HTTP requests",
-		Buckets: prometheus.DefBuckets,
-	}, []string{"method", "route", "status_code"})
-
-	logger = level.NewFilter(kitlog.NewLogfmtLogger(kitlog.NewSyncWriter(os.Stderr)), level.AllowDebug())
-
-	fail = false
-)
+var fail = false
 
 func main() {
-	cfg, err := jaegercfg.FromEnv()
-	if err != nil {
-		log.Fatalln("err", err)
+	serverConfig := server.Config{
+		MetricsNamespace:    "tns",
+		ExcludeRequestInLog: true,
 	}
-	cfg.InitGlobalTracer("db")
+	serverConfig.RegisterFlags(flag.CommandLine)
+	flag.Parse()
+
+	// Use a gokit logger, and tell the server to use it.
+	logger := level.NewFilter(log.NewLogfmtLogger(log.NewSyncWriter(os.Stdout)), serverConfig.LogLevel.Gokit)
+	serverConfig.Log = logging.GoKit(logger)
+
+	// Setting the environment variable JAEGER_AGENT_HOST enables tracing
+	trace := tracing.NewFromEnv("db")
+	defer trace.Close()
+
+	s, err := server.New(serverConfig)
+	if err != nil {
+		level.Error(logger).Log("msg", "error starting server", "err", err)
+		os.Exit(1)
+	}
+	defer s.Shutdown()
 
 	rand.Seed(time.Now().UnixNano())
 
-	peers := getPeers()
+	peers, err := getPeers(flag.Args())
+	if err != nil {
+		level.Error(logger).Log("msg", "error parsing peers", "err", err)
+		os.Exit(1)
+	}
 	level.Info(logger).Log("msg", "peer(s)", "num", len(peers))
 
 	h := md5.New()
 	fmt.Fprintf(h, "%d", rand.Int63())
 	id := fmt.Sprintf("%x", h.Sum(nil))
 
-	http.HandleFunc("/fail", func(w http.ResponseWriter, r *http.Request) {
+	s.HTTP.HandleFunc("/fail", func(w http.ResponseWriter, r *http.Request) {
 		fail = !fail
 
 		fmt.Fprintf(w, "failing: %t\n", fail)
 	})
-	http.Handle("/metrics", promhttp.Handler())
-	http.HandleFunc("/", wrap(func(w http.ResponseWriter, r *http.Request) {
+	s.HTTP.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
 		since := time.Now()
 		defer func() {
 			level.Debug(logger).Log("msg", "query executed OK", "duration", time.Since(since))
@@ -86,50 +83,20 @@ func main() {
 		}
 
 		fmt.Fprintf(w, "db-%s OK\n", id)
-	}))
+	})
 
-	errc := make(chan error)
-	go func() {
-		errc <- http.ListenAndServe(dbPort, nethttp.Middleware(opentracing.GlobalTracer(), http.DefaultServeMux))
-	}()
-	go func() { errc <- interrupt() }()
-	log.Fatal(<-errc)
+	s.Run()
 }
 
-func interrupt() error {
-	c := make(chan os.Signal)
-	signal.Notify(c, syscall.SIGINT, syscall.SIGTERM)
-	return fmt.Errorf("%s", <-c)
-}
-
-func id() string {
-	hostname, err := os.Hostname()
-	if err != nil {
-		hostname = "unknown-host"
-	}
-	return hostname
-}
-
-func getPeers() []*url.URL {
+func getPeers(args []string) ([]*url.URL, error) {
 	peers := []*url.URL{}
-	for _, host := range os.Args[1:] {
-		if _, _, err := net.SplitHostPort(host); err != nil {
-			host = host + dbPort
-		}
-		u, err := url.Parse(fmt.Sprintf("http://%s", host))
+	for _, host := range args {
+		u, err := url.Parse(host)
 		if err != nil {
-			log.Fatal(err)
+			return nil, err
 		}
-		level.Info(logger).Log("peer", u.String())
 		peers = append(peers, u)
 	}
 
-	return peers
-}
-
-func wrap(h http.HandlerFunc) http.HandlerFunc {
-	return func(w http.ResponseWriter, r *http.Request) {
-		m := httpsnoop.CaptureMetrics(h, w, r)
-		requestDuration.WithLabelValues(r.Method, r.URL.Path, strconv.Itoa(m.Code)).Observe(m.Duration.Seconds())
-	}
+	return peers, nil
 }
