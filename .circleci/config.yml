@@ -22,7 +22,6 @@ jobs:
       - run:
           name: Run Unit Tests
           command: |
-            go get -u golang.org/x/lint/golint
             GO111MODULE=on go test ./...
 
   lint:
@@ -33,6 +32,7 @@ jobs:
       - run:
           name: Lint
           command: |
+            go get -u golang.org/x/lint/golint
             golint ./...
 
   build:
