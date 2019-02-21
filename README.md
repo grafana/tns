@@ -9,21 +9,21 @@ The "TNS" name comes from "The New Stack", where the original demo code was used
 1. Build:
 
 ```sh
-# make
+$ make
 ```
 
 2. Run:
 
 ```sh
-# kubectl apply -f ./production/k8s-yamls
+$ kubectl apply -f ./production/k8s-yamls
 ```
 
 3. Monitoring
 
 ```sh
-# ks init ksonnet
-# cd ksonnet
-# jb install github.com/grafana/jsonnet-libs/prometheus-ksonnet
+$ ks init ksonnet
+$ cd ksonnet
+$ jb install github.com/grafana/jsonnet-libs/prometheus-ksonnet
 ```
 
 Update environments/default/main.jsonnet to be:
@@ -39,13 +39,29 @@ prometheus {
 
   prometheus_container+:
      $.util.resourcesRequests('250m', '500Mi'),
+
+  nginx_service+:
+    service.mixin.spec.withType("NodePort") +
+    service.mixin.spec.withPorts({
+        nodePort: 30040,
+        port: 8080,
+        targetPort: 80,
+    }),
 }
 ```
 
 Apply:
 
 ```sh
-# ks apply default
+$ ks apply default
 ```
 
 4. Logging
+
+```bash
+$ helm init
+$ git clone https://github.com/grafana/loki.git
+$ cd loki/production/helm
+$ helm install . -n loki --namespace default
+```
+

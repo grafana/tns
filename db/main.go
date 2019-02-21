@@ -18,8 +18,6 @@ import (
 	"github.com/weaveworks/common/tracing"
 )
 
-const failPercent = 10
-
 func main() {
 	serverConfig := server.Config{
 		MetricsNamespace:    "tns",
@@ -92,14 +90,21 @@ func (db *db) Fetch(w http.ResponseWriter, r *http.Request) {
 	db.mtx.Lock()
 	defer db.mtx.Unlock()
 
-	// Randomly fail x% of the requests.
-	if db.fail && rand.Intn(100) <= failPercent {
+	// Every 5mins, randomly fail 40% of requests for 30 seconds.
+	if time.Now().Unix()%(5*60) < 30 && rand.Intn(10) <= 8 {
 		time.Sleep(50 * time.Millisecond)
-		if rand.Intn(10) <= 1 {
+		if rand.Intn(10) <= 4 {
 			level.Error(db.logger).Log("err", "too many open connections")
+			w.WriteHeader(http.StatusInternalServerError)
 		} else {
 			level.Error(db.logger).Log("err", "query lock timeout")
+			w.WriteHeader(http.StatusInternalServerError)
 		}
+		return
+	}
+
+	if db.fail {
+		level.Error(db.logger).Log("err", "spline matriculation failed")
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
