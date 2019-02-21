@@ -110,7 +110,10 @@ func (db *db) Fetch(w http.ResponseWriter, r *http.Request) {
 	}
 
 	sort.Slice(links, func(i, j int) bool {
-		return links[i].Points > links[j].Points
+		if links[i].Points != links[j].Points {
+			return links[i].Points > links[j].Points
+		}
+		return links[i].ID > links[j].ID
 	})
 
 	max := 10
@@ -139,8 +142,13 @@ func (db *db) Post(w http.ResponseWriter, r *http.Request) {
 
 	db.mtx.Lock()
 	defer db.mtx.Unlock()
-	db.links[link.ID] = &link
 
+	if _, ok := db.links[link.ID]; ok {
+		http.Error(w, "post exists", http.StatusAlreadyReported)
+		return
+	}
+
+	db.links[link.ID] = &link
 	w.WriteHeader(http.StatusNoContent)
 }
 

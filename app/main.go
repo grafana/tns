@@ -205,7 +205,7 @@ func (a *app) Post(w http.ResponseWriter, r *http.Request) {
 	title := strings.TrimSpace(r.PostForm.Get("title"))
 	if title == "" {
 		level.Error(a.logger).Log("msg", "empty url")
-		http.Error(w, "empty url", http.StatusBadRequest)
+		http.Error(w, "empty title", http.StatusBadRequest)
 		return
 	}
 
