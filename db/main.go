@@ -7,6 +7,7 @@ import (
 	"math/rand"
 	"net/http"
 	"os"
+	"sort"
 	"sync"
 	"time"
 
@@ -46,9 +47,10 @@ func main() {
 
 	db := New(logger)
 
-	s.HTTP.HandleFunc("/fail", db.Fail)
 	s.HTTP.HandleFunc("/", db.Fetch)
+	s.HTTP.HandleFunc("/fail", db.Fail)
 	s.HTTP.HandleFunc("/post", db.Post)
+	s.HTTP.HandleFunc("/vote", db.Vote)
 
 	s.Run()
 }
@@ -58,20 +60,20 @@ type db struct {
 
 	mtx   sync.Mutex
 	fail  bool
-	links map[int]Link
+	links map[int]*Link
 }
 
 type Link struct {
-	ID    int
-	Rank  string
-	URL   string
-	Title string
+	ID     int
+	Points int
+	URL    string
+	Title  string
 }
 
 func New(logger log.Logger) *db {
 	return &db{
 		logger: logger,
-		links:  map[int]Link{},
+		links:  map[int]*Link{},
 	}
 }
 
@@ -102,14 +104,24 @@ func (db *db) Fetch(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	links := make([]Link, 0, len(db.links))
+	links := make([]*Link, 0, len(db.links))
 	for _, link := range db.links {
 		links = append(links, link)
 	}
 
+	sort.Slice(links, func(i, j int) bool {
+		return links[i].Points > links[j].Points
+	})
+
+	max := 10
+	if len(links) < max {
+		max = len(links)
+	}
+	links = links[:max]
+
 	w.WriteHeader(http.StatusOK)
 	if err := json.NewEncoder(w).Encode(struct {
-		Links []Link
+		Links []*Link
 	}{
 		Links: links,
 	}); err != nil {
@@ -127,7 +139,24 @@ func (db *db) Post(w http.ResponseWriter, r *http.Request) {
 
 	db.mtx.Lock()
 	defer db.mtx.Unlock()
-	db.links[link.ID] = link
+	db.links[link.ID] = &link
+
+	w.WriteHeader(http.StatusNoContent)
+}
+
+func (db *db) Vote(w http.ResponseWriter, r *http.Request) {
+	var req struct {
+		ID int
+	}
+	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+		level.Error(db.logger).Log("msg", "error decoding link", "err", err)
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	db.mtx.Lock()
+	defer db.mtx.Unlock()
+	db.links[req.ID].Points++
 
 	w.WriteHeader(http.StatusNoContent)
 }

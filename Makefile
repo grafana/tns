@@ -16,7 +16,7 @@ db/.uptodate: db/db db/Dockerfile
 	docker build -t $(DOCKER_IMAGE_BASE)/tns-db db/
 	touch $@
 
-app/.uptodate: app/app app/Dockerfile
+app/.uptodate: app/app app/Dockerfile app/index.html.tmpl
 	docker build -t $(DOCKER_IMAGE_BASE)/tns-app app/
 	touch $@
 
