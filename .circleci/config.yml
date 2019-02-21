@@ -1,0 +1,46 @@
+version: 2
+
+workflows:
+  version: 2
+  test-build-deploy:
+    jobs:
+    - test
+    - build
+    - lint
+
+defaults: &defaults
+  docker:
+    - image: golang:1.11.5-stretch
+  working_directory: /go/src/github.com/grafana/tns
+
+jobs:
+  test:
+    <<: *defaults
+    steps:
+      - checkout
+
+      - run:
+          name: Run Unit Tests
+          command: |
+            GO111MODULE=on go test ./...
+
+  lint:
+    <<: *defaults
+    steps:
+      - checkout
+
+      - run:
+          name: Lint
+          command: |
+            golint ./...
+
+  build:
+    <<: *defaults
+    steps:
+      - checkout
+      - setup_remote_docker
+
+      - run:
+          name: Build Images
+          command: |
+            make
