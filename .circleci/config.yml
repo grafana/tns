@@ -83,7 +83,7 @@ jobs:
       - setup_remote_docker
 
       - restore_cache:
-          key: v1-loki-{{ .Branch }}-{{ .Revision }}
+          key: v1-tns-{{ .Branch }}-{{ .Revision }}
 
       - run:
           name: Install Docker client
