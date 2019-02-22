@@ -1,0 +1,40 @@
+{
+    "stories": [
+        {
+            "title": "Why was everyone talking about the Grafana Loki logo?",
+            "url": "https://news.ycombinator.com/item?id=18665083"
+        },
+        {
+            "title": "Graduate from DataDog with Grafana Cloud.",
+            "url": "https://grafana.com/cloud"
+        },
+        {
+            "title": "Grafana Labs annouces: Project Thor, like Prometheus but for cats.",
+            "url": "https://www.youtube.com/watch?v=kq2qGkfpUsY"
+        },
+        {
+            "title": "Google annouces discontinution of Google Cloud.",
+            "url": "https://www.youtube.com/watch?v=dQw4w9WgXcQ"
+        },
+        {
+            "title": "InfluxData annouces Series Z, $100 quadrillion funding round.",
+            "url": "https://www.influxdata.com/blog/influxdata-secures-60-million-in-series-d-funding-to-bring-the-value-of-time-series-to-the-enterprise-mainstream/"
+        },
+        {
+            "title": "IBM aquires AWS, Google and Microsoft, still forth place in cloud.",
+            "url": "https://www.zdnet.com/article/top-cloud-providers-2018-how-aws-microsoft-google-ibm-oracle-alibaba-stack-up/"
+        },
+        {
+            "title": "Grafana Labs pre-annouces plugins for all future AWS services.",
+            "url": "https://grafana.com/enterprise"
+        },
+        {
+            "title": "Thanos: Long term storage for half your Prometheus metrics.",
+            "url": "https://github.com/improbable-eng/thanos"
+        },
+        {
+            "title": "Grafana Labs CEO: \"Who need VC when you have GitHub stars?\"",
+            "url": "https://timqian.com/star-history/#grafana/loki&influxdata/telegraf"
+        }
+    ]
+}
