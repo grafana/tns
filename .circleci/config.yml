@@ -67,9 +67,9 @@ jobs:
           name: Save Images
           command: |
             mkdir images/
-            docker save grafana/tns-loadgen:latest ./images/loadgen
-            docker save grafana/tns-app:latest ./images/app
-            docker save grafana/tns-db:latest ./images/db
+            docker save grafana/tns-loadgen:latest -o ./images/loadgen
+            docker save grafana/tns-app:latest -o ./images/app
+            docker save grafana/tns-db:latest -o ./images/db
 
       - save_cache:
           key: v1-tns-{{ .Branch }}-{{ .Revision }}
