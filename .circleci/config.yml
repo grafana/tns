@@ -7,6 +7,14 @@ workflows:
     - test
     - build
     - lint
+    - publish:
+        requires:
+        - test
+        - build
+        - lint
+        filters:
+          branches:
+            only: master
 
 defaults: &defaults
   docker:
@@ -54,3 +62,51 @@ jobs:
           name: Build Images
           command: |
             make
+
+      - run:
+          name: Save Images
+          command: |
+            mkdir images/
+            docker save grafana/tns-loadgen:latest ./images/loadgen
+            docker save grafana/tns-app:latest ./images/app
+            docker save grafana/tns-db:latest ./images/db
+
+      - save_cache:
+          key: v1-tns-{{ .Branch }}-{{ .Revision }}
+          paths:
+          - images/
+
+  publish:
+    <<: *defaults
+    steps:
+      - checkout
+      - setup_remote_docker
+
+      - restore_cache:
+          key: v1-loki-{{ .Branch }}-{{ .Revision }}
+
+      - run:
+          name: Install Docker client
+          command: |
+            set -x
+            VER="17.03.0-ce"
+            curl -L -o /tmp/docker-$VER.tgz https://download.docker.com/linux/static/stable/x86_64/docker-$VER.tgz
+            tar -xz -C /tmp -f /tmp/docker-$VER.tgz
+            mv /tmp/docker/* /usr/bin
+
+      - run:
+          name: Load Images
+          command: |
+            docker load -i ./images/loadgen
+            docker load -i ./images/app
+            docker load -i ./images/db
+
+      - run:
+          name: Push Images
+          command: |
+            if [ -n "$DOCKER_USER" ]; then
+              docker login -u "$DOCKER_USER" -p "$DOCKER_PASS" &&
+              docker push grafana/tns-loadgen:latest
+              docker push grafana/tns-app:latest
+              docker push grafana/tns-db:latest
+            fi
