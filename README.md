@@ -20,9 +20,12 @@ $ kubectl apply -f ./production/k8s-yamls
 
 3. Monitoring
 
+Install ksonnet version 0.8.0 as [specified here](https://github.com/grafana/jsonnet-libs/tree/5d7e5391010c768a6ddd39163c35662f379e20ca/prometheus-ksonnet)
+
 ```sh
 $ ks init ksonnet
 $ cd ksonnet
+$ jb init
 $ jb install github.com/grafana/jsonnet-libs/prometheus-ksonnet
 ```
 
