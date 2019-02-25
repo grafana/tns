@@ -35,6 +35,7 @@ Update environments/default/main.jsonnet to be:
 local prometheus = import "prometheus-ksonnet/prometheus-ksonnet.libsonnet";
 
 prometheus {
+  local service = $.core.v1.service,
   _config+:: {
     namespace: "default",
     stateful: true,
