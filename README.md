@@ -96,8 +96,9 @@ $ tk apply environments/default
 
 ```bash
 $ helm init
-$ git clone https://github.com/grafana/loki.git
-$ cd loki/production/helm
-$ helm install . -n loki --namespace default
+$ helm repo add loki https://grafana.github.io/loki/charts
+$ helm repo update
+$ helm upgrade --install loki loki/loki-stack
 ```
 
+Add a Loki datasource to Grafana, pointing at `https://loki.default.svc.cluster.local`.
