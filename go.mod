@@ -27,3 +27,5 @@ require (
 	go.uber.org/atomic v1.3.2 // indirect
 	google.golang.org/grpc v1.18.0 // indirect
 )
+
+go 1.13
