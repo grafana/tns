@@ -14,6 +14,7 @@ import (
 	"github.com/go-kit/kit/log"
 	"github.com/go-kit/kit/log/level"
 	"github.com/weaveworks/common/logging"
+	"github.com/weaveworks/common/middleware"
 	"github.com/weaveworks/common/server"
 	"github.com/weaveworks/common/tracing"
 )
@@ -34,6 +35,9 @@ func main() {
 	trace := tracing.NewFromEnv("db")
 	defer trace.Close()
 
+	db := New(logger)
+	serverConfig.HTTPMiddleware = []middleware.Interface{middleware.Func(db.handlePanic)}
+
 	s, err := server.New(serverConfig)
 	if err != nil {
 		level.Error(logger).Log("msg", "error starting server", "err", err)
@@ -42,8 +46,6 @@ func main() {
 	defer s.Shutdown()
 
 	rand.Seed(time.Now().UnixNano())
-
-	db := New(logger)
 
 	s.HTTP.HandleFunc("/", db.Fetch)
 	s.HTTP.HandleFunc("/fail", db.Fail)
@@ -86,6 +88,18 @@ func (db *db) Fail(w http.ResponseWriter, r *http.Request) {
 	fmt.Fprintf(w, "failing: %t\n", db.fail)
 }
 
+func (db *db) handlePanic(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		defer func() {
+			if r := recover(); r != nil {
+				level.Error(db.logger).Log("err", r)
+				w.WriteHeader(http.StatusInternalServerError)
+			}
+		}()
+		next.ServeHTTP(w, r)
+	})
+}
+
 func (db *db) Fetch(w http.ResponseWriter, r *http.Request) {
 	db.mtx.Lock()
 	defer db.mtx.Unlock()
@@ -94,13 +108,10 @@ func (db *db) Fetch(w http.ResponseWriter, r *http.Request) {
 	if time.Now().Unix()%(5*60) < 30 && rand.Intn(10) <= 8 {
 		time.Sleep(50 * time.Millisecond)
 		if rand.Intn(10) <= 4 {
-			level.Error(db.logger).Log("err", "too many open connections")
-			w.WriteHeader(http.StatusInternalServerError)
+			panic("too many open connections")
 		} else {
-			level.Error(db.logger).Log("err", "query lock timeout")
-			w.WriteHeader(http.StatusInternalServerError)
+			panic("query lock timeout")
 		}
-		return
 	}
 
 	if db.fail {
