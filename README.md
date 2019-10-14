@@ -73,6 +73,25 @@ $ tk apply environments/default
 
 Then go to http://localhost:30040/ to see the monitoring stack.
 
+3b. Add dashboards for demo app
+
+```sh
+$ jb install https://github.com/grafana/tns/production/tns-mixin/
+```
+Update environments/default/main.jsonnet to be:
+
+```
+local prometheus = import "prometheus-ksonnet/prometheus-ksonnet.libsonnet";
+local mixin = import "tns-mixin/mixin.libsonnet";
+
+prometheus + mixin {
+...
+```
+
+```sh
+$ tk apply environments/default
+```
+
 4. Log Aggregation with Grafana Loki
 
 ```bash
