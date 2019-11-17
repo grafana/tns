@@ -103,3 +103,11 @@ $ helm upgrade --install loki loki/loki-stack
 ```
 
 Add a Loki datasource to Grafana, pointing at `https://loki.default.svc.cluster.local`.
+
+5. Install Jaeger
+
+```sh
+$ kubectl apply -f ./production/jaeger
+```
+
+(The app is already configured to send traces to jaeger.)

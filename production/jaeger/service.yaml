@@ -1,0 +1,18 @@
+kind: Service
+apiVersion: v1
+metadata:
+  name: jaeger
+spec:
+  type: NodePort
+  selector:
+    name: jaeger
+  ports:
+  - name: http
+    protocol: TCP
+    port: 16686
+    targetPort: 16686
+    nodePort: 31686
+  - name: thrift-compact
+    protocol: UDP
+    port: 6831
+    targetPort: 6831
