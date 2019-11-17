@@ -21,8 +21,7 @@ import (
 
 func main() {
 	serverConfig := server.Config{
-		MetricsNamespace:    "tns",
-		ExcludeRequestInLog: true,
+		MetricsNamespace: "tns",
 	}
 	serverConfig.RegisterFlags(flag.CommandLine)
 	flag.Parse()

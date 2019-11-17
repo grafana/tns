@@ -102,7 +102,7 @@ $ helm repo update
 $ helm upgrade --install loki loki/loki-stack
 ```
 
-Add a Loki datasource to Grafana, pointing at `https://loki.default.svc.cluster.local`.
+Add a Loki datasource to Grafana, pointing at `http://loki.default.svc.cluster.local:3100`.
 
 5. Install Jaeger
 
