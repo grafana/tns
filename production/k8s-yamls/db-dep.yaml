@@ -19,3 +19,12 @@ spec:
         ports:
         - name: http-metrics
           containerPort: 80
+        env:
+        - name: JAEGER_AGENT_HOST
+          value: jaeger.default.svc.cluster.local
+        - name: JAEGER_TAGS
+          value: cluster=docker,namespace=default
+        - name: JAEGER_SAMPLER_TYPE
+          value: const
+        - name: JAEGER_SAMPLER_PARAM
+          value: "1"
