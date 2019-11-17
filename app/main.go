@@ -291,6 +291,7 @@ func (a *app) Vote(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	req = req.WithContext(r.Context())
 	resp, err := a.client.Do(req)
 	if err != nil {
 		w.WriteHeader(http.StatusServiceUnavailable)
