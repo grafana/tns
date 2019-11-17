@@ -45,6 +45,7 @@ prometheus {
   local service = $.core.v1.service,
   _config+:: {
     namespace: "default",
+    cluster_name: "docker",
   },
 
   prometheus_service+: $.prometheus {
