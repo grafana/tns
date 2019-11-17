@@ -25,6 +25,6 @@ spec:
         - name: JAEGER_TAGS
           value: cluster=docker,namespace=default
         - name: JAEGER_SAMPLER_TYPE
-          value: probabilistic
+          value: const
         - name: JAEGER_SAMPLER_PARAM
-          value: "1.0"
+          value: "1"
