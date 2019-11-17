@@ -32,8 +32,8 @@ $ mkdir tanka; cd tanka
 $ tk init
 $ tk env set environments/default --server=https://kubernetes.docker.internal:6443 # if you're using docker desktop.
 $ jb install github.com/grafana/jsonnet-libs/prometheus-ksonnet
-$ jb install github.com/ksonnet/ksonnet-lib/ksonnet.beta.3/k.libsonnet
-$ jb install github.com/ksonnet/ksonnet-lib/ksonnet.beta.3/k8s.libsonnet
+$ curl https://github.com/ksonnet/ksonnet-lib/blob/master/ksonnet.beta.3/k.libsonnet > vendor/k.libsonnet
+$ curl https://github.com/ksonnet/ksonnet-lib/blob/master/ksonnet.beta.3/k8s.libsonnet > vendor/k8s.libsonnet
 ```
 
 Update environments/default/main.jsonnet to be:
