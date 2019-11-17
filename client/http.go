@@ -54,7 +54,9 @@ func New(logger log.Logger) *Client {
 // Do "overrides" http.Client.Do
 func (c *Client) Do(req *http.Request) (*http.Response, error) {
 	start := time.Now()
-	nethttp.TraceRequest(opentracing.GlobalTracer(), req)
+	req, ht := nethttp.TraceRequest(opentracing.GlobalTracer(), req)
+	defer ht.Finish()
+
 	resp, err := c.Client.Do(req)
 	duration := time.Since(start)
 
