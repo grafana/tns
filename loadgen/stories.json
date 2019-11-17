@@ -9,15 +9,15 @@
             "url": "https://grafana.com/cloud"
         },
         {
-            "title": "Grafana Labs annouces: Project Thor, like Prometheus but for cats.",
-            "url": "https://www.youtube.com/watch?v=kq2qGkfpUsY"
+            "title": "Grafana Labs annouces: Cortex, like Loki but for metrics.",
+            "url": "https://github.com/cortexproject/cortex"
         },
         {
-            "title": "Google annouces discontinution of Google Cloud.",
+            "title": "Splunk acquires all companies in the known universe.",
             "url": "https://www.youtube.com/watch?v=dQw4w9WgXcQ"
         },
         {
-            "title": "InfluxData annouces Series Z, $100 quadrillion funding round.",
+            "title": "Helm 3 launched with even more Jinga templates.",
             "url": "https://www.influxdata.com/blog/influxdata-secures-60-million-in-series-d-funding-to-bring-the-value-of-time-series-to-the-enterprise-mainstream/"
         },
         {
@@ -25,16 +25,24 @@
             "url": "https://www.zdnet.com/article/top-cloud-providers-2018-how-aws-microsoft-google-ibm-oracle-alibaba-stack-up/"
         },
         {
-            "title": "Grafana Labs pre-annouces plugins for all future AWS services.",
-            "url": "https://grafana.com/enterprise"
-        },
-        {
             "title": "Thanos: Long term storage for half your Prometheus metrics.",
             "url": "https://github.com/improbable-eng/thanos"
         },
         {
-            "title": "Grafana Labs CEO: \"Who need VC when you have GitHub stars?\"",
-            "url": "https://timqian.com/star-history/#grafana/loki&influxdata/telegraf"
+            "title": "Google annouces new dependancy manager for Go.",
+            "url": "https://peter.bourgon.org/blog/2018/07/27/a-response-about-dep-and-vgo.html"
+        },
+        {
+            "title": "Grafana Labs revises history, raises VC money.",
+            "url": "https://techcrunch.com/2019/10/24/grafana-labs-nabs-24m-series-a-for-open-source-based-data-analytics-stack/"
+        },
+        {
+            "title": "Dockers annouces sales of office furniture to Mirantis.",
+            "url": "https://techcrunch.com/2019/11/13/mirantis-acquires-docker-enterprise/"
+        },
+        {
+            "title": "And the award for most ironic live tweeted outage goes to...",
+            "url": ""
         }
     ]
 }
