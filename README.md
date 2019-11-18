@@ -48,6 +48,10 @@ prometheus {
     cluster_name: "docker",
   },
 
+  _images+:: {
+    grafana: "grafana/grafana-dev:explore-trace-ui-demo-c8434d13350e0f43c3937ff37ce8932310ac7fd9-ubuntu",
+  },
+
   prometheus_service+: $.prometheus {
     name: "prometheus",
 
