@@ -131,5 +131,5 @@ Navigate to the Loki datasource and add a derived field:
 
 - Name: traceID
 - Regex: traceID=(\w+)
-- URL:  http://localhost:31686/trace/${__value.raw}
+- URL:  http://localhost:31686/trace/${__value.raw}?uiEmbed=v0
 - Internal Link: Jaeger
