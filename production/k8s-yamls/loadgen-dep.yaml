@@ -17,6 +17,7 @@ spec:
         image: grafana/tns-loadgen:latest
         imagePullPolicy: IfNotPresent
         args:
+        - -log.level=debug
         - http://app
         ports:
         - name: http-metrics

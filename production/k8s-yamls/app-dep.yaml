@@ -16,6 +16,9 @@ spec:
       - name: app
         image: grafana/tns-app:latest
         imagePullPolicy: IfNotPresent
+        args:
+        - -log.level=debug
+        - http://db
         ports:
         - name: http-metrics
           containerPort: 80

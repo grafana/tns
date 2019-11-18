@@ -102,7 +102,7 @@ $ helm repo update
 $ helm upgrade --install loki loki/loki-stack
 ```
 
-Add a Loki datasource to Grafana, pointing at `https://loki.default.svc.cluster.local`.
+Add a Loki datasource to Grafana, pointing at `http://loki.default.svc.cluster.local:3100`.
 
 5. Install Jaeger
 
@@ -111,3 +111,25 @@ $ kubectl apply -f ./production/jaeger
 ```
 
 (The app is already configured to send traces to jaeger.)
+
+6. Setup The Trace Demo
+
+Override the Grafana Image by adding the following to your main.jsonnet and run `tk apply`.
+
+```
+_images+:: {
+  grafana: "grafana/grafana-dev:explore-trace-ui-demo-b56f2a8ae23d399f6e170f439c058f4bdb08f0da-ubuntu",
+},
+```
+
+Add a Jaeger datasource:
+
+- URL: http://localhost:31686
+- Access: Browser
+
+Navigate to the Loki datasource and add a derived field:
+
+- Name: traceID
+- Regex: traceID=(\w+)
+- URL:  http://localhost:31686/trace/${__value.raw}
+- Internal Link: Jaeger
