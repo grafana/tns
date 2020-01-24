@@ -9,7 +9,7 @@
             "url": "https://grafana.com/cloud"
         },
         {
-            "title": "Grafana Labs annouces: Cortex, like Loki but for metrics.",
+            "title": "Grafana Labs announces: Cortex, like Loki but for metrics.",
             "url": "https://github.com/cortexproject/cortex"
         },
         {
@@ -26,10 +26,10 @@
         },
         {
             "title": "Thanos: Long term storage for half your Prometheus metrics.",
-            "url": "https://github.com/improbable-eng/thanos"
+            "url": "https://github.com/thanos-io/thanos"
         },
         {
-            "title": "Google annouces new dependancy manager for Go.",
+            "title": "Google announces new dependency manager for Go.",
             "url": "https://peter.bourgon.org/blog/2018/07/27/a-response-about-dep-and-vgo.html"
         },
         {
@@ -37,11 +37,11 @@
             "url": "https://techcrunch.com/2019/10/24/grafana-labs-nabs-24m-series-a-for-open-source-based-data-analytics-stack/"
         },
         {
-            "title": "Dockers annouces sales of office furniture to Mirantis.",
+            "title": "Docker announces sales of office furniture to Mirantis.",
             "url": "https://techcrunch.com/2019/11/13/mirantis-acquires-docker-enterprise/"
         },
         {
-            "title": "And the award for most ironic live tweeted outage goes to...",
+            "title": "And the award for most ironic live tweeted outage goes to…",
             "url": ""
         }
     ]
