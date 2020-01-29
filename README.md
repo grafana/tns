@@ -1,139 +1,81 @@
 # TNS Observability Demo
 
-A simple three-tier demo application, fully instrumented with Prometheus, OpenTracing and Go-kit logging.
+A simple three-tier demo application, fully instrumented with Prometheus, Jaeger and Loki logging.
 
 The "TNS" name comes from "The New Stack", where the original demo code was used for [an article](https://thenewstack.io/how-to-detect-map-and-monitor-docker-containers-with-weave-scope-from-weaveworks/).
 
 ## Instructions
 
-1. Build:
+Installation requires `kubectl`, the Tanka tool and Jsonnet Bundler to be installed. 
+
+1. Install Kubectl
+
+This demo (and Tanka) assumes that you have `kubectl` installed and that you have configs
+available for an empty cluster onto which you can install this demo. The cluster should 
+be empty because the demo will install apps into many namespaces.
+
+You can list your configured clusters/contexts with:
 
 ```sh
-$ make
+$ kubectl config get-contexts
 ```
 
-2. Run:
+2. Install Tanka
+
+Install the 0.7.0 release of Tanka, available [here](https://github.com/grafana/tanka/releases/tag/v0.7.0).
+
+3. Install Jsonnet Bundler
+  
+Install the 0.2.0 release of the Jsonnet Bundler, available [here](https://github.com/jsonnet-bundler/jsonnet-bundler/releases/tag/v0.2.0).
+
+4. Checkout TNS code
 
 ```sh
-$ kubectl apply -f ./production/k8s-yamls
+$ git checkout https://github.com/grafana/tns
+$ cd tns
 ```
 
-3. Monitoring with Prometheus
+5. Install all services
 
-Requires [tanka](https://github.com/grafana/tanka) and a recent version of [jsonnet-bundler](https://github.com/jsonnet-bundler/jsonnet-bundler):
+At this stage, you have two options. The steps required to get Prometheus, Grafana, Loki, 
+Jaeger and the TNS demo app installed are all contained in the `production/sample/install.sh`
+script. If you wish to understand what Tanka is doing, then look at that script, and 
+follow the steps manually.
 
-```sh
-$ GO111MODULE=on go get github.com/grafana/tanka/cmd/tk@v0.5.0
-$ go get github.com/jsonnet-bundler/jsonnet-bundler/cmd/jb
-```
-
-```sh
-$ mkdir tanka; cd tanka
-$ tk init
-$ tk env set environments/default --server=https://kubernetes.docker.internal:6443 # if you're using docker desktop.
-$ jb install github.com/grafana/jsonnet-libs/prometheus-ksonnet
-$ curl https://raw.githubusercontent.com/ksonnet/ksonnet-lib/master/ksonnet.beta.3/k8s.libsonnet > vendor/k8s.libsonnet
-$ curl https://raw.githubusercontent.com/ksonnet/ksonnet-lib/master/ksonnet.beta.3/k.libsonnet > vendor/k.libsonnet
-```
-
-Update environments/default/main.jsonnet to be:
+If however, you just want the applications installed, and are running on a computer with
+a Bash shell (typically MacOS or Linux), just run this script. You will need to identify
+the Kubernetes 'context' that you wish to interact with. Execute the script, providing 
+the relevant context name:
 
 ```
-local prometheus = import "prometheus-ksonnet/prometheus-ksonnet.libsonnet";
-
-prometheus {
-  local service = $.core.v1.service,
-  _config+:: {
-    namespace: "default",
-    cluster_name: "docker",
-  },
-
-  _images+:: {
-    grafana: "grafana/grafana-dev:explore-trace-ui-demo-c8434d13350e0f43c3937ff37ce8932310ac7fd9-ubuntu",
-  },
-
-  prometheus_service+: $.prometheus {
-    name: "prometheus",
-
-    prometheus_container+::
-        $.util.resourcesRequests('250m', '500Mi'),
-  },
-
-  // Expose the nginx admin frontend on port 30040 of the node.
-  nginx_service+:
-    service.mixin.spec.withType("NodePort") +
-    service.mixin.spec.withPorts({
-        nodePort: 30040,
-        port: 8080,
-        targetPort: 80,
-    }),
-}
+$ production/sample/install.sh <CONTEXT>
 ```
 
-Apply:
+This will download a lot of resources, and will ask you to confirm with `yes` before it
+installs to each Kubernetes namespace.
 
-```sh
-$ tk apply environments/default
-```
+## Accessing the Demo
 
-Then go to http://localhost:30040/ to see the monitoring stack.
+You should now have all the applications installed. They should be accessible via an
+Nginx service on 30040.
 
-3b. Add dashboards for demo app
+If you are using a local Kubernetes, you should be able to access these services 
+via http://localhost:30040/. Exactly how you access this URL will depend on where your
+Kubernetes cluster is hosted - you may need to enable a Load Balancer for example.
 
-```sh
-$ jb install https://github.com/grafana/tns/production/tns-mixin/
-```
-Update environments/default/main.jsonnet to be:
+## Reviewing the Tanka Code
+You will now have a `tanka` directory within your checkout that contains all of the 
+Jsonnet resources that were needed to deploy this monitoring stack. To find out more
+about Tanka, visit https://tanka.dev.
 
-```
-local prometheus = import "prometheus-ksonnet/prometheus-ksonnet.libsonnet";
-local mixin = import "tns-mixin/mixin.libsonnet";
+## Tracing Grafana Demo
+This demo is currently wired up to run a development version of Grafana which includes
+pre-released tracing features.
 
-prometheus + mixin {
-...
-```
-
-```sh
-$ tk apply environments/default
-```
-
-4. Log Aggregation with Grafana Loki
-
-```bash
-$ helm init
-$ helm repo add loki https://grafana.github.io/loki/charts
-$ helm repo update
-$ helm upgrade --install loki loki/loki-stack
-```
-
-Add a Loki datasource to Grafana, pointing at `http://loki.default.svc.cluster.local:3100`.
-
-5. Install Jaeger
-
-```sh
-$ kubectl apply -f ./production/jaeger
-```
-
-(The app is already configured to send traces to jaeger.)
-
-6. Setup The Trace Demo
-
-Override the Grafana Image by adding the following to your main.jsonnet and run `tk apply`.
+To use a different version of Grafana, remove this from `tanka/environments/default/main.jsonnet`:
 
 ```
 _images+:: {
   grafana: "grafana/grafana-dev:explore-trace-ui-demo-b56f2a8ae23d399f6e170f439c058f4bdb08f0da-ubuntu",
 },
 ```
-
-Add a Jaeger datasource:
-
-- URL: http://localhost:31686
-- Access: Browser
-
-Navigate to the Loki datasource and add a derived field:
-
-- Name: traceID
-- Regex: traceID=(\w+)
-- URL:  http://localhost:31686/trace/${__value.raw}?uiEmbed=v0
-- Internal Link: Jaeger
