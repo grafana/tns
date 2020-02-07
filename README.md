@@ -67,7 +67,7 @@ your cluster should be ready for use.
 
 ## Accessing the Demo
 
-You should now be able to access the demo via [http://localhost:30040/](http://localhost:30040).
+You should now be able to access the demo via [http://localhost:8080/](http://localhost:8080).
 
 ## Reviewing the Tanka Code
 This installation will have created a `tanka` directory in your TNS checkout. This

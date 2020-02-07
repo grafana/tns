@@ -6,7 +6,8 @@ CLUSTER_NAME=tns
 BASEDIR=$(dirname $(realpath "$0"))
 
 API_PORT=8555
-EXPOSE=30040:30040@k3d-tns-server
+#EXPOSE=30040:30040@k3d-tns-server
+EXPOSE=8080:80
 SERVER=${SERVER-localhost}
 VOLUME=$BASEDIR/.volume
 

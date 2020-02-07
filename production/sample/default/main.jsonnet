@@ -46,16 +46,15 @@ prometheus + promtail + tns_mixin + {
 
   // Expose the nginx admin frontend on port 30040 of the node.
   nginx_service+:
-    service.mixin.spec.withType('NodePort') +
+    service.mixin.spec.withType('ClusterIP') +
     service.mixin.spec.withPorts({
-      nodePort: 30040,
-      port: 8080,
+      port: 80,
       targetPort: 80,
     }),
 
   grafana_datasource_config_map+:
     $.core.v1.configMap.withDataMixin({
-      'loki.yml': $.util.manifestYaml({
+      'datasources.yml': $.util.manifestYaml({
         apiVersion: 1,
         datasources: [{
           name: 'Loki',
@@ -66,21 +65,17 @@ prometheus + promtail + tns_mixin + {
           version: 1,
           editable: false,
           basicAuth: false,
-          jsonData: {
+/*          jsonData: {
+            maxLines: 1000,
             derivedFields: [{
               datasourceName: 'Jaeger',
               matcherRegex: 'traceID=(\\w+)',
               name: 'TraceID',
               url: '/jaeger/trace/$${__value.raw}',
             }],
-          },
-        }],
-      }),
-    })
-    + $.core.v1.configMap.withDataMixin({
-      'jaeger.yml': $.util.manifestYaml({
-        apiVersion: 1,
-        datasources: [{
+          },*/
+        },
+        {
           name: 'Jaeger',
           type: 'jaeger',
           access: 'browser',
@@ -92,4 +87,19 @@ prometheus + promtail + tns_mixin + {
         }],
       }),
     }),
+
+    local ingress = $.extensions.v1beta1.ingress,
+    ingress: ingress.new() +
+      ingress.mixin.metadata.withName('ingress')
+      + ingress.mixin.metadata.withAnnotationsMixin({
+          'ingress.kubernetes.io/ssl-redirect': 'false',
+        })
+      + ingress.mixin.spec.withRules([
+          ingress.mixin.specType.rulesType.mixin.http.withPaths(
+              ingress.mixin.spec.rulesType.mixin.httpType.pathsType.withPath('/') +
+              ingress.mixin.specType.mixin.backend.withServiceName('nginx') +
+              ingress.mixin.specType.mixin.backend.withServicePort(80)
+          )
+        ])
+      ,
 }
