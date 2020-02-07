@@ -1,0 +1,172 @@
+{
+  "dependencies": [
+    {
+      "name": "alertmanager-mixin",
+      "source": {
+        "git": {
+          "remote": "https://github.com/prometheus/alertmanager",
+          "subdir": "doc/alertmanager-mixin"
+        }
+      },
+      "version": "2c193c84e80fdd34f37f539c7d5c97e0d7f2f50c",
+      "sum": "1l51RtpwfcfGlHeBYBWsD8BpOmZyb05eu2EbpVJkrMQ="
+    },
+    {
+      "name": "grafana-builder",
+      "source": {
+        "git": {
+          "remote": "https://github.com/kausalco/public",
+          "subdir": "grafana-builder"
+        }
+      },
+      "version": "7ac7da1a0fe165b68cdb718b2521b560d51bd1f4",
+      "sum": "slxrtftVDiTlQK22ertdfrg4Epnq97gdrLI63ftUfaE="
+    },
+    {
+      "name": "grafonnet",
+      "source": {
+        "git": {
+          "remote": "https://github.com/grafana/grafonnet-lib",
+          "subdir": "grafonnet"
+        }
+      },
+      "version": "c459106d2d2b583dd3a83f6c75eb52abee3af764",
+      "sum": "CeM3LRgUCUJTolTdMnerfMPGYmhClx7gX5ajrQVEY2Y="
+    },
+    {
+      "name": "jaeger",
+      "source": {
+        "local": {
+          "directory": "../production/jaeger"
+        }
+      },
+      "version": ""
+    },
+    {
+      "name": "ksonnet-util",
+      "source": {
+        "git": {
+          "remote": "https://github.com/grafana/jsonnet-libs",
+          "subdir": "ksonnet-util"
+        }
+      },
+      "version": "7ac7da1a0fe165b68cdb718b2521b560d51bd1f4",
+      "sum": "LKsTTBcH8TXX5ANgRUu5I7Y1tf5le4nANFV3/W53I+c="
+    },
+    {
+      "name": "ksonnet.beta.4",
+      "source": {
+        "git": {
+          "remote": "https://github.com/ksonnet/ksonnet-lib",
+          "subdir": "ksonnet.beta.4"
+        }
+      },
+      "version": "0d2f82676817bbf9e4acf6495b2090205f323b9f",
+      "sum": "ur22hPQq0JAPBxm8hNMcwjumj4MkozDwOKiGZvVMYh4="
+    },
+    {
+      "name": "kubernetes-mixin",
+      "source": {
+        "git": {
+          "remote": "https://github.com/kubernetes-monitoring/kubernetes-mixin",
+          "subdir": ""
+        }
+      },
+      "version": "0ee0da08a9691201a118d30f6b396381c2c8d017",
+      "sum": "r+ibLhIoXzEWGXUCntSd44IRxeopnZkFfZ0OGZR2s1U="
+    },
+    {
+      "name": "loki",
+      "source": {
+        "local": {
+          "directory": "../production/loki"
+        }
+      },
+      "version": ""
+    },
+    {
+      "name": "node-mixin",
+      "source": {
+        "git": {
+          "remote": "https://github.com/prometheus/node_exporter",
+          "subdir": "docs/node-mixin"
+        }
+      },
+      "version": "eac3e30f7f7f564c2bd110c7bb97390711e45e32",
+      "sum": "7vEamDTP9AApeiF4Zu9ZyXzDIs3rYHzwf9k7g8X+wsg="
+    },
+    {
+      "name": "oauth2_proxy",
+      "source": {
+        "git": {
+          "remote": "https://github.com/grafana/jsonnet-libs",
+          "subdir": "oauth2-proxy"
+        }
+      },
+      "version": "7ac7da1a0fe165b68cdb718b2521b560d51bd1f4",
+      "sum": "njaEcgj39Cau1InalHnw3MEufWp9Rmrg7bO4RH1LTCA="
+    },
+    {
+      "name": "prometheus-ksonnet",
+      "source": {
+        "git": {
+          "remote": "https://github.com/grafana/jsonnet-libs",
+          "subdir": "prometheus-ksonnet"
+        }
+      },
+      "version": "7ac7da1a0fe165b68cdb718b2521b560d51bd1f4",
+      "sum": "wH4ZLwFq9/zl2EOZ9mAXf2yqGOvhR44h6BF4KpvM8VY="
+    },
+    {
+      "name": "prometheus-mixin",
+      "source": {
+        "git": {
+          "remote": "https://github.com/prometheus/prometheus",
+          "subdir": "documentation/prometheus-mixin"
+        }
+      },
+      "version": "641676b3975c72241041047323de178136491eb0",
+      "sum": "u1YS9CVuBTcw2vks0PZbLb1gtlI/7bVGDVBZsjWFLTw="
+    },
+    {
+      "name": "promgrafonnet",
+      "source": {
+        "git": {
+          "remote": "https://github.com/kubernetes-monitoring/kubernetes-mixin",
+          "subdir": "lib/promgrafonnet"
+        }
+      },
+      "version": "92309e9c7a7637c38a12c0964e62a7aeccaf49ae",
+      "sum": "VhgBM39yv0f4bKv8VfGg4FXkg573evGDRalip9ypKbc="
+    },
+    {
+      "name": "promtail",
+      "source": {
+        "git": {
+          "remote": "https://github.com/grafana/loki",
+          "subdir": "production/ksonnet/promtail"
+        }
+      },
+      "version": "cb798635f5e7241f36517ae89ce764c13729f130",
+      "sum": "tIrxV9SermVKhtftRuK7fmcJMv/9Hthk2jqeBkwz6/M="
+    },
+    {
+      "name": "tns",
+      "source": {
+        "local": {
+          "directory": "../production/tns"
+        }
+      },
+      "version": ""
+    },
+    {
+      "name": "tns-mixin",
+      "source": {
+        "local": {
+          "directory": "../production/tns-mixin"
+        }
+      },
+      "version": ""
+    }
+  ]
+}

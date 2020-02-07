@@ -1,6 +1,6 @@
-local prometheus = import "prometheus-ksonnet/prometheus-ksonnet.libsonnet";
+local prometheus = import 'prometheus-ksonnet/prometheus-ksonnet.libsonnet';
 local promtail = import 'promtail/promtail.libsonnet';
-local tns_mixin = import "tns-mixin/mixin.libsonnet";
+local tns_mixin = import 'tns-mixin/mixin.libsonnet';
 
 prometheus + promtail + tns_mixin + {
   local service = $.core.v1.service,
@@ -20,15 +20,6 @@ prometheus + promtail + tns_mixin + {
         external_labels: {},
       }],
     },
-  },
-
-  _images+:: {
-    grafana: "grafana/grafana-dev:explore-trace-ui-demo-c8434d13350e0f43c3937ff37ce8932310ac7fd9-ubuntu",
-  },
-
-  main_prometheus+: {
-    prometheus_container+::
-        $.util.resourcesRequests('250m', '500Mi'),
   },
 
   // Expose the nginx admin frontend on port 30040 of the node.

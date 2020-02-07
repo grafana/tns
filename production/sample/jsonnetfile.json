@@ -1,0 +1,80 @@
+{
+  "dependencies": [
+    {
+      "name": "jaeger",
+      "source": {
+        "local": {
+          "directory": "../production/jaeger"
+        }
+      },
+      "version": ""
+    },
+    {
+      "name": "ksonnet-util",
+      "source": {
+        "git": {
+          "remote": "https://github.com/grafana/jsonnet-libs",
+          "subdir": "ksonnet-util"
+        }
+      },
+      "version": "master"
+    },
+    {
+      "name": "ksonnet.beta.4",
+      "source": {
+        "git": {
+          "remote": "https://github.com/ksonnet/ksonnet-lib",
+          "subdir": "ksonnet.beta.4"
+        }
+      },
+      "version": "master"
+    },
+    {
+      "name": "loki",
+      "source": {
+        "local": {
+          "directory": "../production/loki"
+        }
+      },
+      "version": ""
+    },
+    {
+      "name": "prometheus-ksonnet",
+      "source": {
+        "git": {
+          "remote": "https://github.com/grafana/jsonnet-libs",
+          "subdir": "prometheus-ksonnet"
+        }
+      },
+      "version": "master"
+    },
+    {
+      "name": "promtail",
+      "source": {
+        "git": {
+          "remote": "https://github.com/grafana/loki",
+          "subdir": "production/ksonnet/promtail"
+        }
+      },
+      "version": "master"
+    },
+    {
+      "name": "tns",
+      "source": {
+        "local": {
+          "directory": "../production/tns"
+        }
+      },
+      "version": ""
+    },
+    {
+      "name": "tns-mixin",
+      "source": {
+        "local": {
+          "directory": "../production/tns-mixin"
+        }
+      },
+      "version": ""
+    }
+  ]
+}

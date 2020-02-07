@@ -1,5 +1,5 @@
 {
-  local statefulset = $.apps.v1beta1.statefulSet,
+  local statefulset = $.apps.v1.statefulSet,
   local container = $.core.v1.container,
   local containerPort = $.core.v1.containerPort,
   local mount = $.core.v1.volumeMount,

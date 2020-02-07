@@ -3,4 +3,5 @@ app/app
 loadgen/loadgen
 vendor
 */.uptodate
-tanka
+/tanka
+.volume

@@ -1,0 +1,35 @@
+#!/bin/bash
+set -euo pipefail
+IFS=$'\n\t'
+
+CLUSTER_NAME=tns
+BASEDIR=$(dirname $(realpath "$0"))
+
+API_PORT=8555
+EXPOSE=30040:30040@k3d-tns-server
+SERVER=${SERVER-localhost}
+VOLUME=$BASEDIR/.volume
+
+k3d create \
+  --name $CLUSTER_NAME \
+  --volume $VOLUME:/kubernetes \
+  --volume $VOLUME/local:/opt/local-path-provisioner \
+  --api-port $SERVER:$API_PORT \
+  --publish $EXPOSE \
+  --auto-restart \
+  --image "docker.io/rancher/k3s:v1.17.0-k3s.1"
+
+echo -n 'creating'
+set +e
+while ! k3d get-kubeconfig --name=$CLUSTER_NAME >/dev/null 2>&1; do
+  sleep 1
+  echo -n '.'
+done
+set -e
+echo 'done'
+
+export KUBECONFIG="$(k3d get-kubeconfig --name=$CLUSTER_NAME):$HOME/.kube/config"
+kubectl apply -f https://raw.githubusercontent.com/rancher/local-path-provisioner/master/deploy/local-path-storage.yaml
+kubectl patch storageclass local-path -p '{"metadata":{"annotations":{"storageclass.kubernetes.io/is-default-class":"true"}}}'
+
+kubectl config use-context $CLUSTER_NAME
