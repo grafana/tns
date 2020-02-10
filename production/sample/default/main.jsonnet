@@ -48,7 +48,6 @@ prometheus + promtail + tns_mixin + {
     grafana: 'grafana/grafana:6.6.1',
   },
 
-  // Expose the nginx admin frontend on port 30040 of the node.
   nginx_service+:
     service.mixin.spec.withType('ClusterIP') +
     service.mixin.spec.withPorts({
