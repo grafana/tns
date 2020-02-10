@@ -44,6 +44,10 @@ prometheus + promtail + tns_mixin + {
     },
   },
 
+  _images+:: {
+    grafana: 'grafana/grafana:6.6.1',
+  },
+
   // Expose the nginx admin frontend on port 30040 of the node.
   nginx_service+:
     service.mixin.spec.withType('ClusterIP') +
@@ -65,15 +69,14 @@ prometheus + promtail + tns_mixin + {
           version: 1,
           editable: false,
           basicAuth: false,
-/*          jsonData: {
+          jsonData: {
             maxLines: 1000,
             derivedFields: [{
-              datasourceName: 'Jaeger',
               matcherRegex: 'traceID=(\\w+)',
               name: 'TraceID',
               url: '/jaeger/trace/$${__value.raw}',
             }],
-          },*/
+          },
         },
         {
           name: 'Jaeger',
