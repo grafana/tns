@@ -1,0 +1,34 @@
+#!/bin/bash -e
+
+CONTEXT=${1-tns}
+BASEDIR=$(dirname $(realpath "$0"))
+PROD=$BASEDIR/production/sample
+
+function install_env {
+    ENV=$1
+    tk env add environments/$ENV --server-from-context $CONTEXT --namespace $ENV # Creates/configures the environment.
+    ln -sf $PROD/$ENV/main.jsonnet environments/$ENV/main.jsonnet # Copies the base configuration for your env.
+    tk apply environments/$ENV                                    # Installs everything for your environment.
+}
+
+if [ -e $BASEDIR/tanka ]; then
+  echo "tanka/ directory already exists. Please remove and try again."
+  exit 1
+fi
+
+if ! kubectl --context $CONTEXT get ns>/dev/null 2>&1; then
+  echo "$CONTEXT is not a valid KUBECONFIG context. Please check and try again."
+  exit 2
+fi
+
+# Initialise Tanka
+mkdir $BASEDIR/tanka && cd $BASEDIR/tanka
+tk init                  # Initialises Tanka, and downloads the Kubernetes libaries Tanka needs
+cp $PROD/jsonnetfile.* . # copies dependency list into current directory
+jb install               # Installs dependencies
+
+## Install apps into separate namespaces
+install_env default # Install default monitoring stack
+install_env jaeger  # Install jaeger tracing app
+install_env loki    # Install loki logging app
+install_env tns     # Install TNS demo app
