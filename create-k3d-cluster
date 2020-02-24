@@ -3,7 +3,7 @@ set -euo pipefail
 IFS=$'\n\t'
 
 CLUSTER_NAME=tns
-BASEDIR=$(dirname $(realpath "$0"))
+BASEDIR=$(cd `dirname $0`; pwd)
 
 API_PORT=8555
 #EXPOSE=30040:30040@k3d-tns-server
