@@ -21,4 +21,4 @@ require (
 
 go 1.13
 
-replace github.com/weaveworks/common => github.com/beorn7/common v0.0.0-20200129195118-a3684e46ed7c
+replace github.com/weaveworks/common => github.com/beorn7/common v0.0.0-20200304160655-6e32da8d2de2
