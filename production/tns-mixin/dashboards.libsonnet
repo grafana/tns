@@ -18,7 +18,7 @@ local g = (import 'grafana-builder/grafana.libsonnet') + {
 };
 
 {
-  dashboards+: {
+  grafanaDashboards+: {
     'demo-red.json':
       g.dashboard('Demo App')
       .addMultiTemplate('namespace', 'kube_pod_container_info{image=~".*grafana/tns.*"}', 'namespace')
