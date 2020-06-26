@@ -1,7 +1,6 @@
 .ONESHELL:
 .DELETE_ON_ERROR:
-SHELL       := bash
-.SHELLFLAGS := -euf -o pipefail -c
+SHELL       := sh
 MAKEFLAGS   += --warn-undefined-variables
 MAKEFLAGS   += --no-builtin-rule
 
