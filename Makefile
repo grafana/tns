@@ -1,3 +1,12 @@
+.ONESHELL:
+.DELETE_ON_ERROR:
+SHELL       := bash
+.SHELLFLAGS := -euf -o pipefail -c
+MAKEFLAGS   += --warn-undefined-variables
+MAKEFLAGS   += --no-builtin-rule
+
+JSONNET_FILES := $(shell find . -name 'vendor' -prune -o -name '*.libsonnet' -print -o -name '*.jsonnet' -print)
+
 build: db/.uptodate app/.uptodate loadgen/.uptodate
 
 DOCKER_IMAGE_BASE?=grafana
@@ -26,3 +35,17 @@ loadgen/.uptodate: loadgen/loadgen loadgen/Dockerfile
 
 clean:
 	rm -f db/db app/app loadgen/loadgen db/.uptodate app/.uptodate loadgen/.uptodate
+
+.PHONY: fmt-jsonnet
+fmt-jsonnet: $(JSONNET_FILES)
+	jsonnetfmt -i -- $?
+
+.PHONY: lint-jsonnet
+lint-jsonnet: $(JSONNET_FILES)
+	@RESULT=0;
+	for f in $?; do
+		if !(jsonnetfmt -- "$$f" | diff -u "$$f" -); then
+			RESULT=1
+		fi
+	done
+	exit $$RESULT
