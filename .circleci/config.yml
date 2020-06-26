@@ -6,12 +6,13 @@ workflows:
     jobs:
     - test
     - build
-    - lint
+    - lint-go
+    - lint-jsonnet
     - publish:
         requires:
         - test
         - build
-        - lint
+        - lint-go
         filters:
           branches:
             only: master
@@ -32,17 +33,22 @@ jobs:
           command: |
             GO111MODULE=on go test ./...
 
-  lint:
+  lint-go:
     <<: *defaults
     steps:
       - checkout
-
       - run:
           name: Lint Go
           command: |
             go get -u golang.org/x/lint/golint
             golint ./...
 
+  lint-jsonnet:
+    <<: *defaults
+    docker:
+      - image: grafana/cortex-jsonnet-build-image:e6474c5
+    steps:
+      - checkout
       - run:
           name: Lint Jsonnet
           command: |
