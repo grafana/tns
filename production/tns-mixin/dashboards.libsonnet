@@ -18,6 +18,7 @@ local g = (import 'grafana-builder/grafana.libsonnet') + {
 };
 
 {
+  grafanaDashboardFolder: 'TNS',
   grafanaDashboards+: {
     'demo-red.json':
       g.dashboard('Demo App')

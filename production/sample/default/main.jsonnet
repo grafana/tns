@@ -2,7 +2,11 @@ local prometheus = import 'prometheus-ksonnet/prometheus-ksonnet.libsonnet';
 local promtail = import 'promtail/promtail.libsonnet';
 local tns_mixin = import 'tns-mixin/mixin.libsonnet';
 
-prometheus + promtail + tns_mixin + {
+prometheus + promtail + {
+  // A known data source UID is necessary to configure the Loki datasource such that users can pivot
+  // from Loki logs to Jaeger traces on traceID.
+  local jaeger_data_source_uid = 'jaeger',
+  local jaeger_query_url = 'http://jaeger.jaeger.svc.cluster.local:16686/jaeger/',
   local service = $.core.v1.service,
   _config+:: {
     namespace: 'default',
@@ -42,10 +46,6 @@ prometheus + promtail + tns_mixin + {
         },
       ],
     },
-  },
-
-  _images+:: {
-    grafana: 'grafana/grafana:6.6.1',
   },
 
   nginx_service+:
@@ -104,4 +104,7 @@ prometheus + promtail + tns_mixin + {
           )
         ])
       ,
+  mixins+:: {
+    tns_demo: tns_mixin,
+  },
 }
