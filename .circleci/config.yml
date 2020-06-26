@@ -38,10 +38,15 @@ jobs:
       - checkout
 
       - run:
-          name: Lint
+          name: Lint Go
           command: |
             go get -u golang.org/x/lint/golint
             golint ./...
+
+      - run:
+          name: Lint Jsonnet
+          command: |
+            make lint-jsonnet
 
   build:
     <<: *defaults
