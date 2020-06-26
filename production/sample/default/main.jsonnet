@@ -59,51 +59,53 @@ prometheus + promtail + {
     $.core.v1.configMap.withDataMixin({
       'datasources.yml': $.util.manifestYaml({
         apiVersion: 1,
-        datasources: [{
-          name: 'Loki',
-          type: 'loki',
-          access: 'proxy',
-          url: 'http://loki.loki.svc.cluster.local:3100',
-          isDefault: false,
-          version: 1,
-          editable: false,
-          basicAuth: false,
-          jsonData: {
-            maxLines: 1000,
-            derivedFields: [{
-              matcherRegex: 'traceID=(\\w+)',
-              name: 'TraceID',
-              url: '/jaeger/trace/$${__value.raw}',
-            }],
+        datasources: [
+          {
+            name: 'Loki',
+            type: 'loki',
+            access: 'proxy',
+            url: 'http://loki.loki.svc.cluster.local:3100',
+            isDefault: false,
+            version: 1,
+            editable: false,
+            basicAuth: false,
+            jsonData: {
+              maxLines: 1000,
+              derivedFields: [{
+                matcherRegex: 'traceID=(\\w+)',
+                name: 'TraceID',
+                url: '/jaeger/trace/$${__value.raw}',
+              }],
+            },
           },
-        },
-        {
-          name: 'Jaeger',
-          type: 'jaeger',
-          access: 'browser',
-          url: 'http://jaeger.jaeger.svc.cluster.local:16686',
-          isDefault: false,
-          version: 1,
-          editable: false,
-          basicAuth: false,
-        }],
+          {
+            name: 'Jaeger',
+            type: 'jaeger',
+            access: 'browser',
+            url: 'http://jaeger.jaeger.svc.cluster.local:16686',
+            isDefault: false,
+            version: 1,
+            editable: false,
+            basicAuth: false,
+          },
+        ],
       }),
     }),
 
-    local ingress = $.extensions.v1beta1.ingress,
-    ingress: ingress.new() +
-      ingress.mixin.metadata.withName('ingress')
-      + ingress.mixin.metadata.withAnnotationsMixin({
-          'ingress.kubernetes.io/ssl-redirect': 'false',
-        })
-      + ingress.mixin.spec.withRules([
-          ingress.mixin.specType.rulesType.mixin.http.withPaths(
-              ingress.mixin.spec.rulesType.mixin.httpType.pathsType.withPath('/') +
-              ingress.mixin.specType.mixin.backend.withServiceName('nginx') +
-              ingress.mixin.specType.mixin.backend.withServicePort(80)
-          )
-        ])
-      ,
+  local ingress = $.extensions.v1beta1.ingress,
+  ingress: ingress.new() +
+           ingress.mixin.metadata.withName('ingress')
+           + ingress.mixin.metadata.withAnnotationsMixin({
+             'ingress.kubernetes.io/ssl-redirect': 'false',
+           })
+           + ingress.mixin.spec.withRules([
+             ingress.mixin.specType.rulesType.mixin.http.withPaths(
+               ingress.mixin.spec.rulesType.mixin.httpType.pathsType.withPath('/') +
+               ingress.mixin.specType.mixin.backend.withServiceName('nginx') +
+               ingress.mixin.specType.mixin.backend.withServicePort(80)
+             ),
+           ])
+  ,
   mixins+:: {
     tns_demo: tns_mixin,
   },

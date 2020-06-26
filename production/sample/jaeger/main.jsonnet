@@ -1,6 +1,6 @@
 local jaeger = import 'jaeger/jaeger.libsonnet';
 
-jaeger + {
+jaeger {
   _config+:: {
     namespace: 'jaeger',
   },
