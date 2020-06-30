@@ -33,12 +33,12 @@ loadgen/.uptodate: loadgen/loadgen loadgen/Dockerfile
 	docker build -t $(DOCKER_IMAGE_BASE)/tns-loadgen loadgen/
 	touch $@
 
-lint-image/.uptodate:
-	docker build -t $(DOCKER_IMAGE_BASE)/tns-lint-image:$(IMAGE_TAG) lint-image/
+lint-image/.uptodate: lint-image/Dockerfile
+	docker build -t $(DOCKER_IMAGE_BASE)/tns-lint:$(IMAGE_TAG) lint-image/
 	touch $@
 
-lint-image/.published:
-	docker push grafana/tns-lint-image:$(IMAGE_TAG)
+lint-image/.published: lint-image/.uptodate
+	docker push $(DOCKER_IMAGE_BASE)/tns-lint:$(IMAGE_TAG)
 
 clean:
 	rm -f db/db app/app loadgen/loadgen db/.uptodate app/.uptodate loadgen/.uptodate lint-image/.{uptodate,published}
