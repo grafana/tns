@@ -88,6 +88,7 @@ $ k3d stop tns
 To re-enable it, do this:
 ```sh
 $ k3d start tns
+```
 
 ## Removing the Cluster
 Once you have finished with the cluster, this should remove it and leave you ready to
