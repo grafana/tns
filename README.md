@@ -29,7 +29,7 @@ Download and install it from [here](https://github.com/grafana/tanka/releases/ta
 Jsonnet bundler downloads Jsonnet dependencies. Download and install it from 
 [here](https://github.com/jsonnet-bundler/jsonnet-bundler/releases/tag/v0.2.0). Make sure the binary is executable:
 ```
-$ chmod +x /usr/local/bin/jb`
+$ chmod +x /usr/local/bin/jb
 ```
 
 ## Instructions
