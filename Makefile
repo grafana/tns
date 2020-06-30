@@ -1,5 +1,14 @@
-build: db/.uptodate app/.uptodate loadgen/.uptodate
+.ONESHELL:
+.DELETE_ON_ERROR:
+SHELL       := sh
+MAKEFLAGS   += --warn-undefined-variables
+MAKEFLAGS   += --no-builtin-rule
 
+
+build: db/.uptodate app/.uptodate loadgen/.uptodate lint-image/.uptodate
+publish: lint-image/.published
+
+IMAGE_TAG?=$(shell git rev-parse --short HEAD)
 DOCKER_IMAGE_BASE?=grafana
 GOENV=GOOS=linux GOARCH=amd64 CGO_ENABLED=0 GO111MODULE=on
 
@@ -24,5 +33,29 @@ loadgen/.uptodate: loadgen/loadgen loadgen/Dockerfile
 	docker build -t $(DOCKER_IMAGE_BASE)/tns-loadgen loadgen/
 	touch $@
 
+lint-image/.uptodate: lint-image/Dockerfile
+	docker build -t $(DOCKER_IMAGE_BASE)/tns-lint:$(IMAGE_TAG) lint-image/
+	touch $@
+
+lint-image/.published: lint-image/.uptodate
+	docker push $(DOCKER_IMAGE_BASE)/tns-lint:$(IMAGE_TAG)
+
 clean:
-	rm -f db/db app/app loadgen/loadgen db/.uptodate app/.uptodate loadgen/.uptodate
+	rm -f db/db app/app loadgen/loadgen db/.uptodate app/.uptodate loadgen/.uptodate lint-image/.{uptodate,published}
+
+
+JSONNET_FILES := $(shell find . -name 'vendor' -prune -o -name '*.libsonnet' -print -o -name '*.jsonnet' -print)
+
+.PHONY: fmt-jsonnet
+fmt-jsonnet: $(JSONNET_FILES)
+	jsonnetfmt -i -- $?
+
+.PHONY: lint-jsonnet
+lint-jsonnet: $(JSONNET_FILES)
+	@RESULT=0;
+	for f in $?; do
+		if !(jsonnetfmt -- "$$f" | diff -u "$$f" -); then
+			RESULT=1
+		fi
+	done
+	exit $$RESULT

@@ -15,40 +15,39 @@
     pvc.mixin.metadata.withName('loki-data'),
 
   local loki_container = container.new('loki', $._images.loki)
-    + container.withArgs(["-config.file=/etc/loki/loki.yaml"])
-    + container.withVolumeMounts([
-      mount.new('loki-config', '/etc/loki'),
-      mount.new('loki-data', '/data'),
-    ])
-    + container.withPorts([
-      containerPort.new(name='http-metrics', port=3100),
-    ])
-    + if $._config.loki.tracing.jaegerAgentHost != '' then
-      container.withEnvMixin({JAEGER_AGENT_HOST: $._config.loki.tracing.jaegerAgentHost})
-      else {}
-    + container.mixin.livenessProbe.httpGet.withPath('/ready')
-    + container.mixin.livenessProbe.httpGet.withPort('http-metrics')
-    + container.mixin.livenessProbe.withInitialDelaySeconds(45)
-    + container.mixin.readinessProbe.httpGet.withPath('/ready')
-    + container.mixin.readinessProbe.httpGet.withPort('http-metrics')
-    + container.mixin.readinessProbe.withInitialDelaySeconds(45)
-    ,
+                         + container.withArgs(['-config.file=/etc/loki/loki.yaml'])
+                         + container.withVolumeMounts([
+                           mount.new('loki-config', '/etc/loki'),
+                           mount.new('loki-data', '/data'),
+                         ])
+                         + container.withPorts([
+                           containerPort.new(name='http-metrics', port=3100),
+                         ])
+                         + if $._config.loki.tracing.jaegerAgentHost != '' then
+                           container.withEnvMixin({ JAEGER_AGENT_HOST: $._config.loki.tracing.jaegerAgentHost })
+                         else {}
+                              + container.mixin.livenessProbe.httpGet.withPath('/ready')
+                              + container.mixin.livenessProbe.httpGet.withPort('http-metrics')
+                              + container.mixin.livenessProbe.withInitialDelaySeconds(45)
+                              + container.mixin.readinessProbe.httpGet.withPath('/ready')
+                              + container.mixin.readinessProbe.httpGet.withPort('http-metrics')
+                              + container.mixin.readinessProbe.withInitialDelaySeconds(45)
+  ,
 
   loki_statefulset: statefulset.new('loki', $._config.loki.replicas, loki_container, [$.loki_pvc])
-    .withVolumes([
-      volume.fromPersistentVolumeClaim('loki-data', 'loki-data'),
-      volume.fromSecret('loki-config', 'loki-config'),
-    ])
-    + statefulset.mixin.metadata.withNamespace($._config.namespace)
-    + statefulset.mixin.spec.withServiceName('loki')
-    + statefulset.mixin.spec.template.spec.securityContext.withFsGroup(10001)
-    + statefulset.mixin.spec.template.spec.securityContext.withRunAsGroup(10001)
-    + statefulset.mixin.spec.template.spec.securityContext.withRunAsNonRoot(true)
-    + statefulset.mixin.spec.template.spec.securityContext.withRunAsUser(10001)
-    //+ statefulset.mixin.spec.template.spec.securityContext.withReadOnlyRootFilesystem(true)
-    ,
+                    .withVolumes([
+                      volume.fromPersistentVolumeClaim('loki-data', 'loki-data'),
+                      volume.fromSecret('loki-config', 'loki-config'),
+                    ])
+                    + statefulset.mixin.metadata.withNamespace($._config.namespace)
+                    + statefulset.mixin.spec.withServiceName('loki')
+                    + statefulset.mixin.spec.template.spec.securityContext.withFsGroup(10001)
+                    + statefulset.mixin.spec.template.spec.securityContext.withRunAsGroup(10001)
+                    + statefulset.mixin.spec.template.spec.securityContext.withRunAsNonRoot(true)
+                    + statefulset.mixin.spec.template.spec.securityContext.withRunAsUser(10001)
+  //+ statefulset.mixin.spec.template.spec.securityContext.withReadOnlyRootFilesystem(true)
+  ,
 
   loki_service: $.util.serviceFor($.loki_statefulset)
-    + $.core.v1.service.mixin.metadata.withNamespace($._config.namespace)
-    ,
+                + $.core.v1.service.mixin.metadata.withNamespace($._config.namespace),
 }

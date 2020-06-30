@@ -2,9 +2,9 @@
 
 {
   _config+:: {
-      jaeger+: {
-        replicas: 1,
-      },
+    jaeger+: {
+      replicas: 1,
+    },
   },
 
   _images+:: {
@@ -18,16 +18,16 @@
   ns: $.core.v1.namespace.new($._config.namespace),
 
   local jaeger_container = container.new('jaeger', $._images.jaeger)
-    + container.withImagePullPolicy('IfNotPresent')
-    + container.withPorts([
-      containerPort.new('http-server', 16686),
-      containerPort.new('http-metrics', 16687),
-      containerPort.new(name='thrift-compact', port=6831).withProtocol('UDP'),
-    ])
-    + container.withArgs([
-      '--query.base-path=/jaeger',
-      ])
-    ,
+                           + container.withImagePullPolicy('IfNotPresent')
+                           + container.withPorts([
+                             containerPort.new('http-server', 16686),
+                             containerPort.new('http-metrics', 16687),
+                             containerPort.new(name='thrift-compact', port=6831).withProtocol('UDP'),
+                           ])
+                           + container.withArgs([
+                             '--query.base-path=/jaeger',
+                           ])
+  ,
 
   jaeger_deployment: deployment.new('jaeger', $._config.jaeger.replicas, jaeger_container),
 

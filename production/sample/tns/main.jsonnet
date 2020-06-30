@@ -1,6 +1,6 @@
 local tns = import 'tns/tns.libsonnet';
 
-tns + {
+tns {
   _config+:: {
     namespace: 'tns',
   },
