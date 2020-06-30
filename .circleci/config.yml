@@ -46,7 +46,7 @@ jobs:
   lint-jsonnet:
     <<: *defaults
     docker:
-      - image: grafana/cortex-jsonnet-build-image:e6474c5
+      - image: grafana/tns-lint:6daf0b2
     steps:
       - checkout
       - run:
