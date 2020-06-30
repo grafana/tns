@@ -83,11 +83,11 @@ about Tanka, visit https://tanka.dev.
 Should you wish to disable your cluster, use this command:
 
 ```sh
-$ k3d stop tns
+$ k3d stop -n tns
 ```
 To re-enable it, do this:
 ```sh
-$ k3d start tns
+$ k3d start -n tns
 ```
 
 ## Removing the Cluster
