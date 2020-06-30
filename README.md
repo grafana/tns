@@ -15,7 +15,7 @@ This demo assumes you have Docker installed. Follow instructions [here](https://
 ### k3d
 To run this demo, you need a Kubernetes cluster. While the demo should work against any 
 Kubernetes cluster, these docs will assume a locally running `k3d` cluster. Download and
-install `k3d` from [here](https://github.com/rancher/k3d/releases/tag/v1.6.0).
+install `k3d` from [here](https://github.com/rancher/k3d/releases/tag/v1.6.0). Note that the instructions below work specifically for v1.6.0 of k3d.
 
 ### kubectl
 `kubectl` is used to interact with Kubernetes clusters. Follow the instructions
@@ -27,7 +27,7 @@ Download and install it from [here](https://github.com/grafana/tanka/releases/ta
 
 ### jsonnet-bundler
 Jsonnet bundler downloads Jsonnet dependencies. Download and install it from 
-[here](https://github.com/jsonnet-bundler/jsonnet-bundler/releases/tag/v0.2.0)
+[here](https://github.com/jsonnet-bundler/jsonnet-bundler/releases/tag/v0.2.0). For MacOS, be sure to run `sudo chmod +x /usr/local/bin/jb` to make the binary an exectuable.
 
 ## Instructions
 
