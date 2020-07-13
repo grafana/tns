@@ -13,7 +13,7 @@ prometheus + promtail + {
     cluster_name: 'docker',
     admin_services+: [
       { title: 'TNS Demo', path: 'tns-demo', url: 'http://app.tns.svc.cluster.local/', subfilter: true },
-      { title: 'Jaeger', path: 'jaeger', url: 'http://jaeger.jaeger.svc.cluster.local:16686/jaeger/' },
+      { title: 'Jaeger', path: 'jaeger', url: jaeger_query_url },
     ],
     promtail_config+: {
       clients: [{
@@ -74,7 +74,7 @@ prometheus + promtail + {
               derivedFields: [{
                 matcherRegex: 'traceID=(\\w+)',
                 name: 'TraceID',
-                url: '/jaeger/trace/$${__value.raw}',
+                url: '../jaeger/trace/$${__value.raw}',
               }],
             },
           },
@@ -82,7 +82,7 @@ prometheus + promtail + {
             name: 'Jaeger',
             type: 'jaeger',
             access: 'browser',
-            url: 'http://jaeger.jaeger.svc.cluster.local:16686',
+            url: jaeger_query_url,
             isDefault: false,
             version: 1,
             editable: false,
