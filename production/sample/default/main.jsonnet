@@ -72,9 +72,10 @@ prometheus + promtail + {
             jsonData: {
               maxLines: 1000,
               derivedFields: [{
-                matcherRegex: 'traceID=(\\w+)',
+                matcherRegex: '(?:traceID|trace_id)=(\\w+)',
                 name: 'TraceID',
-                url: '../jaeger/trace/$${__value.raw}',
+                url: '$${__value.raw}',
+                datasourceUid: jaeger_data_source_uid,
               }],
             },
           },
@@ -82,6 +83,7 @@ prometheus + promtail + {
             name: 'Jaeger',
             type: 'jaeger',
             access: 'browser',
+            uid: jaeger_data_source_uid,
             url: jaeger_query_url,
             isDefault: false,
             version: 1,
