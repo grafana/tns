@@ -1,39 +1,42 @@
-db1:
-  image: gouthamve/tns-db
-db2:
-  image: gouthamve/tns-db
-  links:
-    - db1
-db3:
-  image: gouthamve/tns-db
-  links:
-    - db1
-    - db2
 
-app1:
-  image: gouthamve/tns-app
-  links:
-    - db1
-    - db2
-    - db3
-app2:
-  image: gouthamve/tns-app
-  links:
-    - db1
-    - db2
-    - db3
+db:
+  image: grafana/tns-db
+  command:
+    - '-log.level=debug'
+  ports:
+    - 0.0.0.0:8000:80
+#  environment:
+#    JAEGER_AGENT_HOST: jaeger
+#    JAEGER_TAGS: cluster=tns,namespace=tns
+#    JAEGER_SAMPLE_TYPE: const
+#    JAEGER_SAMPLE_PARAM: 1
 
-lb1:
-  image: gouthamve/tns-lb
+app:
+  image: grafana/tns-app
+  command:
+    - '-log.level=debug'
+    - 'http://db'
   links:
-    - app1
-    - app2
+    - db
   ports:
     - 0.0.0.0:8001:80
-lb2:
-  image: gouthamve/tns-lb
+#  environment:
+#    JAEGER_AGENT_HOST: jaeger
+#    JAEGER_TAGS: cluster=tns,namespace=tns
+#    JAEGER_SAMPLE_TYPE: const
+#    JAEGER_SAMPLE_PARAM: 1
+
+loadgen:
+  image: grafana/tns-loadgen
+  command:
+    - '-log.level=debug'
+    - 'http://app'
   links:
-    - app1
-    - app2
+    - app
   ports:
     - 0.0.0.0:8002:80
+#  environment:
+#    JAEGER_AGENT_HOST: jaeger
+#    JAEGER_TAGS: cluster=tns,namespace=tns
+#    JAEGER_SAMPLE_TYPE: const
+#    JAEGER_SAMPLE_PARAM: 1
