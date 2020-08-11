@@ -8,7 +8,7 @@
   },
 
   _images+:: {
-    jaeger: 'jaegertracing/all-in-one:1.16.0',
+    jaeger: 'jaegertracing/all-in-one:1.18.1',
   },
 
   local deployment = $.apps.v1.deployment,
