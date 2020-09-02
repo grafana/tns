@@ -1,6 +1,7 @@
 package com.example.TianMiao.controller;
 
 import java.util.List;
+import java.util.Map;
 
 import javax.validation.Valid;
 
@@ -19,6 +20,11 @@ import com.example.TianMiao.exception.ResourceNotFoundException;
 import com.example.TianMiao.model.User;
 import com.example.TianMiao.repository.UserRepository;
 
+import io.opentracing.Scope;
+import io.opentracing.Span;
+import io.opentracing.Tracer;
+import io.opentracing.util.GlobalTracer;
+
 @RestController
 @RequestMapping("/api")
 public class UserController {
@@ -27,7 +33,18 @@ public class UserController {
 	
 	@GetMapping("/users")
 	public List<User> getAllUsers() {
-		return userRepository.findAll();
+		List<User> users;
+		int value = this.SiblingHelperMethod();
+
+		Tracer tracer = GlobalTracer.get();
+		Span span = tracer.buildSpan("parent-child").start();
+		try (Scope scope = tracer.scopeManager().activate(span)) {
+			users = userRepository.findAll();
+		} finally {
+			span.finish();
+		}
+
+		return users;
 	}
 	
 	@PostMapping("/users")
@@ -57,5 +74,17 @@ public class UserController {
 				.orElseThrow(() -> new ResourceNotFoundException("User", "id", userId));
 		userRepository.delete(user);
 		return ResponseEntity.ok().build();
+	}
+
+	private int SiblingHelperMethod()  {
+		Tracer tracer = GlobalTracer.get();
+		Span span = tracer.buildSpan("sibling-span").start();
+		try (Scope scope = tracer.scopeManager().activate(span)) {
+			span.setTag("tag", "value");			
+		} finally {
+			span.finish();
+		}
+
+		return 3;
 	}
 }
