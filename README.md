@@ -31,6 +31,7 @@ Jsonnet bundler downloads Jsonnet dependencies. Download and install it from
 ```
 $ chmod +x /usr/local/bin/jb
 ```
+If you encounter the error `jb: command not found` after installation add `$(go env GOPATH)/bin` to your `$PATH`. 
 
 ## Instructions
 
