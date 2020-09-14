@@ -43,8 +43,15 @@ services:
       JAEGER_SAMPLER_TYPE: probabilistic
       JAEGER_SAMPLER_PARAM: 1
 
+  grafana:
+    image: tomwilkie/grafana:exemplars-1
+    volumes:
+      - ./datasources.yaml:/etc/grafana/provisioning/datasources/datasources.yaml
+    ports:
+    - "3000:3000"
+
   prometheus:
-    image: prom/prometheus-linux-amd64:pr-6635
+    image: cstyan/prometheus:exemplars-64206a
     volumes:
       - ./prometheus.yaml:/etc/prometheus/prometheus.yml
     links:
