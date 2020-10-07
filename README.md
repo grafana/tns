@@ -13,7 +13,7 @@ them into your `/usr/local/bin` directory after downloading.
 This demo assumes you have Docker installed. Follow instructions [here](https://docs.docker.com/install/) for more details.
 
 ### k3d
-To run this demo, you need a Kubernetes cluster. While the demo should work against any 
+To run this demo, you need a Kubernetes cluster. While the demo should work against any
 Kubernetes cluster, these docs will assume a locally running `k3d` cluster. Download and
 install `k3d` from [here](https://github.com/rancher/k3d/releases/tag/v1.6.0). Note that the instructions below work specifically for v1.6.0 of k3d. The later versions of k3d work very differently and it is important to use v1.6.
 
@@ -26,7 +26,7 @@ Tanka uses the Jsonnet language to interact with Kubernetes, via the `kubectl` t
 Download and install it from [here](https://github.com/grafana/tanka/releases/tag/v0.7.1).
 
 ### jsonnet-bundler
-Jsonnet bundler downloads Jsonnet dependencies. Download and install it from 
+Jsonnet bundler downloads Jsonnet dependencies. Download and install it from
 [here](https://github.com/jsonnet-bundler/jsonnet-bundler/releases/tag/v0.4.0).). Rename the downloaded binary to jb and move it to the location where $PATH points. Also make sure the  binary is executable:
 ```
 $ chmod +x /usr/local/bin/jb
@@ -48,6 +48,17 @@ $ cd tns
 $ ./create-k3d-cluster
 $ export KUBECONFIG="$(k3d get-kubeconfig --name='tns')"
 ```
+
+If you see any error like,
+
+`permission denied while trying to connect to the Docker daemon socket at unix:///var/run/docker.sock`
+
+then try to add your user to `docker` group to run docker without `sudo`.
+
+```sh
+$ sudo usermod -aG docker <your-user>
+```
+you should logout and login again for the changes to take effect.
 
 3. Install TNS applications
 This step will ask you to confirm `yes` four times.
@@ -75,7 +86,7 @@ You should now be able to access the demo via [http://localhost:8080/](http://lo
 ## Reviewing the Tanka Code
 This installation will have created a `tanka` directory in your TNS checkout. This
 directory contains all of the Jsonnet resources used to install this demo.
-You will now have a `tanka` directory within your checkout that contains all of the 
+You will now have a `tanka` directory within your checkout that contains all of the
 Jsonnet resources that were needed to deploy this monitoring stack. To find out more
 about Tanka, visit https://tanka.dev.
 
