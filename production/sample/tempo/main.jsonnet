@@ -3,6 +3,16 @@ local tempo = import 'tempo/tempo.libsonnet';
 tempo {
   local configmap = $.core.v1.configMap,
   local container = $.core.v1.container,
+  local policyRule = $.rbac.v1beta1.policyRule,
+  local cluster_role_name = 'agent',
+
+  agent_rbac:
+    $.util.rbac(cluster_role_name, [
+      policyRule.new() +
+      policyRule.withApiGroups(['']) +
+      policyRule.withResources(['nodes', 'nodes/proxy', 'services', 'endpoints', 'pods']) +
+      policyRule.withVerbs(['get', 'list', 'watch']),
+    ]),
 
   _images+:: {
     tempo: 'annanay25/tempo:c136583e',
@@ -144,6 +154,7 @@ tempo {
     deployment.new('jaeger-agent', 1, [
       $.agent_container,
     ]) +
+    deployment.mixin.spec.template.spec.withServiceAccount(cluster_role_name) +
     deployment.mixin.spec.template.metadata.withAnnotations({
       strategies_hash: std.md5(std.toString($.agent_config)),
     }) +
