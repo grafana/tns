@@ -22,7 +22,9 @@ prometheus + promtail + {
         password:: '',
         scheme:: 'http',
         hostname:: 'loki.loki.svc.cluster.local:3100',
-        external_labels: {},
+        external_labels: {
+          cluster: 'tns',
+        },
       }],
       pipeline_stages+: [
         {
