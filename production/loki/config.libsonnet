@@ -5,11 +5,6 @@
 
   _config+:: {
     loki+: {
-      diskSize: '10Gi',
-      replicas: 1,
-      tracing+: {
-        jaegerAgentHost: '',
-      },
       auth_enabled: false,
       ingester: {
         chunk_idle_period: '3m',

@@ -8,6 +8,9 @@ prometheus + promtail + {
   local jaeger_data_source_uid = 'jaeger',
   local jaeger_query_url = 'http://jaeger.jaeger.svc.cluster.local:16686/jaeger/',
   local service = $.core.v1.service,
+  _images+:: {
+    grafana: 'bezoo/grafana:dev',
+  },
   _config+:: {
     namespace: 'default',
     cluster_name: 'docker',

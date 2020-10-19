@@ -10,7 +10,7 @@
 
   loki_pvc::
     pvc.new() +
-    pvc.mixin.spec.resources.withRequests({ storage: $._config.loki.diskSize }) +
+    pvc.mixin.spec.resources.withRequests({ storage: '10Gi' }) +
     pvc.mixin.spec.withAccessModes(['ReadWriteOnce']) +
     pvc.mixin.metadata.withName('loki-data'),
 
@@ -23,9 +23,6 @@
                          + container.withPorts([
                            containerPort.new(name='http-metrics', port=3100),
                          ])
-                         + if $._config.loki.tracing.jaegerAgentHost != '' then
-                           container.withEnvMixin({ JAEGER_AGENT_HOST: $._config.loki.tracing.jaegerAgentHost })
-                         else {}
                               + container.mixin.livenessProbe.httpGet.withPath('/ready')
                               + container.mixin.livenessProbe.httpGet.withPort('http-metrics')
                               + container.mixin.livenessProbe.withInitialDelaySeconds(45)
@@ -34,7 +31,7 @@
                               + container.mixin.readinessProbe.withInitialDelaySeconds(45)
   ,
 
-  loki_statefulset: statefulset.new('loki', $._config.loki.replicas, loki_container, [$.loki_pvc])
+  loki_statefulset: statefulset.new('loki', 1, loki_container, [$.loki_pvc])
                     .withVolumes([
                       volume.fromPersistentVolumeClaim('loki-data', 'loki-data'),
                       volume.fromSecret('loki-config', 'loki-config'),
