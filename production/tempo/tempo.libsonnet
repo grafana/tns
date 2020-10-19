@@ -14,23 +14,9 @@
 
   local tempo_config_volume = 'tempo-conf',
   local tempo_query_config_volume = 'tempo-query-conf',
-  local tempo_data_volume = 'tempo-data',
 
   namespace:
     $.core.v1.namespace.new($._config.namespace),
-
-  tempo_pvc:
-    pvc.new() +
-    pvc.mixin.spec.resources
-    .withRequests({ storage: $._config.pvc_size }) +
-    pvc.mixin.spec
-    .withAccessModes(['ReadWriteOnce'])
-    .withStorageClassName($._config.pvc_storage_class) +
-    pvc.mixin.metadata
-    .withLabels({ app: 'tempo' })
-    .withNamespace($._config.namespace)
-    .withName('tempo-pvc') +
-    { kind: 'PersistentVolumeClaim', apiVersion: 'v1' },
 
   tempo_container::
     container.new('tempo', $._images.tempo) +
@@ -43,7 +29,6 @@
     ]) +
     container.withVolumeMounts([
       volumeMount.new(tempo_config_volume, '/conf'),
-      volumeMount.new(tempo_data_volume, '/var/tempo'),
     ]),
 
   tempo_query_container::
@@ -75,7 +60,6 @@
     deployment.mixin.spec.template.spec.withVolumes([
       volume.fromConfigMap(tempo_query_config_volume, $.tempo_query_configmap.metadata.name),
       volume.fromConfigMap(tempo_config_volume, $.tempo_configmap.metadata.name),
-      volume.fromPersistentVolumeClaim(tempo_data_volume, $.tempo_pvc.metadata.name),
     ]),
 
   tempo_service:

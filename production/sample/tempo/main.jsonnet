@@ -1,10 +1,14 @@
 local tempo = import 'tempo/tempo.libsonnet';
 
 tempo {
+  _images+:: {
+    tempo: 'annanay25/tempo:c136583e',
+    tempo_query: 'annanay25/tempo-query:c136583e',
+    tempo_vulture: 'annanay25/tempo-vulture:c136583e',
+  },
+  
   _config+:: {
     namespace: 'tempo',
-    pvc_size: '1Gi',
-    pvc_storage_class: 'standard',
     receivers: {
         jaeger: {
             protocols: {

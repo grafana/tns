@@ -8,6 +8,7 @@ prometheus + promtail + {
   local service = $.core.v1.service,
   _images+:: {
     grafana: 'bezoo/grafana:dev',
+    prometheus: 'cstyan/prometheus:exemplars-64206a',
   },
   _config+:: {
     namespace: 'default',
@@ -55,6 +56,14 @@ prometheus + promtail + {
       targetPort: 80,
     }),
 
+  grafana_config+:: {
+    sections+: {
+      feature_toggles+: {
+        enable: 'traceToLogs',
+      },
+    },
+  },
+
   grafana_datasource_config_map+:
     $.core.v1.configMap.withDataMixin({
       'datasources.yml': $.util.manifestYaml({
@@ -77,6 +86,23 @@ prometheus + promtail + {
                 url: '$${__value.raw}',
                 datasourceUid: 'tempo',
               }],
+            },
+          },
+          {
+            name: 'prometheus-exemplars',
+            type: 'prometheus',
+            access: 'proxy',
+            url: 'http://prometheus.default.svc.cluster.local/prometheus/',
+            isDefault: false,
+            version: 1,
+            editable: false,
+            basicAuth: false,
+            jsonData: {
+              httpMethod: 'GET',
+              exemplarTraceIDDestination: {
+                  name: 'traceID',
+                  url: 'http://localhost:8080/grafana/explore?orgId=1&left=%5B%22now-1h%22,%22now%22,%22Tempo%22,%7B%22query%22:%22$${value}%22%7D%5D',
+              },
             },
           },
           {
