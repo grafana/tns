@@ -2,7 +2,7 @@
   _config+:: {
     tns+: {
       jaeger: {
-        host: 'jaeger.jaeger.svc.cluster.local',
+        host: 'tempo.tempo.svc.cluster.local',
         tags: 'cluster=tns,namespace=tns',
         sampler_type: 'const',
         sampler_param: '1',

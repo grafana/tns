@@ -5,8 +5,6 @@ local tns_mixin = import 'tns-mixin/mixin.libsonnet';
 prometheus + promtail + {
   // A known data source UID is necessary to configure the Loki datasource such that users can pivot
   // from Loki logs to Jaeger traces on traceID.
-  local jaeger_data_source_uid = 'jaeger',
-  local jaeger_query_url = 'http://jaeger.jaeger.svc.cluster.local:16686/jaeger/',
   local service = $.core.v1.service,
   _images+:: {
     grafana: 'bezoo/grafana:dev',
@@ -16,7 +14,6 @@ prometheus + promtail + {
     cluster_name: 'docker',
     admin_services+: [
       { title: 'TNS Demo', path: 'tns-demo', url: 'http://app.tns.svc.cluster.local/', subfilter: true },
-      { title: 'Jaeger', path: 'jaeger', url: jaeger_query_url },
     ],
     promtail_config+: {
       clients: [{
@@ -78,16 +75,16 @@ prometheus + promtail + {
                 matcherRegex: '(?:traceID|trace_id)=(\\w+)',
                 name: 'TraceID',
                 url: '$${__value.raw}',
-                datasourceUid: jaeger_data_source_uid,
+                datasourceUid: 'tempo',
               }],
             },
           },
           {
-            name: 'Jaeger',
-            type: 'jaeger',
+            name: 'Tempo',
+            type: 'tempo',
             access: 'browser',
-            uid: jaeger_data_source_uid,
-            url: jaeger_query_url,
+            uid: 'tempo',
+            url: 'http://tempo.tempo.svc.cluster.local:16686/',
             isDefault: false,
             version: 1,
             editable: false,
