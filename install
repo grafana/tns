@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-CONTEXT=${1-tns}
+CONTEXT=${1-k3d-tns}
 BASEDIR=$(cd `dirname $0`; pwd)
 PROD=$BASEDIR/production/sample
 

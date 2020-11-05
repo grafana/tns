@@ -7,18 +7,14 @@ BASEDIR=$(cd `dirname $0`; pwd)
 
 API_PORT=8555
 #EXPOSE=30040:30040@k3d-tns-server
-EXPOSE=8080:80
-SERVER=${SERVER-localhost}
+EXPOSE=8080:80@loadbalancer
 VOLUME=$BASEDIR/.volume
 
-k3d create \
-  --name $CLUSTER_NAME \
+k3d cluster create $CLUSTER_NAME \
   --volume $VOLUME:/kubernetes \
   --volume $VOLUME/local:/opt/local-path-provisioner \
-  --api-port $SERVER:$API_PORT \
-  --publish $EXPOSE \
-  --auto-restart \
-  --image "docker.io/rancher/k3s:v1.17.0-k3s.1"
+  --api-port $API_PORT \
+  --port $EXPOSE
 
 echo -n 'creating'
 set +e
