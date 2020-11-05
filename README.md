@@ -83,6 +83,28 @@ your cluster should be ready for use.
 
 You should now be able to access the demo via [http://localhost:8080/](http://localhost:8080).
 
+## Demoable things
+
+### Metrics -> Logs -> Traces
+- Go to the TNS dashboard
+- Zoom in on a section with failed requests if you are so inclined
+- Panel Drop Down -> Explore
+- Datasource Drop Down -> Loki
+- Choose a log line with a traceID -> Tempo
+
+### Metrics -> Traces -> Logs
+- Go to Explore
+- Choose Datasource prometheus-exemplars
+- Run this query `histogram_quantile(.99, sum(rate(tns_request_duration_seconds_bucket{}[1m])) by (le))`
+- Click an exemplar
+- Click the log icon on a span line
+
+### LogQLV2
+- Go to Explore
+- Choose Datasource Loki
+- Run this query `{job="tns/app", level="info"} | logfmt | status>=500 and status <=599 and duration > 50ms`
+- Choose a log line with a traceID -> Tempo
+
 ## Reviewing the Tanka Code
 This installation will have created a `tanka` directory in your TNS checkout. This
 directory contains all of the Jsonnet resources used to install this demo.
