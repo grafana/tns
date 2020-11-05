@@ -12,7 +12,7 @@ import (
 	"github.com/opentracing/opentracing-go"
 	"github.com/prometheus/client_golang/prometheus"
 	"github.com/prometheus/client_golang/prometheus/promauto"
-	"github.com/weaveworks/common"
+	"github.com/weaveworks/common/middleware"
 )
 
 var requestDuration = promauto.NewHistogramVec(prometheus.HistogramOpts{
@@ -61,7 +61,7 @@ func (c *Client) Do(req *http.Request) (*http.Response, error) {
 	resp, err := c.Client.Do(req)
 	duration := time.Since(start)
 
-	id, _ := common.ExtractTraceID(req.Context())
+	id, _ := middleware.ExtractTraceID(req.Context())
 
 	if err != nil {
 		level.Error(c.logger).Log("msg", "HTTP client error", "error", err, "url", req.URL, "duration", duration, "traceID", id)
