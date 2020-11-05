@@ -23,12 +23,12 @@
                          + container.withPorts([
                            containerPort.new(name='http-metrics', port=3100),
                          ])
-                              + container.mixin.livenessProbe.httpGet.withPath('/ready')
-                              + container.mixin.livenessProbe.httpGet.withPort('http-metrics')
-                              + container.mixin.livenessProbe.withInitialDelaySeconds(45)
-                              + container.mixin.readinessProbe.httpGet.withPath('/ready')
-                              + container.mixin.readinessProbe.httpGet.withPort('http-metrics')
-                              + container.mixin.readinessProbe.withInitialDelaySeconds(45)
+                         + container.mixin.livenessProbe.httpGet.withPath('/ready')
+                         + container.mixin.livenessProbe.httpGet.withPort('http-metrics')
+                         + container.mixin.livenessProbe.withInitialDelaySeconds(45)
+                         + container.mixin.readinessProbe.httpGet.withPath('/ready')
+                         + container.mixin.readinessProbe.httpGet.withPort('http-metrics')
+                         + container.mixin.readinessProbe.withInitialDelaySeconds(45)
   ,
 
   loki_statefulset: statefulset.new('loki', 1, loki_container, [$.loki_pvc])

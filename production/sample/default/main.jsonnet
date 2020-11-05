@@ -102,8 +102,8 @@ prometheus + promtail + {
             jsonData: {
               httpMethod: 'GET',
               exemplarTraceIDDestination: {
-                  name: 'traceID',
-                  url: 'http://localhost:8080/grafana/explore?orgId=1&left=%5B%22now-1h%22,%22now%22,%22Tempo%22,%7B%22query%22:%22$${value}%22%7D%5D',
+                name: 'traceID',
+                url: 'http://localhost:8080/grafana/explore?orgId=1&left=%5B%22now-1h%22,%22now%22,%22Tempo%22,%7B%22query%22:%22$${value}%22%7D%5D',
               },
             },
           },

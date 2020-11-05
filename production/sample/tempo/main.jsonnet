@@ -24,20 +24,20 @@ tempo {
   _config+:: {
     namespace: 'tempo',
     receivers: {
-        jaeger: {
-            protocols: {
-                thrift_compact: {
-                    endpoint: '0.0.0.0:6831',
-                },
-            },
-        },
-        otlp: {
-          protocols: {
-            grpc: {
-              endpoint: '0.0.0.0:55680',
-            },
+      jaeger: {
+        protocols: {
+          thrift_compact: {
+            endpoint: '0.0.0.0:6831',
           },
         },
+      },
+      otlp: {
+        protocols: {
+          grpc: {
+            endpoint: '0.0.0.0:55680',
+          },
+        },
+      },
     },
   },
 

@@ -4,28 +4,28 @@
   tempo_config:: {
     auth_enabled: false,
     server: {
-      http_listen_port: $._config.port
+      http_listen_port: $._config.port,
     },
     distributor: {
-      receivers: $._config.receivers
+      receivers: $._config.receivers,
     },
     ingester: {
     },
     compactor: {
       compaction: {
-        compacted_block_retention: "24h",
-      }
+        compacted_block_retention: '24h',
+      },
     },
     storage: {
       trace: {
-        backend: "local",
+        backend: 'local',
         wal: {
-          path: "/var/tempo/wal",
+          path: '/var/tempo/wal',
         },
         'local': {
-          path: "/tmp/tempo/traces"
+          path: '/tmp/tempo/traces',
         },
-      }
+      },
     },
   },
 
@@ -44,7 +44,7 @@
     configMap.new('tempo-query') +
     configMap.withData({
       'tempo-query.yaml': $.util.manifestYaml({
-        backend: 'localhost:%d' % $._config.port
-      })
+        backend: 'localhost:%d' % $._config.port,
+      }),
     }),
 }
