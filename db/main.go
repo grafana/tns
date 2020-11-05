@@ -31,7 +31,11 @@ func main() {
 	serverConfig.Log = logging.GoKit(logger)
 
 	// Setting the environment variable JAEGER_AGENT_HOST enables tracing
-	trace := tracing.NewFromEnv("db")
+	trace, err := tracing.NewFromEnv("db")
+	if err != nil {
+		level.Error(logger).Log("msg", "error initializing tracing", "err", err)
+		os.Exit(1)
+	}
 	defer trace.Close()
 
 	db := New(logger)
