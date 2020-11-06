@@ -6,8 +6,7 @@ The "TNS" name comes from "The New Stack", where the original demo code was used
 
 ## Prerequisites
 
-There are a set of tools you will need to download and install. We recommend you place
-them into your `/usr/local/bin` directory after downloading.
+There are a set of tools you will need to download and install.
 
 ### Docker
 This demo assumes you have Docker installed. Follow instructions [here](https://docs.docker.com/install/) for more details.
