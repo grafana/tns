@@ -46,7 +46,7 @@ $ cd tns
 2. Install K3D Cluster
 ```sh
 $ ./create-k3d-cluster
-$ export KUBECONFIG="$(k3d get-kubeconfig --name='tns')"
+$ export KUBECONFIG=$(k3d kubeconfig write tns)
 ```
 
 If you see any error like,
