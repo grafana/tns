@@ -10,6 +10,8 @@ API_PORT=8555
 EXPOSE=8080:80@loadbalancer
 VOLUME=$BASEDIR/.volume
 
+mkdir -p .volume
+
 k3d cluster create $CLUSTER_NAME \
   --volume $VOLUME:/kubernetes \
   --volume $VOLUME/local:/opt/local-path-provisioner \

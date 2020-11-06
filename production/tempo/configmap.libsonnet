@@ -25,6 +25,7 @@
         'local': {
           path: '/tmp/tempo/traces',
         },
+        blocklist_poll: '30s',
       },
     },
   },

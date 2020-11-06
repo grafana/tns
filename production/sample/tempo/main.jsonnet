@@ -15,9 +15,6 @@ tempo {
     ]),
 
   _images+:: {
-    tempo: 'annanay25/tempo:c136583e',
-    tempo_query: 'annanay25/tempo-query:c136583e',
-    tempo_vulture: 'annanay25/tempo-vulture:c136583e',
     grafana_agent: 'grafana/agent:master-b10f023',
   },
 
