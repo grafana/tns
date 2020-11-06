@@ -126,6 +126,6 @@ $ k3d start -name tns
 Once you have finished with the cluster, this should remove it and leave you ready to
 recreate it on another occasion:
 ```sh
-$ k3d delete --name tns
+$ k3d cluster delete tns
 $ rm -rf tanka
 ```
