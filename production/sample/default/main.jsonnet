@@ -5,15 +5,16 @@ local tns_mixin = import 'tns-mixin/mixin.libsonnet';
 prometheus + promtail + {
   // A known data source UID is necessary to configure the Loki datasource such that users can pivot
   // from Loki logs to Jaeger traces on traceID.
-  local jaeger_data_source_uid = 'jaeger',
-  local jaeger_query_url = 'http://jaeger.jaeger.svc.cluster.local:16686/jaeger/',
   local service = $.core.v1.service,
+  _images+:: {
+    grafana: 'grafana/grafana:7.3.x-exemplars',
+    prometheus: 'cstyan/prometheus:exemplars-64206a',
+  },
   _config+:: {
     namespace: 'default',
     cluster_name: 'docker',
     admin_services+: [
       { title: 'TNS Demo', path: 'tns-demo', url: 'http://app.tns.svc.cluster.local/', subfilter: true },
-      { title: 'Jaeger', path: 'jaeger', url: jaeger_query_url },
     ],
     promtail_config+: {
       clients: [{
@@ -21,7 +22,9 @@ prometheus + promtail + {
         password:: '',
         scheme:: 'http',
         hostname:: 'loki.loki.svc.cluster.local:3100',
-        external_labels: {},
+        external_labels: {
+          cluster: 'tns',
+        },
       }],
       pipeline_stages+: [
         {
@@ -55,6 +58,14 @@ prometheus + promtail + {
       targetPort: 80,
     }),
 
+  grafana_config+:: {
+    sections+: {
+      feature_toggles+: {
+        enable: 'traceToLogs',
+      },
+    },
+  },
+
   grafana_datasource_config_map+:
     $.core.v1.configMap.withDataMixin({
       'datasources.yml': $.util.manifestYaml({
@@ -75,16 +86,33 @@ prometheus + promtail + {
                 matcherRegex: '(?:traceID|trace_id)=(\\w+)',
                 name: 'TraceID',
                 url: '$${__value.raw}',
-                datasourceUid: jaeger_data_source_uid,
+                datasourceUid: 'tempo',
               }],
             },
           },
           {
-            name: 'Jaeger',
-            type: 'jaeger',
+            name: 'prometheus-exemplars',
+            type: 'prometheus',
+            access: 'proxy',
+            url: 'http://prometheus.default.svc.cluster.local/prometheus/',
+            isDefault: false,
+            version: 1,
+            editable: false,
+            basicAuth: false,
+            jsonData: {
+              httpMethod: 'GET',
+              exemplarTraceIDDestination: {
+                name: 'traceID',
+                url: 'http://localhost:8080/grafana/explore?orgId=1&left=%5B%22now-1h%22,%22now%22,%22Tempo%22,%7B%22query%22:%22$${value}%22%7D%5D',
+              },
+            },
+          },
+          {
+            name: 'Tempo',
+            type: 'tempo',
             access: 'browser',
-            uid: jaeger_data_source_uid,
-            url: jaeger_query_url,
+            uid: 'tempo',
+            url: 'http://tempo.tempo.svc.cluster.local:16686/',
             isDefault: false,
             version: 1,
             editable: false,

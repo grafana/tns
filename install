@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-CONTEXT=${1-tns}
+CONTEXT=${1-k3d-tns}
 BASEDIR=$(cd `dirname $0`; pwd)
 PROD=$BASEDIR/production/sample
 
@@ -29,6 +29,6 @@ jb install               # Installs dependencies
 
 ## Install apps into separate namespaces
 install_env default # Install default monitoring stack
-install_env jaeger  # Install jaeger tracing app
 install_env loki    # Install loki logging app
 install_env tns     # Install TNS demo app
+install_env tempo   # Install tempo tracing app

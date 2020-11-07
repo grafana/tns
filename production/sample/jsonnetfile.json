@@ -56,6 +56,14 @@
     {
       "source": {
         "local": {
+          "directory": "../production/tempo"
+        }
+      },
+      "version": ""
+    },
+    {
+      "source": {
+        "local": {
           "directory": "../production/tns"
         }
       },

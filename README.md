@@ -6,8 +6,7 @@ The "TNS" name comes from "The New Stack", where the original demo code was used
 
 ## Prerequisites
 
-There are a set of tools you will need to download and install. We recommend you place
-them into your `/usr/local/bin` directory after downloading.
+There are a set of tools you will need to download and install.
 
 ### Docker
 This demo assumes you have Docker installed. Follow instructions [here](https://docs.docker.com/install/) for more details.
@@ -15,7 +14,7 @@ This demo assumes you have Docker installed. Follow instructions [here](https://
 ### k3d
 To run this demo, you need a Kubernetes cluster. While the demo should work against any
 Kubernetes cluster, these docs will assume a locally running `k3d` cluster. Download and
-install `k3d` from [here](https://github.com/rancher/k3d/releases/tag/v1.6.0). Note that the instructions below work specifically for v1.6.0 of k3d. The later versions of k3d work very differently and it is important to use v1.6.
+install `k3d` from [here](https://github.com/rancher/k3d/releases/tag/v3.2.0).
 
 ### kubectl
 `kubectl` is used to interact with Kubernetes clusters. Follow the instructions
@@ -46,7 +45,7 @@ $ cd tns
 2. Install K3D Cluster
 ```sh
 $ ./create-k3d-cluster
-$ export KUBECONFIG="$(k3d get-kubeconfig --name='tns')"
+$ export KUBECONFIG=$(k3d kubeconfig write tns)
 ```
 
 If you see any error like,
@@ -83,6 +82,28 @@ your cluster should be ready for use.
 
 You should now be able to access the demo via [http://localhost:8080/](http://localhost:8080).
 
+## Demoable things
+
+### Metrics -> Logs -> Traces
+- Go to the TNS dashboard
+- Zoom in on a section with failed requests if you are so inclined
+- Panel Drop Down -> Explore
+- Datasource Drop Down -> Loki
+- Choose a log line with a traceID -> Tempo
+
+### Metrics -> Traces -> Logs
+- Go to Explore
+- Choose Datasource prometheus-exemplars
+- Run this query `histogram_quantile(.99, sum(rate(tns_request_duration_seconds_bucket{}[1m])) by (le))`
+- Click an exemplar
+- Click the log icon on a span line
+
+### LogQLV2
+- Go to Explore
+- Choose Datasource Loki
+- Run this query `{job="tns/app", level="info"} | logfmt | status>=500 and status <=599 and duration > 50ms`
+- Choose a log line with a traceID -> Tempo
+
 ## Reviewing the Tanka Code
 This installation will have created a `tanka` directory in your TNS checkout. This
 directory contains all of the Jsonnet resources used to install this demo.
@@ -94,17 +115,17 @@ about Tanka, visit https://tanka.dev.
 Should you wish to disable your cluster, use this command:
 
 ```sh
-$ k3d stop -name tns
+$ k3d cluster stop tns
 ```
 To re-enable it, do this:
 ```sh
-$ k3d start -name tns
+$ k3d cluster start tns
 ```
 
 ## Removing the Cluster
 Once you have finished with the cluster, this should remove it and leave you ready to
 recreate it on another occasion:
 ```sh
-$ k3d delete --name tns
+$ k3d cluster delete tns
 $ rm -rf tanka
 ```
