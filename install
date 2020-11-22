@@ -27,7 +27,7 @@ tk init                  # Initialises Tanka, and downloads the Kubernetes libar
 cp "$PROD"/jsonnetfile.* . # copies dependency list into current directory
 jb install               # Installs dependencies
 
-## Install apps into separate namespaces
+# Install apps into separate namespaces
 install_env default # Install default monitoring stack
 install_env loki    # Install loki logging app
 install_env tns     # Install TNS demo app
