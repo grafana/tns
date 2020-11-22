@@ -1,17 +1,17 @@
 #!/usr/bin/env bash
 
 CONTEXT=${1-k3d-tns}
-BASEDIR=$(cd `dirname $0`; pwd)
-PROD=$BASEDIR/production/sample
+BASEDIR="$(cd "`dirname $0`"; pwd)"
+PROD="$BASEDIR/production/sample"
 
 function install_env {
     ENV=$1
     tk env add environments/$ENV --server-from-context $CONTEXT --namespace $ENV # Creates/configures the environment.
-    ln -sf $PROD/$ENV/main.jsonnet environments/$ENV/main.jsonnet # Copies the base configuration for your env.
+    ln -sf "$PROD/$ENV/main.jsonnet" environments/$ENV/main.jsonnet # Copies the base configuration for your env.
     tk apply environments/$ENV                                    # Installs everything for your environment.
 }
 
-if [ -e $BASEDIR/tanka ]; then
+if [ -e "$BASEDIR/tanka" ]; then
   echo "tanka/ directory already exists. Please remove and try again."
   exit 1
 fi
@@ -22,9 +22,9 @@ if ! kubectl --context $CONTEXT get ns>/dev/null 2>&1; then
 fi
 
 # Initialise Tanka
-mkdir $BASEDIR/tanka && cd $BASEDIR/tanka
+mkdir "$BASEDIR/tanka" && cd "$BASEDIR/tanka"
 tk init                  # Initialises Tanka, and downloads the Kubernetes libaries Tanka needs
-cp $PROD/jsonnetfile.* . # copies dependency list into current directory
+cp "$PROD"/jsonnetfile.* . # copies dependency list into current directory
 jb install               # Installs dependencies
 
 ## Install apps into separate namespaces
