@@ -32,7 +32,7 @@
   ,
 
   loki_statefulset: statefulset.new('loki', 1, loki_container, [$.loki_pvc])
-                    .withVolumes([
+                    + statefulset.mixin.spec.template.spec.withVolumes([
                       volume.fromPersistentVolumeClaim('loki-data', 'loki-data'),
                       volume.fromSecret('loki-config', 'loki-config'),
                     ])
