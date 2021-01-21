@@ -17,7 +17,7 @@ k3d cluster create $CLUSTER_NAME \
   --volume $VOLUME/local:/opt/local-path-provisioner \
   --api-port $API_PORT \
   --port $EXPOSE \
-  --update-default-kubeconfig=false
+  --kubeconfig-update-default=false
 
 echo -n 'creating'
 set +e

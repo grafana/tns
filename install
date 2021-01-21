@@ -11,6 +11,10 @@ function install_env {
     tk apply environments/$ENV                                    # Installs everything for your environment.
 }
 
+if [[ $(docker info --format "{{.MemTotal}}") -lt 2560000000 ]]; then
+  echo "WARNING: your docker daemon will likely need more memory in order to schedule all required pods"
+fi
+
 if [ -e "$BASEDIR/tanka" ]; then
   echo "tanka/ directory already exists. Please remove and try again."
   exit 1

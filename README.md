@@ -11,6 +11,9 @@ There are a set of tools you will need to download and install.
 ### Docker
 This demo assumes you have Docker installed. Follow instructions [here](https://docs.docker.com/install/) for more details.
 
+_Note_: The `k3d` kubernetes distribution used for this demo runs as a single node cluster inside docker. Make sure
+your docker daemon has at least 2.5 GB of total memory available for all pods in this deployment to be scheduled.
+
 ### k3d
 To run this demo, you need a Kubernetes cluster. While the demo should work against any
 Kubernetes cluster, these docs will assume a locally running `k3d` cluster. Download and
@@ -129,3 +132,8 @@ recreate it on another occasion:
 $ k3d cluster delete tns
 $ rm -rf tanka
 ```
+
+## Troubleshooting
+
+* Tempo 404's when trying to load traces
+    - This is likely because the jaeger agent is not running correctly. Check that all pods were successfully scheduled
