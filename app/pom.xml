@@ -67,32 +67,11 @@
         	<groupId>javax.servlet</groupId>
         	<artifactId>javax.servlet-api</artifactId>
         </dependency>
-		<!-- OpenTelemetry Automatic Instrumentation -->
 		<dependency>
 			<groupId>org.javassist</groupId>
 			<artifactId>javassist</artifactId>
 			<version>3.25.0-GA</version>
 		</dependency>
-		<!-- <dependency>
-			<groupId>io.opentelemetry.javaagent.instrumentation</groupId>
-			<artifactId>opentelemetry-javaagent</artifactId>
-			<version>0.14.0</version>
-		</dependency> 
-		<dependency>
-			<groupId>io.opentelemetry</groupId>
-			<artifactId>opentelemetry-api</artifactId>
-			<version>0.14.1</version>
-		</dependency>
-		<dependency>
-			<groupId>io.opentelemetry</groupId>
-			<artifactId>opentelemetry-sdk</artifactId>
-			<version>0.14.1</version>
-		</dependency>
-		<dependency>
-			<groupId>io.opentelemetry</groupId>
-			<artifactId>opentelemetry-exporter-logging</artifactId>
-			<version>0.14.1</version>
-		</dependency>-->
 	</dependencies>
 
 	<build>
