@@ -51,7 +51,7 @@ services:
     - "3000:3000"
 
   prometheus:
-    image: tomwilkie/prometheus:exemplars-b165c3b9
+    image: tomwilkie/prometheus:b165c3b91
     user: root
     volumes:
       - ./prometheus.yaml:/etc/prometheus/prometheus.yml
