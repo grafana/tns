@@ -8,9 +8,9 @@ services:
     ports:
       - 0.0.0.0:8000:80
     environment:
-      JAEGER_ENDPOINT: 'http://tempo:14268'
+      JAEGER_ENDPOINT: 'http://tempo:14268/api/traces'
       JAEGER_TAGS: cluster=tns,namespace=tns
-      JAEGER_SAMPLER_TYPE: probabilistic
+      JAEGER_SAMPLER_TYPE: const
       JAEGER_SAMPLER_PARAM: 1
 
   app:
@@ -23,9 +23,9 @@ services:
     ports:
       - 0.0.0.0:8001:80
     environment:
-      JAEGER_ENDPOINT: 'http://tempo:14268'
+      JAEGER_ENDPOINT: 'http://tempo:14268/api/traces'
       JAEGER_TAGS: cluster=tns,namespace=tns
-      JAEGER_SAMPLER_TYPE: probabilistic
+      JAEGER_SAMPLER_TYPE: const
       JAEGER_SAMPLER_PARAM: 1
 
   loadgen:
@@ -38,13 +38,25 @@ services:
     ports:
       - 0.0.0.0:8002:80
     environment:
-      JAEGER_ENDPOINT: 'http://tempo:14268'
+      JAEGER_ENDPOINT: 'http://tempo:14268/api/traces'
       JAEGER_TAGS: cluster=tns,namespace=tns
-      JAEGER_SAMPLER_TYPE: probabilistic
+      JAEGER_SAMPLER_TYPE: const
       JAEGER_SAMPLER_PARAM: 1
 
+  grafana:
+    image: grafana/grafana:7.4.x-exemplars
+    volumes:
+      - ./datasources.yaml:/etc/grafana/provisioning/datasources/datasources.yaml
+    environment:
+     - GF_AUTH_ANONYMOUS_ENABLED=true
+     - GF_AUTH_ANONYMOUS_ORG_ROLE=Admin
+     - GF_AUTH_DISABLE_LOGIN_FORM=true
+    ports:
+     - "3000:3000"
+
   prometheus:
-    image: prom/prometheus-linux-amd64:pr-6635
+    image: tomwilkie/prometheus:b165c3b91
+    user: root
     volumes:
       - ./prometheus.yaml:/etc/prometheus/prometheus.yml
     links:
@@ -55,30 +67,14 @@ services:
       - 0.0.0.0:8003:9090
 
   tempo:
-    image: tempo:latest
-    command: ["-config.file=/etc/tempo.yaml"]
-    volumes:
-      - ./tempo.yaml:/etc/tempo.yaml
-      - /tmp/tempo:/tmp/tempo
+    image: grafana/tempo:0.5.0
+    command: ["--target=all", "--storage.trace.backend=local", "--storage.trace.local.path=/var/tempo", "--auth.enabled=false"]
     ports:
-      - "8004:3100"  # tempo
-
-  minio:
-    image: minio/minio:RELEASE.2020-07-27T18-37-02Z
-    environment:
-      - MINIO_ACCESS_KEY=tempo
-      - MINIO_SECRET_KEY=supersecret
-    ports:
-      - "8005:9000"
-    entrypoint:
-      - sh
-      - -euc
-      - mkdir -p /data/tempo && /usr/bin/minio server /data
+      - "8004:80"  # tempo
 
   tempo-query:
-    image: tempo-query:latest
-    command: ["--grpc-storage-plugin.configuration-file=/etc/tempo-query.yaml"]
-    volumes:
-      - ./tempo-query.yaml:/etc/tempo-query.yaml
+    image: grafana/tempo-query:0.5.0
+    environment:
+      - BACKEND=tempo
     ports:
       - "8006:16686"  # jaeger-ui
