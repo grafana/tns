@@ -44,7 +44,7 @@ services:
       JAEGER_SAMPLER_PARAM: 1
 
   grafana:
-    image: tomwilkie/grafana:exemplars-1
+    image: grafana/grafana:7.4.0-beta1
     volumes:
       - ./datasources.yaml:/etc/grafana/provisioning/datasources/datasources.yaml
     ports:
