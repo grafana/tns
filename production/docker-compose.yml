@@ -62,7 +62,7 @@ services:
       - 0.0.0.0:8003:9090
 
   tempo:
-    image: tempo:latest
+    image: grafana/tempo:0.5.0
     command: ["-config.file=/etc/tempo.yaml"]
     volumes:
       - ./tempo.yaml:/etc/tempo.yaml
@@ -83,7 +83,7 @@ services:
       - mkdir -p /data/tempo && /usr/bin/minio server /data
 
   tempo-query:
-    image: tempo-query:latest
+    image: grafana/tempo-query:0.5.0
     command: ["--grpc-storage-plugin.configuration-file=/etc/tempo-query.yaml"]
     volumes:
       - ./tempo-query.yaml:/etc/tempo-query.yaml
