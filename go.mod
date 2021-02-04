@@ -8,7 +8,7 @@ require (
 	github.com/opentracing-contrib/go-stdlib v0.0.0-20190519235532-cf7a6c988dc9
 	github.com/opentracing/opentracing-go v1.1.0
 	github.com/prometheus/client_golang v1.8.0
-	github.com/weaveworks/common v0.0.0-20201029142910-313edde7a455
+	github.com/weaveworks/common v0.0.0-20210112142934-23c8d7fa6120
 	google.golang.org/genproto v0.0.0-20200122232147-0452cf42e150 // indirect
 )
 
