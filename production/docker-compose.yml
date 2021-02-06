@@ -2,7 +2,7 @@ version: "2"
 services:
 
   db:
-    image: grafana/tns-db
+    image: grafana/tns-db:9c1ab38
     command:
       - '-log.level=debug'
     ports:
@@ -14,7 +14,7 @@ services:
       JAEGER_SAMPLER_PARAM: 1
 
   app:
-    image: grafana/tns-app
+    image: grafana/tns-app:9c1ab38
     command:
       - '-log.level=debug'
       - 'http://db'
@@ -29,7 +29,7 @@ services:
       JAEGER_SAMPLER_PARAM: 1
 
   loadgen:
-    image: grafana/tns-loadgen
+    image: grafana/tns-loadgen:9c1ab38
     command:
       - '-log.level=debug'
       - 'http://app'

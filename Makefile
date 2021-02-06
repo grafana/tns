@@ -23,14 +23,17 @@ loadgen/loadgen: loadgen/*.go
 
 db/.uptodate: db/db db/Dockerfile
 	docker build -t $(DOCKER_IMAGE_BASE)/tns-db db/
+	docker tag $(DOCKER_IMAGE_BASE)/tns-db $(DOCKER_IMAGE_BASE)/tns-db:$(IMAGE_TAG)
 	touch $@
 
 app/.uptodate: app/app app/Dockerfile app/index.html.tmpl
 	docker build -t $(DOCKER_IMAGE_BASE)/tns-app app/
+	docker tag $(DOCKER_IMAGE_BASE)/tns-app $(DOCKER_IMAGE_BASE)/tns-app:$(IMAGE_TAG)
 	touch $@
 
 loadgen/.uptodate: loadgen/loadgen loadgen/Dockerfile
 	docker build -t $(DOCKER_IMAGE_BASE)/tns-loadgen loadgen/
+	docker tag $(DOCKER_IMAGE_BASE)/tns-loadgen $(DOCKER_IMAGE_BASE)/tns-loadgen:$(IMAGE_TAG)
 	touch $@
 
 lint-image/.uptodate: lint-image/Dockerfile
