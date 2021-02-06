@@ -26,7 +26,7 @@ db/.uptodate: db/db db/Dockerfile
 	docker tag $(DOCKER_IMAGE_BASE)/tns-db $(DOCKER_IMAGE_BASE)/tns-db:$(IMAGE_TAG)
 	touch $@
 
-app/.uptodate: app/app app/Dockerfile app/index.html.tmpl
+app/.uptodate: app/Dockerfile
 	docker build -t $(DOCKER_IMAGE_BASE)/tns-app app/
 	docker tag $(DOCKER_IMAGE_BASE)/tns-app $(DOCKER_IMAGE_BASE)/tns-app:$(IMAGE_TAG)
 	touch $@
