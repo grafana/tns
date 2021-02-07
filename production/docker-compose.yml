@@ -1,6 +1,14 @@
 version: "2"
 services:
 
+  mysql:
+    image: mysql:8
+    container_name: mysql_service
+    restart: always
+    environment:
+        MYSQL_ROOT_PASSWORD: password
+        MYSQL_DATABASE: news
+
   db:
     image: grafana/tns-db:9c1ab38
     command:
@@ -14,19 +22,17 @@ services:
       JAEGER_SAMPLER_PARAM: 1
 
   app:
-    image: grafana/tns-app:9c1ab38
-    command:
-      - '-log.level=debug'
-      - 'http://db'
-    links:
-      - db
+    image: grafana/tns-app
     ports:
-      - 0.0.0.0:8001:80
+      - 8080:8080
+      - 8009:8009
+    depends_on:
+      - mysql
     environment:
-      JAEGER_ENDPOINT: 'http://tempo:14268/api/traces'
-      JAEGER_TAGS: cluster=tns,namespace=tns
-      JAEGER_SAMPLER_TYPE: const
-      JAEGER_SAMPLER_PARAM: 1
+      - OTEL_EXPORTER=otlp_span,prometheus
+      - OTEL_EXPORTER_OTLP_ENDPOINT=tempo:55680
+      - OTEL_EXPORTER_OTLP_INSECURE=true
+      - OTEL_RESOURCE_ATTRIBUTES=service.name=demo
 
   loadgen:
     image: grafana/tns-loadgen:9c1ab38
