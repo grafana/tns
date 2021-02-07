@@ -1,4 +1,4 @@
-package com.example.TianMiao.model;
+package com.grafana.news.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import org.springframework.data.annotation.CreatedDate;
@@ -11,31 +11,33 @@ import java.io.Serializable;
 import java.util.Date;
 
 @Entity
-@Table(name = "user")
+@Table(name = "post")
 @EntityListeners(AuditingEntityListener.class)
-@JsonIgnoreProperties(value = {"createdAt", "updatedAt"}, allowGetters = true)
-public class User implements Serializable {
+@JsonIgnoreProperties(value = {"createdAt"}, allowGetters = true)
+public class Post implements Serializable {
 	/**
-	 * 
+	 *
 	 */
 	private static final long serialVersionUID = 1L;
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
-	
+
 	@NotBlank
-	private String username;
-	
+	private String title;
+
 	@Column(nullable = false, updatable = false)
     @Temporal(TemporalType.TIMESTAMP)
     @CreatedDate
     private Date createdAt;
-	
-	@Column(nullable = false)
-	@Temporal(TemporalType.TIMESTAMP)
-	@LastModifiedDate
-	private Date updatedAt;
+
+	@NotBlank
+	private String url;
+
+	@NotBlank
+	private Long points;
+
 
 	public Long getId() {
 		return id;
@@ -45,12 +47,12 @@ public class User implements Serializable {
 		this.id = id;
 	}
 
-	public String getUsername() {
-		return username;
+	public String getTitle() {
+		return title;
 	}
 
-	public void setUsername(String username) {
-		this.username = username;
+	public void setTitle(String title) {
+		this.title = title;
 	}
 
 	public Date getCreatedAt() {
@@ -61,12 +63,23 @@ public class User implements Serializable {
 		this.createdAt = createdAt;
 	}
 
-	public Date getUpdatedAt() {
-		return updatedAt;
+	public String getUrl() {
+		return url;
 	}
 
-	public void setUpdatedAt(Date updatedAt) {
-		this.updatedAt = updatedAt;
+	public void setUrl(String url) {
+		this.url = url;
 	}
-	
+
+	public Long getPoints() {
+		return points;
+	}
+
+	public void setPoints(Long points) {
+		this.points = points;
+	}
+
+	public void upvote() {
+		this.points++;
+	}
 }

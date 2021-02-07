@@ -1,4 +1,4 @@
-package com.example.TianMiao;
+package com.grafana.news;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -8,14 +8,14 @@ import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
 
 @SpringBootApplication
 @EnableJpaAuditing
-public class TianMiaoApplication extends SpringBootServletInitializer {
+public class NewsApplication extends SpringBootServletInitializer {
 
 	@Override
 	protected SpringApplicationBuilder configure(SpringApplicationBuilder application) {
-		return application.sources(TianMiaoApplication.class);
+		return application.sources(NewsApplication.class);
 	}
-	
+
 	public static void main(String[] args) {
-		SpringApplication.run(TianMiaoApplication.class, args);
+		SpringApplication.run(NewsApplication.class, args);
 	}
 }

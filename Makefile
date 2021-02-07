@@ -15,9 +15,6 @@ GOENV=GOOS=linux GOARCH=amd64 CGO_ENABLED=0 GO111MODULE=on
 db/db: db/*.go
 	env $(GOENV) go build -o $@ ./db
 
-app/app: app/*.go
-	env $(GOENV) go build -o $@ ./app
-
 loadgen/loadgen: loadgen/*.go
 	env $(GOENV) go build -o $@ ./loadgen
 
@@ -26,7 +23,7 @@ db/.uptodate: db/db db/Dockerfile
 	docker tag $(DOCKER_IMAGE_BASE)/tns-db $(DOCKER_IMAGE_BASE)/tns-db:$(IMAGE_TAG)
 	touch $@
 
-app/.uptodate: app/Dockerfile
+app/.uptodate: app/Dockerfile app/pom.xml $(shell find app/src)
 	docker build -t $(DOCKER_IMAGE_BASE)/tns-app app/
 	docker tag $(DOCKER_IMAGE_BASE)/tns-app $(DOCKER_IMAGE_BASE)/tns-app:$(IMAGE_TAG)
 	touch $@

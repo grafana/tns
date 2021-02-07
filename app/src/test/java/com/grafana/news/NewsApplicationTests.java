@@ -1,4 +1,4 @@
-package com.example.TianMeow;
+package com.grafana.news;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -7,7 +7,7 @@ import org.springframework.test.context.junit4.SpringRunner;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest
-public class TianMeowApplicationTests {
+public class NewsApplicationTests {
 
 	@Test
 	public void contextLoads() {

@@ -11,6 +11,6 @@ RUN mvn install -Dmaven.test.skip=true
 
 
 FROM tomcat:9-jre11
-COPY --from=build /usr/src/app/target/TianMiao.war /usr/local/tomcat/webapps/TianMiao.war
-RUN curl -o /usr/local/tomcat/opentelemetry-javaagent-all.jar https://github.com/open-telemetry/opentelemetry-java-instrumentation/releases/download/v0.15.1/opentelemetry-javaagent-all.jar
-ENV JAVA_OPTS="-javaagent:/opentelemetry-javaagent-all.jar -Dlogging.level.org.springframework.web.filter.CommonsRequestLoggingFilter=DEBUG '-Dlogging.pattern.console=%d{yyyy-MM-dd HH:mm:ss} - %logger{36} - %msg traceID=%X{traceId} %n'"
+RUN curl -L -o /usr/local/tomcat/opentelemetry-javaagent-all.jar https://github.com/open-telemetry/opentelemetry-java-instrumentation/releases/download/v0.15.1/opentelemetry-javaagent-all.jar
+COPY --from=build /usr/src/app/target/News.war /usr/local/tomcat/webapps/News.war
+ENV JAVA_OPTS="-javaagent:/usr/local/tomcat/opentelemetry-javaagent-all.jar -Dlogging.level.org.springframework.web.filter.CommonsRequestLoggingFilter=DEBUG '-Dlogging.pattern.console=%d{yyyy-MM-dd HH:mm:ss} - %logger{36} - %msg traceID=%X{traceId} %n'"
