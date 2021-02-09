@@ -1,4 +1,9 @@
-version: "2"
+x-logging: &default-logging
+  driver: loki
+  options:
+    loki-url: 'http://localhost:3100/api/prom/push'
+
+version: '3.3'
 services:
 
   db:
@@ -12,6 +17,7 @@ services:
       JAEGER_TAGS: cluster=tns,namespace=tns
       JAEGER_SAMPLER_TYPE: const
       JAEGER_SAMPLER_PARAM: 1
+    logging: *default-logging
 
   app:
     image: grafana/tns-app:9c1ab38
@@ -27,6 +33,7 @@ services:
       JAEGER_TAGS: cluster=tns,namespace=tns
       JAEGER_SAMPLER_TYPE: const
       JAEGER_SAMPLER_PARAM: 1
+    logging: *default-logging
 
   loadgen:
     image: grafana/tns-loadgen:9c1ab38
@@ -42,6 +49,7 @@ services:
       JAEGER_TAGS: cluster=tns,namespace=tns
       JAEGER_SAMPLER_TYPE: const
       JAEGER_SAMPLER_PARAM: 1
+    logging: *default-logging
 
   grafana:
     image: grafana/grafana:7.4.x-exemplars
@@ -53,6 +61,7 @@ services:
      - GF_AUTH_DISABLE_LOGIN_FORM=true
     ports:
      - "3000:3000"
+    logging: *default-logging
 
   prometheus:
     image: tomwilkie/prometheus:b165c3b91
@@ -65,16 +74,26 @@ services:
       - loadgen
     ports:
       - 0.0.0.0:8003:9090
+    logging: *default-logging
+
+  loki:
+    image: grafana/loki:2.1.0
+    command: -config.file=/etc/loki/local-config.yaml
+    ports:
+        - "3100:3100"
+    logging: *default-logging
 
   tempo:
     image: grafana/tempo:0.5.0
     command: ["--target=all", "--storage.trace.backend=local", "--storage.trace.local.path=/var/tempo", "--auth.enabled=false"]
     ports:
-      - "8004:80"  # tempo
+      - "8004:80"
+    logging: *default-logging
 
   tempo-query:
     image: grafana/tempo-query:0.5.0
     environment:
       - BACKEND=tempo
     ports:
-      - "8006:16686"  # jaeger-ui
+      - "8006:16686"
+    logging: *default-logging
