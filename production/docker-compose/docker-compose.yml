@@ -64,9 +64,13 @@ services:
     logging: *default-logging
 
   prometheus:
-    image: tomwilkie/prometheus:8f3349c95
+    image: tomwilkie/prometheus:0ea72b6a6
     user: root
-    command: ["--config.file=/etc/prometheus/prometheus.yml", "--storage.tsdb.path=/prometheus", "--enable-feature=exemplar-storage"]
+    command:
+      - "--config.file=/etc/prometheus/prometheus.yml"
+      - "--storage.tsdb.path=/prometheus"
+      - "--enable-feature=exemplar-storage"
+      - "--log.level=debug"
     volumes:
       - ./prometheus.yaml:/etc/prometheus/prometheus.yml
     links:
