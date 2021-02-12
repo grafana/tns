@@ -21,7 +21,7 @@ services:
       - 0.0.0.0:8000:80
     environment:
       JAEGER_ENDPOINT: 'http://tempo:14268/api/traces'
-      JAEGER_TAGS: cluster=tns,namespace=tns
+      JAEGER_TAGS: job=db
       JAEGER_SAMPLER_TYPE: const
       JAEGER_SAMPLER_PARAM: 1
     logging: *default-logging
@@ -37,7 +37,7 @@ services:
       - 0.0.0.0:8001:80
     environment:
       JAEGER_ENDPOINT: 'http://tempo:14268/api/traces'
-      JAEGER_TAGS: cluster=tns,namespace=tns
+      JAEGER_TAGS: job=app
       JAEGER_SAMPLER_TYPE: const
       JAEGER_SAMPLER_PARAM: 1
     logging: *default-logging
@@ -53,7 +53,7 @@ services:
       - 0.0.0.0:8002:80
     environment:
       JAEGER_ENDPOINT: 'http://tempo:14268/api/traces'
-      JAEGER_TAGS: cluster=tns,namespace=tns
+      JAEGER_TAGS: job=loadgen
       JAEGER_SAMPLER_TYPE: const
       JAEGER_SAMPLER_PARAM: 1
     logging: *default-logging
@@ -67,7 +67,7 @@ services:
      - GF_AUTH_ANONYMOUS_ORG_ROLE=Admin
      - GF_AUTH_DISABLE_LOGIN_FORM=true
     ports:
-     - "3000:3000"
+     - 0.0.0.0:3000:3000
     logging: *default-logging
 
   prometheus:
@@ -86,8 +86,33 @@ services:
       - db
       - loadgen
     ports:
-      - 0.0.0.0:8003:9090
+      - 0.0.0.0:9090:9090
     logging: *default-logging
+
+  cadvisor:
+    image: gcr.io/cadvisor/cadvisor:v0.38.7
+    container_name: cadvisor
+    ports:
+      - 8080:8080
+    volumes:
+      - /:/rootfs:ro
+      - /var/run:/var/run:rw
+      - /sys:/sys:ro
+      - /var/lib/docker/:/var/lib/docker:ro
+    logging: *default-logging
+
+  node_exporter:
+    image: prom/node-exporter:v1.1.0
+    container_name: node_exporter
+    volumes:
+      - /proc:/host/proc:ro
+      - /sys:/host/sys:ro
+      - /:/rootfs:ro
+    command:
+      - '--path.procfs=/host/proc'
+      - '--path.rootfs=/rootfs'
+      - '--path.sysfs=/host/sys'
+      - '--collector.filesystem.ignored-mount-points=^/(sys|proc|dev|host|etc)($$|/)'
 
   loki:
     image: grafana/loki:2.1.0
