@@ -5,3 +5,4 @@ vendor
 */.uptodate
 /tanka
 .volume
+production/tns-mixin/jsonnetfile.lock.json

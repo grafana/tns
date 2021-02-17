@@ -20,18 +20,33 @@ rule_files:
 # Here it's Prometheus itself.
 scrape_configs:
   # The job name is added as a label `job=<job_name>` to any timeseries scraped from this config.
-  - job_name: 'prometheus'
+  - job_name: 'monitoring/grafana'
+    static_configs:
+    - targets: ['grafana:3000']
+  - job_name: 'monitoring/prometheus'
     static_configs:
     - targets: ['localhost:9090']
-  - job_name: 'app'
+  - job_name: 'monitoring/loki'
+    static_configs:
+    - targets: ['loki:3100']
+  - job_name: 'monitoring/tempo'
+    static_configs:
+    - targets: ['tempo:80']
+  - job_name: 'tns/app'
     static_configs:
     - targets: ['app:80']
-  - job_name: 'db'
+  - job_name: 'tns/db'
     static_configs:
     - targets: ['db:80']
-  - job_name: 'loadgen'
+  - job_name: 'tns/loadgen'
     static_configs:
     - targets: ['loadgen:80']
-  - job_name: 'tempo'
+  - job_name: 'monitoring/docker'
     static_configs:
-    - targets: ['tempo:14268']
+    - targets: ['docker.for.mac.host.internal:9323']
+  - job_name: 'monitoring/node_exporter'
+    static_configs:
+    - targets: ['node_exporter:9100']
+  - job_name: 'monitoring/cadvisor'
+    static_configs:
+    - targets: ['cadvisor:8080']

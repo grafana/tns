@@ -2,6 +2,15 @@ x-logging: &default-logging
   driver: loki
   options:
     loki-url: 'http://localhost:3100/api/prom/push'
+    labels: namespace
+    loki-relabel-config: |
+      - action: replace
+        source_labels: ["namespace","compose_service"]
+        separator: "/"
+        target_label: job
+      - action: replace
+        source_labels: ["container_name"]
+        target_label: instance
 
 version: '3.3'
 services:
@@ -14,9 +23,11 @@ services:
       - 0.0.0.0:8000:80
     environment:
       JAEGER_ENDPOINT: 'http://tempo:14268/api/traces'
-      JAEGER_TAGS: cluster=tns,namespace=tns
+      JAEGER_TAGS: job=tns/db
       JAEGER_SAMPLER_TYPE: const
       JAEGER_SAMPLER_PARAM: 1
+    labels:
+      namespace: tns
     logging: *default-logging
 
   app:
@@ -30,9 +41,11 @@ services:
       - 0.0.0.0:8001:80
     environment:
       JAEGER_ENDPOINT: 'http://tempo:14268/api/traces'
-      JAEGER_TAGS: cluster=tns,namespace=tns
+      JAEGER_TAGS: job=tns/app
       JAEGER_SAMPLER_TYPE: const
       JAEGER_SAMPLER_PARAM: 1
+    labels:
+      namespace: tns
     logging: *default-logging
 
   loadgen:
@@ -46,31 +59,39 @@ services:
       - 0.0.0.0:8002:80
     environment:
       JAEGER_ENDPOINT: 'http://tempo:14268/api/traces'
-      JAEGER_TAGS: cluster=tns,namespace=tns
+      JAEGER_TAGS: job=tns/loadgen
       JAEGER_SAMPLER_TYPE: const
       JAEGER_SAMPLER_PARAM: 1
+    labels:
+      namespace: tns
     logging: *default-logging
 
   grafana:
     image: grafana/grafana:7.4.x-exemplars
     volumes:
       - ./datasources.yaml:/etc/grafana/provisioning/datasources/datasources.yaml
+      - ./dashboards.yaml:/etc/grafana/provisioning/dashboards/dashboards.yaml
+      - ./dashboards:/etc/grafana/dashboards
     environment:
      - GF_AUTH_ANONYMOUS_ENABLED=true
      - GF_AUTH_ANONYMOUS_ORG_ROLE=Admin
      - GF_AUTH_DISABLE_LOGIN_FORM=true
     ports:
-     - "3000:3000"
+     - 0.0.0.0:3000:3000
+    labels:
+      namespace: monitoring
     logging: *default-logging
 
   prometheus:
     image: tomwilkie/prometheus:0ea72b6a6
     user: root
     command:
-      - "--config.file=/etc/prometheus/prometheus.yml"
-      - "--storage.tsdb.path=/prometheus"
-      - "--enable-feature=exemplar-storage"
-      - "--log.level=debug"
+      - --config.file=/etc/prometheus/prometheus.yml
+      - --storage.tsdb.path=/prometheus
+      - --storage.tsdb.retention.time=1d
+      - --enable-feature=exemplar-storage
+      - --log.level=debug
+      - --web.enable-admin-api
     volumes:
       - ./prometheus.yaml:/etc/prometheus/prometheus.yml
     links:
@@ -78,21 +99,65 @@ services:
       - db
       - loadgen
     ports:
-      - 0.0.0.0:8003:9090
+      - 0.0.0.0:9090:9090
+    labels:
+      namespace: monitoring
+    logging: *default-logging
+
+  cadvisor:
+    image: gcr.io/cadvisor/cadvisor:v0.38.7
+    container_name: cadvisor
+    ports:
+      - 8080:8080
+    volumes:
+      - /:/rootfs:ro
+      - /var/run:/var/run:rw
+      - /sys:/sys:ro
+      - /var/lib/docker/:/var/lib/docker:ro
+    labels:
+      namespace: monitoring
+    logging: *default-logging
+
+  node_exporter:
+    image: prom/node-exporter:v1.1.0
+    container_name: node_exporter
+    volumes:
+      - /proc:/host/proc:ro
+      - /sys:/host/sys:ro
+      - /:/rootfs:ro
+    command:
+      - '--path.procfs=/host/proc'
+      - '--path.rootfs=/rootfs'
+      - '--path.sysfs=/host/sys'
+      - '--collector.filesystem.ignored-mount-points=^/(sys|proc|dev|host|etc)($$|/)'
+    labels:
+      namespace: monitoring
     logging: *default-logging
 
   loki:
     image: grafana/loki:2.1.0
-    command: -config.file=/etc/loki/local-config.yaml
+    command:
+      - -config.file=/etc/loki/local-config.yaml
+      - -table-manager.retention-period=1d
+      - -table-manager.retention-deletes-enabled=true
     ports:
-        - "3100:3100"
+      - "3100:3100"
+    labels:
+      namespace: monitoring
     logging: *default-logging
 
   tempo:
     image: grafana/tempo:0.5.0
-    command: ["--target=all", "--storage.trace.backend=local", "--storage.trace.local.path=/var/tempo", "--auth.enabled=false"]
+    command:
+      - --target=all
+      - --storage.trace.backend=local
+      - --storage.trace.local.path=/var/tempo
+      - --auth.enabled=false
+      - --compactor.compaction.block-retention=24h
     ports:
       - "8004:80"
+    labels:
+      namespace: monitoring
     logging: *default-logging
 
   tempo-query:
@@ -101,4 +166,6 @@ services:
       - BACKEND=tempo
     ports:
       - "8006:16686"
+    labels:
+      namespace: monitoring
     logging: *default-logging
