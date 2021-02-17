@@ -4,7 +4,8 @@ x-logging: &default-logging
     loki-url: 'http://localhost:3100/api/prom/push'
     loki-relabel-config: |
       - action: replace
-        source_labels: ["compose_service"]
+        source_labels: ["namespace","compose_service"]
+        separator: "/"
         target_label: job
       - action: replace
         source_labels: ["container_name"]
@@ -24,6 +25,8 @@ services:
       JAEGER_TAGS: job=db
       JAEGER_SAMPLER_TYPE: const
       JAEGER_SAMPLER_PARAM: 1
+    labels:
+      namespace: tns
     logging: *default-logging
 
   app:
@@ -40,6 +43,8 @@ services:
       JAEGER_TAGS: job=app
       JAEGER_SAMPLER_TYPE: const
       JAEGER_SAMPLER_PARAM: 1
+    labels:
+      namespace: tns
     logging: *default-logging
 
   loadgen:
@@ -56,18 +61,24 @@ services:
       JAEGER_TAGS: job=loadgen
       JAEGER_SAMPLER_TYPE: const
       JAEGER_SAMPLER_PARAM: 1
+    labels:
+      namespace: tns
     logging: *default-logging
 
   grafana:
     image: grafana/grafana:7.4.x-exemplars
     volumes:
       - ./datasources.yaml:/etc/grafana/provisioning/datasources/datasources.yaml
+      - ./dashboards.yaml:/etc/grafana/provisioning/dashboards/dashboards.yaml
+      - ./dashboards:/etc/grafana/dashboards
     environment:
      - GF_AUTH_ANONYMOUS_ENABLED=true
      - GF_AUTH_ANONYMOUS_ORG_ROLE=Admin
      - GF_AUTH_DISABLE_LOGIN_FORM=true
     ports:
      - 0.0.0.0:3000:3000
+    labels:
+      namespace: monitoring
     logging: *default-logging
 
   prometheus:
@@ -79,6 +90,7 @@ services:
       - --storage.tsdb.retention.time=1d
       - --enable-feature=exemplar-storage
       - --log.level=debug
+      - --web.enable-admin-api
     volumes:
       - ./prometheus.yaml:/etc/prometheus/prometheus.yml
     links:
@@ -87,6 +99,8 @@ services:
       - loadgen
     ports:
       - 0.0.0.0:9090:9090
+    labels:
+      namespace: monitoring
     logging: *default-logging
 
   cadvisor:
@@ -99,6 +113,8 @@ services:
       - /var/run:/var/run:rw
       - /sys:/sys:ro
       - /var/lib/docker/:/var/lib/docker:ro
+    labels:
+      namespace: monitoring
     logging: *default-logging
 
   node_exporter:
@@ -113,6 +129,9 @@ services:
       - '--path.rootfs=/rootfs'
       - '--path.sysfs=/host/sys'
       - '--collector.filesystem.ignored-mount-points=^/(sys|proc|dev|host|etc)($$|/)'
+    labels:
+      namespace: monitoring
+    logging: *default-logging
 
   loki:
     image: grafana/loki:2.1.0
@@ -122,6 +141,8 @@ services:
       - -table-manager.retention-deletes-enabled=true
     ports:
       - "3100:3100"
+    labels:
+      namespace: monitoring
     logging: *default-logging
 
   tempo:
@@ -134,6 +155,8 @@ services:
       - --compactor.compaction.block-retention=24h
     ports:
       - "8004:80"
+    labels:
+      namespace: monitoring
     logging: *default-logging
 
   tempo-query:
@@ -142,4 +165,6 @@ services:
       - BACKEND=tempo
     ports:
       - "8006:16686"
+    labels:
+      namespace: monitoring
     logging: *default-logging

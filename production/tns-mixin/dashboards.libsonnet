@@ -27,33 +27,33 @@ local g = (import 'grafana-builder/grafana.libsonnet') + {
         g.row('Load balancer')
         .addPanel(
           g.panel('QPS') +
-          g.qpsSimplePanel('tns_request_duration_seconds_count{job="$namespace/loadgen"}')
+          g.qpsSimplePanel('tns_request_duration_seconds_count{job=~"$namespace/loadgen"}')
         )
         .addPanel(
           g.panel('Latency') +
-          g.latencyPanel('tns_request_duration_seconds', '{job="$namespace/loadgen"}')
+          g.latencyPanel('tns_request_duration_seconds', '{job=~"$namespace/loadgen"}')
         )
       )
       .addRow(
         g.row('App')
         .addPanel(
           g.panel('QPS') +
-          g.qpsSimplePanel('tns_request_duration_seconds_count{job="$namespace/app"}')
+          g.qpsSimplePanel('tns_request_duration_seconds_count{job=~"$namespace/app"}')
         )
         .addPanel(
           g.panel('Latency') +
-          g.latencyPanel('tns_request_duration_seconds', '{job="$namespace/app"}')
+          g.latencyPanel('tns_request_duration_seconds', '{job=~"$namespace/app"}')
         )
       )
       .addRow(
         g.row('DB')
         .addPanel(
           g.panel('QPS') +
-          g.qpsSimplePanel('tns_request_duration_seconds_count{job="$namespace/db"}')
+          g.qpsSimplePanel('tns_request_duration_seconds_count{job=~"$namespace/db"}')
         )
         .addPanel(
           g.panel('Latency') +
-          g.latencyPanel('tns_request_duration_seconds', '{job="$namespace/db"}')
+          g.latencyPanel('tns_request_duration_seconds', '{job=~"$namespace/db"}')
         )
       ),
   },
