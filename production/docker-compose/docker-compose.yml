@@ -2,6 +2,7 @@ x-logging: &default-logging
   driver: loki
   options:
     loki-url: 'http://localhost:3100/api/prom/push'
+    labels: namespace
     loki-relabel-config: |
       - action: replace
         source_labels: ["namespace","compose_service"]
@@ -22,7 +23,7 @@ services:
       - 0.0.0.0:8000:80
     environment:
       JAEGER_ENDPOINT: 'http://tempo:14268/api/traces'
-      JAEGER_TAGS: job=db
+      JAEGER_TAGS: job=tns/db
       JAEGER_SAMPLER_TYPE: const
       JAEGER_SAMPLER_PARAM: 1
     labels:
@@ -40,7 +41,7 @@ services:
       - 0.0.0.0:8001:80
     environment:
       JAEGER_ENDPOINT: 'http://tempo:14268/api/traces'
-      JAEGER_TAGS: job=app
+      JAEGER_TAGS: job=tns/app
       JAEGER_SAMPLER_TYPE: const
       JAEGER_SAMPLER_PARAM: 1
     labels:
@@ -58,7 +59,7 @@ services:
       - 0.0.0.0:8002:80
     environment:
       JAEGER_ENDPOINT: 'http://tempo:14268/api/traces'
-      JAEGER_TAGS: job=loadgen
+      JAEGER_TAGS: job=tns/loadgen
       JAEGER_SAMPLER_TYPE: const
       JAEGER_SAMPLER_PARAM: 1
     labels:
