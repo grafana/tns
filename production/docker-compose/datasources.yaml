@@ -15,6 +15,7 @@ datasources:
         datasourceUid: tempo
   - name: Loki
     type: loki
+    uid: loki
     access: proxy
     orgId: 1
     url: http://loki:3100
@@ -37,5 +38,8 @@ datasources:
     editable: false
     isDefault: false
     jsonData:
-        httpMethod: GET
+      httpMethod: GET
+      tracesToLogs:
+        datasourceUid: 'loki'
+        tags: ['job', 'instance']
     version: 1
