@@ -19,25 +19,26 @@ local g = (import 'grafana-builder/grafana.libsonnet') + {
   latencyPanelWithExemplars(metricName, selector)::
     // There is a display issue with any multiplier != 1 so enforce it
     g.latencyPanel(metricName, selector, '1') + {
-    
-    // Requires new timeseries panel
-    type: 'timeseries',
 
-    // Enable exemplars on all queries
-    targets: [
-      t + {
-        exemplar: true,
-      } for t in super.targets
-    ],
-    
-    // Seconds to match multiplier 1
-    yaxes: $.yaxes('s'),
-    fieldConfig+: {
-      defaults+: {
-        unit: 's',
+      // Requires new timeseries panel
+      type: 'timeseries',
+
+      // Enable exemplars on all queries
+      targets: [
+        t {
+          exemplar: true,
+        }
+        for t in super.targets
+      ],
+
+      // Seconds to match multiplier 1
+      yaxes: $.yaxes('s'),
+      fieldConfig+: {
+        defaults+: {
+          unit: 's',
+        },
       },
     },
-  },
 };
 
 {
