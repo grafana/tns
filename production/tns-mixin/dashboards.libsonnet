@@ -15,6 +15,29 @@ local g = (import 'grafana-builder/grafana.libsonnet') + {
       },
     ],
   } + $.stack,
+
+  latencyPanelWithExemplars(metricName, selector)::
+    // There is a display issue with any multiplier != 1 so enforce it
+    g.latencyPanel(metricName, selector, '1') + {
+    
+    // Requires new timeseries panel
+    type: 'timeseries',
+
+    // Enable exemplars on all queries
+    targets: [
+      t + {
+        exemplar: true,
+      } for t in super.targets
+    ],
+    
+    // Seconds to match multiplier 1
+    yaxes: $.yaxes('s'),
+    fieldConfig+: {
+      defaults+: {
+        unit: 's',
+      },
+    },
+  },
 };
 
 {
@@ -31,7 +54,7 @@ local g = (import 'grafana-builder/grafana.libsonnet') + {
         )
         .addPanel(
           g.panel('Latency') +
-          g.latencyPanel('tns_request_duration_seconds', '{job=~"$namespace/loadgen"}')
+          g.latencyPanelWithExemplars('tns_request_duration_seconds', '{job=~"$namespace/loadgen"}')
         )
       )
       .addRow(
@@ -42,7 +65,7 @@ local g = (import 'grafana-builder/grafana.libsonnet') + {
         )
         .addPanel(
           g.panel('Latency') +
-          g.latencyPanel('tns_request_duration_seconds', '{job=~"$namespace/app"}')
+          g.latencyPanelWithExemplars('tns_request_duration_seconds', '{job=~"$namespace/app"}')
         )
       )
       .addRow(
@@ -53,7 +76,7 @@ local g = (import 'grafana-builder/grafana.libsonnet') + {
         )
         .addPanel(
           g.panel('Latency') +
-          g.latencyPanel('tns_request_duration_seconds', '{job=~"$namespace/db"}')
+          g.latencyPanelWithExemplars('tns_request_duration_seconds', '{job=~"$namespace/db"}')
         )
       ),
   },
