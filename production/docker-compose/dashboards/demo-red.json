@@ -98,6 +98,11 @@
                   "dashLength": 10,
                   "dashes": false,
                   "datasource": "$datasource",
+                  "fieldConfig": {
+                     "defaults": {
+                        "unit": "s"
+                     }
+                  },
                   "fill": 1,
                   "id": 2,
                   "legend": {
@@ -124,7 +129,8 @@
                   "steppedLine": false,
                   "targets": [
                      {
-                        "expr": "histogram_quantile(0.99, sum(rate(tns_request_duration_seconds_bucket{job=~\"$namespace/loadgen\"}[$__rate_interval])) by (le)) * 1e3",
+                        "exemplar": true,
+                        "expr": "histogram_quantile(0.99, sum(rate(tns_request_duration_seconds_bucket{job=~\"$namespace/loadgen\"}[$__rate_interval])) by (le)) * 1",
                         "format": "time_series",
                         "intervalFactor": 2,
                         "legendFormat": "99th Percentile",
@@ -132,7 +138,8 @@
                         "step": 10
                      },
                      {
-                        "expr": "histogram_quantile(0.50, sum(rate(tns_request_duration_seconds_bucket{job=~\"$namespace/loadgen\"}[$__rate_interval])) by (le)) * 1e3",
+                        "exemplar": true,
+                        "expr": "histogram_quantile(0.50, sum(rate(tns_request_duration_seconds_bucket{job=~\"$namespace/loadgen\"}[$__rate_interval])) by (le)) * 1",
                         "format": "time_series",
                         "intervalFactor": 2,
                         "legendFormat": "50th Percentile",
@@ -140,7 +147,8 @@
                         "step": 10
                      },
                      {
-                        "expr": "sum(rate(tns_request_duration_seconds_sum{job=~\"$namespace/loadgen\"}[$__rate_interval])) * 1e3 / sum(rate(tns_request_duration_seconds_count{job=~\"$namespace/loadgen\"}[$__rate_interval]))",
+                        "exemplar": true,
+                        "expr": "sum(rate(tns_request_duration_seconds_sum{job=~\"$namespace/loadgen\"}[$__rate_interval])) * 1 / sum(rate(tns_request_duration_seconds_count{job=~\"$namespace/loadgen\"}[$__rate_interval]))",
                         "format": "time_series",
                         "intervalFactor": 2,
                         "legendFormat": "Average",
@@ -157,7 +165,7 @@
                      "sort": 0,
                      "value_type": "individual"
                   },
-                  "type": "graph",
+                  "type": "timeseries",
                   "xaxis": {
                      "buckets": null,
                      "mode": "time",
@@ -167,7 +175,7 @@
                   },
                   "yaxes": [
                      {
-                        "format": "ms",
+                        "format": "s",
                         "label": null,
                         "logBase": 1,
                         "max": null,
@@ -281,6 +289,11 @@
                   "dashLength": 10,
                   "dashes": false,
                   "datasource": "$datasource",
+                  "fieldConfig": {
+                     "defaults": {
+                        "unit": "s"
+                     }
+                  },
                   "fill": 1,
                   "id": 4,
                   "legend": {
@@ -307,7 +320,8 @@
                   "steppedLine": false,
                   "targets": [
                      {
-                        "expr": "histogram_quantile(0.99, sum(rate(tns_request_duration_seconds_bucket{job=~\"$namespace/app\"}[$__rate_interval])) by (le)) * 1e3",
+                        "exemplar": true,
+                        "expr": "histogram_quantile(0.99, sum(rate(tns_request_duration_seconds_bucket{job=~\"$namespace/app\"}[$__rate_interval])) by (le)) * 1",
                         "format": "time_series",
                         "intervalFactor": 2,
                         "legendFormat": "99th Percentile",
@@ -315,7 +329,8 @@
                         "step": 10
                      },
                      {
-                        "expr": "histogram_quantile(0.50, sum(rate(tns_request_duration_seconds_bucket{job=~\"$namespace/app\"}[$__rate_interval])) by (le)) * 1e3",
+                        "exemplar": true,
+                        "expr": "histogram_quantile(0.50, sum(rate(tns_request_duration_seconds_bucket{job=~\"$namespace/app\"}[$__rate_interval])) by (le)) * 1",
                         "format": "time_series",
                         "intervalFactor": 2,
                         "legendFormat": "50th Percentile",
@@ -323,7 +338,8 @@
                         "step": 10
                      },
                      {
-                        "expr": "sum(rate(tns_request_duration_seconds_sum{job=~\"$namespace/app\"}[$__rate_interval])) * 1e3 / sum(rate(tns_request_duration_seconds_count{job=~\"$namespace/app\"}[$__rate_interval]))",
+                        "exemplar": true,
+                        "expr": "sum(rate(tns_request_duration_seconds_sum{job=~\"$namespace/app\"}[$__rate_interval])) * 1 / sum(rate(tns_request_duration_seconds_count{job=~\"$namespace/app\"}[$__rate_interval]))",
                         "format": "time_series",
                         "intervalFactor": 2,
                         "legendFormat": "Average",
@@ -340,7 +356,7 @@
                      "sort": 0,
                      "value_type": "individual"
                   },
-                  "type": "graph",
+                  "type": "timeseries",
                   "xaxis": {
                      "buckets": null,
                      "mode": "time",
@@ -350,7 +366,7 @@
                   },
                   "yaxes": [
                      {
-                        "format": "ms",
+                        "format": "s",
                         "label": null,
                         "logBase": 1,
                         "max": null,
@@ -464,6 +480,11 @@
                   "dashLength": 10,
                   "dashes": false,
                   "datasource": "$datasource",
+                  "fieldConfig": {
+                     "defaults": {
+                        "unit": "s"
+                     }
+                  },
                   "fill": 1,
                   "id": 6,
                   "legend": {
@@ -490,7 +511,8 @@
                   "steppedLine": false,
                   "targets": [
                      {
-                        "expr": "histogram_quantile(0.99, sum(rate(tns_request_duration_seconds_bucket{job=~\"$namespace/db\"}[$__rate_interval])) by (le)) * 1e3",
+                        "exemplar": true,
+                        "expr": "histogram_quantile(0.99, sum(rate(tns_request_duration_seconds_bucket{job=~\"$namespace/db\"}[$__rate_interval])) by (le)) * 1",
                         "format": "time_series",
                         "intervalFactor": 2,
                         "legendFormat": "99th Percentile",
@@ -498,7 +520,8 @@
                         "step": 10
                      },
                      {
-                        "expr": "histogram_quantile(0.50, sum(rate(tns_request_duration_seconds_bucket{job=~\"$namespace/db\"}[$__rate_interval])) by (le)) * 1e3",
+                        "exemplar": true,
+                        "expr": "histogram_quantile(0.50, sum(rate(tns_request_duration_seconds_bucket{job=~\"$namespace/db\"}[$__rate_interval])) by (le)) * 1",
                         "format": "time_series",
                         "intervalFactor": 2,
                         "legendFormat": "50th Percentile",
@@ -506,7 +529,8 @@
                         "step": 10
                      },
                      {
-                        "expr": "sum(rate(tns_request_duration_seconds_sum{job=~\"$namespace/db\"}[$__rate_interval])) * 1e3 / sum(rate(tns_request_duration_seconds_count{job=~\"$namespace/db\"}[$__rate_interval]))",
+                        "exemplar": true,
+                        "expr": "sum(rate(tns_request_duration_seconds_sum{job=~\"$namespace/db\"}[$__rate_interval])) * 1 / sum(rate(tns_request_duration_seconds_count{job=~\"$namespace/db\"}[$__rate_interval]))",
                         "format": "time_series",
                         "intervalFactor": 2,
                         "legendFormat": "Average",
@@ -523,7 +547,7 @@
                      "sort": 0,
                      "value_type": "individual"
                   },
-                  "type": "graph",
+                  "type": "timeseries",
                   "xaxis": {
                      "buckets": null,
                      "mode": "time",
@@ -533,7 +557,7 @@
                   },
                   "yaxes": [
                      {
-                        "format": "ms",
+                        "format": "s",
                         "label": null,
                         "logBase": 1,
                         "max": null,
