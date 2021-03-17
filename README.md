@@ -8,6 +8,7 @@ The "TNS" name comes from "The New Stack", where the original demo code was used
 
 There are a set of tools you will need to download and install.
 
+_Note_: You can run this app without kubernetes. See the instructions [here](https://github.com/grafana/tns/blob/main/production/docker-compose/README.md).
 ### Docker
 This demo assumes you have Docker installed. Follow instructions [here](https://docs.docker.com/install/) for more details.
 
