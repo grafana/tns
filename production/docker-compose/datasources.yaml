@@ -33,7 +33,7 @@ datasources:
   - name: Tempo
     type: tempo
     uid: tempo
-    url: http://tempo-query:16686/
+    url: http://tempo/
     access: proxy
     editable: false
     isDefault: false
