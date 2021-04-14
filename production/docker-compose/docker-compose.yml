@@ -147,7 +147,7 @@ services:
     logging: *default-logging
 
   tempo:
-    image: grafana/tempo:0.5.0
+    image: grafana/tempo:df7225ae
     command:
       - --target=all
       - --storage.trace.backend=local
@@ -156,16 +156,6 @@ services:
       - --compactor.compaction.block-retention=24h
     ports:
       - "8004:80"
-    labels:
-      namespace: monitoring
-    logging: *default-logging
-
-  tempo-query:
-    image: grafana/tempo-query:0.5.0
-    environment:
-      - BACKEND=tempo
-    ports:
-      - "8006:16686"
     labels:
       namespace: monitoring
     logging: *default-logging
