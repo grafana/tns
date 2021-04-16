@@ -12,7 +12,7 @@ x-logging: &default-logging
         source_labels: ["container_name"]
         target_label: instance
 
-version: '3.3'
+version: '3.4'
 services:
 
   db:
