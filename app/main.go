@@ -19,12 +19,16 @@ import (
 	"text/template"
 	"time"
 
+	"github.com/opentracing/opentracing-go"
+	"github.com/opentracing/opentracing-go/ext"
+
 	"github.com/go-kit/kit/log"
 	"github.com/go-kit/kit/log/level"
 	"github.com/grafana/tns/client"
 	"github.com/weaveworks/common/logging"
 	"github.com/weaveworks/common/server"
 	"github.com/weaveworks/common/tracing"
+	"github.com/yurishkuro/opentracing-tutorial/go/lib/tracing"
 )
 
 func main() {
@@ -69,6 +73,7 @@ func main() {
 	s.HTTP.HandleFunc("/", app.Index)
 	s.HTTP.HandleFunc("/post", app.Post)
 	s.HTTP.HandleFunc("/vote", app.Vote)
+	s.HTTP.HandleFunc("/probes", app.Probes)
 
 	s.Run()
 }
@@ -314,5 +319,23 @@ func (a *app) Vote(w http.ResponseWriter, r *http.Request) {
 	// Implement PRG pattern to prevent double-POST.
 	newURL := strings.TrimSuffix(req.RequestURI, "/vote")
 	http.Redirect(w, req, newURL, http.StatusFound)
+	return
+}
+
+// Probes is an endpoint created by the hackathon-xkcd-910 group to forward incoming trace ids by the synthethic
+// monitoring
+func (a *app) Probes(w http.ResponseWriter, r *http.Request) {
+	// Tracing bit
+	tracer := opentracing.GlobalTracer()
+	carrier := opentracing.HTTPHeadersCarrier(r.Header)
+	spanCtx, err := tracer.Extract(opentracing.HTTPHeaders, carrier)
+	span := tracer.StartSpan("probe", ext.RPCServerOption(spanCtx))
+	defer span.Finish()
+
+	// Log Headers
+	level.Debug(a.logger).Log("headers", fmt.Sprintf("%v", r.Header))
+
+	w.WriteHeader(http.StatusOK)
+	fmt.Fprintf(w, "probe OK\n", ninill)
 	return
 }
