@@ -9,6 +9,7 @@ require (
 	github.com/opentracing/opentracing-go v1.1.0
 	github.com/prometheus/client_golang v1.8.0
 	github.com/weaveworks/common v0.0.0-20210112142934-23c8d7fa6120
+	github.com/yurishkuro/opentracing-tutorial v0.0.0-20210511203829-d23f141c526b // indirect
 	google.golang.org/genproto v0.0.0-20200122232147-0452cf42e150 // indirect
 )
 

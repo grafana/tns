@@ -1,8 +1,20 @@
-db/db
-app/app
-loadgen/loadgen
-vendor
-*/.uptodate
-/tanka
-.volume
-production/tns-mixin/jsonnetfile.lock.json
+# Default ignore
+.vscode/*
+.uptodate
+.published
+.pkg
+.idea
+.cache
+*.output
+.drone/secrets.yml
+
+# Project specific secrets
+**/license.jwt
+app
+
+# Remove built binaries
+dist
+
+# Tag file used in drone and local env
+.tag
+.tags

@@ -28,7 +28,6 @@ import (
 	"github.com/weaveworks/common/logging"
 	"github.com/weaveworks/common/server"
 	"github.com/weaveworks/common/tracing"
-	"github.com/yurishkuro/opentracing-tutorial/go/lib/tracing"
 )
 
 func main() {
@@ -328,7 +327,7 @@ func (a *app) Probes(w http.ResponseWriter, r *http.Request) {
 	// Tracing bit
 	tracer := opentracing.GlobalTracer()
 	carrier := opentracing.HTTPHeadersCarrier(r.Header)
-	spanCtx, err := tracer.Extract(opentracing.HTTPHeaders, carrier)
+	spanCtx, _ := tracer.Extract(opentracing.HTTPHeaders, carrier)
 	span := tracer.StartSpan("probe", ext.RPCServerOption(spanCtx))
 	defer span.Finish()
 
@@ -336,6 +335,6 @@ func (a *app) Probes(w http.ResponseWriter, r *http.Request) {
 	level.Debug(a.logger).Log("headers", fmt.Sprintf("%v", r.Header))
 
 	w.WriteHeader(http.StatusOK)
-	fmt.Fprintf(w, "probe OK\n", ninill)
+	fmt.Fprintf(w, "probe OK\n")
 	return
 }
