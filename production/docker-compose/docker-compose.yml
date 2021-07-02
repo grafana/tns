@@ -67,7 +67,7 @@ services:
     logging: *default-logging
 
   grafana:
-    image: grafana/grafana:7.5.3
+    image: grafana/grafana:8.0.4
     volumes:
       - ./datasources.yaml:/etc/grafana/provisioning/datasources/datasources.yaml
       - ./dashboards.yaml:/etc/grafana/provisioning/dashboards/dashboards.yaml
@@ -83,7 +83,7 @@ services:
     logging: *default-logging
 
   prometheus:
-    image: prom/prometheus:v2.26.0
+    image: prom/prometheus:v2.28.1
     user: root
     command:
       - --config.file=/etc/prometheus/prometheus.yml
