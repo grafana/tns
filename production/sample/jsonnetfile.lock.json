@@ -8,8 +8,8 @@
           "subdir": "grafonnet"
         }
       },
-      "version": "c459106d2d2b583dd3a83f6c75eb52abee3af764",
-      "sum": "CeM3LRgUCUJTolTdMnerfMPGYmhClx7gX5ajrQVEY2Y="
+      "version": "3082bfca110166cd69533fa3c0875fdb1b68c329",
+      "sum": "4/sUV0Kk+o8I+wlYxL9R6EPhL/NiLfYHk+NXlU64RUk="
     },
     {
       "source": {
@@ -28,8 +28,8 @@
           "subdir": "ksonnet-util"
         }
       },
-      "version": "7ac7da1a0fe165b68cdb718b2521b560d51bd1f4",
-      "sum": "LKsTTBcH8TXX5ANgRUu5I7Y1tf5le4nANFV3/W53I+c="
+      "version": "d8d3c4b74089f6f6a83b6c99d7425e2d646a1b30",
+      "sum": "OxgtIWL4hjvG0xkMwUzZ7Yjs52zUhLhaVQpwHCbqf8A="
     },
     {
       "source": {
@@ -65,12 +65,12 @@
     {
       "source": {
         "git": {
-          "remote": "https://github.com/kausalco/public.git",
-          "subdir": "grafana-builder"
+          "remote": "https://github.com/jsonnet-libs/k8s-libsonnet.git",
+          "subdir": "1.20"
         }
       },
-      "version": "7ac7da1a0fe165b68cdb718b2521b560d51bd1f4",
-      "sum": "slxrtftVDiTlQK22ertdfrg4Epnq97gdrLI63ftUfaE="
+      "version": "b2a8dba95bc5a328c01881e52857c87fb5ec12f0",
+      "sum": "z5Pu+Nq2lZ2fgHOIdlQKqaZ30DMNx1u5VJ9be0o1FEI="
     },
     {
       "source": {
@@ -89,8 +89,8 @@
           "subdir": ""
         }
       },
-      "version": "0ee0da08a9691201a118d30f6b396381c2c8d017",
-      "sum": "r+ibLhIoXzEWGXUCntSd44IRxeopnZkFfZ0OGZR2s1U="
+      "version": "dbfcd76158c3458855d2c3fead974b19c6c5faf4",
+      "sum": "tpUEjqi3L/lD70uoxAbVmnKNFhLvUNPlSgXjn6/CPVo="
     },
     {
       "source": {
@@ -99,8 +99,8 @@
           "subdir": "lib/promgrafonnet"
         }
       },
-      "version": "92309e9c7a7637c38a12c0964e62a7aeccaf49ae",
-      "sum": "VhgBM39yv0f4bKv8VfGg4FXkg573evGDRalip9ypKbc="
+      "version": "dbfcd76158c3458855d2c3fead974b19c6c5faf4",
+      "sum": "zv7hXGui6BfHzE9wPatHI/AGZa4A2WKo6pq7ZdqBsps="
     },
     {
       "source": {
@@ -144,6 +144,14 @@
       "source": {
         "local": {
           "directory": "../production/loki"
+        }
+      },
+      "version": ""
+    },
+    {
+      "source": {
+        "local": {
+          "directory": "../production/tempo"
         }
       },
       "version": ""

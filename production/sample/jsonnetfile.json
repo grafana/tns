@@ -39,6 +39,15 @@
     },
     {
       "source": {
+        "git": {
+          "remote": "https://github.com/jsonnet-libs/k8s-libsonnet.git",
+          "subdir": "1.20"
+        }
+      },
+      "version": "main"
+    },
+    {
+      "source": {
         "local": {
           "directory": "../production/jaeger"
         }
