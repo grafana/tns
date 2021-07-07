@@ -27,7 +27,7 @@ fi
 
 # Initialise Tanka
 mkdir "$BASEDIR/tanka" && cd "$BASEDIR/tanka"
-tk init                  # Initialises Tanka, and downloads the Kubernetes libaries Tanka needs
+tk init --k8s=1.21                 # Initialises Tanka, and downloads the Kubernetes libaries Tanka needs
 cp "$PROD"/jsonnetfile.* . # copies dependency list into current directory
 jb install               # Installs dependencies
 
