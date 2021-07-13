@@ -23,6 +23,7 @@ import (
 	"github.com/go-kit/kit/log/level"
 	"github.com/grafana/tns/client"
 	"github.com/weaveworks/common/logging"
+	"github.com/weaveworks/common/middleware"
 	"github.com/weaveworks/common/server"
 	"github.com/weaveworks/common/tracing"
 )
@@ -35,7 +36,7 @@ func main() {
 	flag.Parse()
 
 	// Use a gokit logger, and tell the server to use it.
-	logger := level.NewFilter(log.NewLogfmtLogger(log.NewSyncWriter(os.Stdout)), serverConfig.LogLevel.Gokit)
+	logger := level.NewFilter(log.NewJSONLogger(log.NewSyncWriter(os.Stdout)), serverConfig.LogLevel.Gokit)
 	serverConfig.Log = logging.GoKit(logger)
 
 	// Setting the environment variable JAEGER_AGENT_HOST enables tracing
@@ -176,7 +177,9 @@ func (a *app) Index(w http.ResponseWriter, r *http.Request) {
 		ID:    a.id,
 		Links: response.Links,
 	}); err != nil {
-		level.Error(a.logger).Log("msg", "failed to execute template", "err", err)
+		id, _ := middleware.ExtractTraceID(r.Context())
+
+		level.Error(a.logger).Log("msg", "failed to execute template", "err", err, "traceID", id)
 	}
 }
 

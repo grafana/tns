@@ -69,6 +69,8 @@ func (c *Client) Do(req *http.Request) (*http.Response, error) {
 	} else {
 		level.Info(c.logger).Log("msg", "HTTP client success", "status", resp.StatusCode, "url", req.URL, "duration", duration, "traceID", id)
 		requestDuration.WithLabelValues(req.Method, strconv.Itoa(resp.StatusCode)).Observe(duration.Seconds())
+
+		// {"log":"level=info msg=\"HTTP client success\" status=200 url=http://tns-db:8010 duration=2.127699ms traceID=17c087a68ad41c06\n","stream":"stdout","time":"2021-07-13T07:14:50.869854415Z"}
 	}
 
 	return resp, err
