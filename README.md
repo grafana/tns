@@ -92,12 +92,12 @@ You should now be able to access the demo via [http://localhost:8080/](http://lo
 - Go to the TNS dashboard
 - Zoom in on a section with failed requests if you are so inclined
 - Panel Drop Down -> Explore
-- Datasource Drop Down -> Loki
+- Choose Datasource Loki
 - Choose a log line with a traceID -> Tempo
 
 ### Metrics -> Traces -> Logs
 - Go to Explore
-- Choose Datasource prometheus-exemplars
+- Choose Datasource Prometheus
 - Run this query `histogram_quantile(.99, sum(rate(tns_request_duration_seconds_bucket{}[1m])) by (le))`
 - Click an exemplar
 - Click the log icon on a span line
