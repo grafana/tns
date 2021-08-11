@@ -65,7 +65,13 @@
   tempo_service:
     $.util.serviceFor($.tempo_deployment)
     + service.mixin.spec.withPortsMixin([
-      servicePort.withName('http').withPort(80).withTargetPort(16686),
-      servicePort.withName('receiver').withPort(6831).withProtocol('UDP').withTargetPort(6831),
+      servicePort.withName('http') +
+      servicePort.withPort(80) +
+      servicePort.withTargetPort(16686),
+      servicePort.withName('receiver') +
+      servicePort.withPort(6831) +
+      servicePort.withProtocol('UDP') +
+      servicePort.withTargetPort(6831),
+      // servicePort.newNamed(name='http', port=90, targetPort=16686)
     ]),
 }
