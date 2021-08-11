@@ -123,16 +123,18 @@ prometheus + promtail + {
     }),
 
   local ingress = $.extensions.v1beta1.ingress,
+  local ingressRule = $.extensions.v1beta1.ingressRule,
+  local httpIngressPath = $.extensions.v1beta1.httpIngressPath,
   ingress: ingress.new() +
            ingress.mixin.metadata.withName('ingress')
            + ingress.mixin.metadata.withAnnotationsMixin({
              'ingress.kubernetes.io/ssl-redirect': 'false',
            })
            + ingress.mixin.spec.withRules([
-             ingress.mixin.specType.rulesType.mixin.http.withPaths(
-               ingress.mixin.spec.rulesType.mixin.httpType.pathsType.withPath('/') +
-               ingress.mixin.specType.mixin.backend.withServiceName('nginx') +
-               ingress.mixin.specType.mixin.backend.withServicePort(80)
+             ingressRule.mixin.http.withPaths(
+               httpIngressPath.withPath('/') +
+               httpIngressPath.backend.withServiceName('nginx') +
+               httpIngressPath.backend.withServicePort(80)
              ),
            ])
   ,
