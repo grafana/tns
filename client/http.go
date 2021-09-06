@@ -67,7 +67,7 @@ func (c *Client) Do(req *http.Request) (*http.Response, error) {
 		level.Error(c.logger).Log("msg", "HTTP client error", "error", err, "url", req.URL, "duration", duration, "traceID", id)
 		requestDuration.WithLabelValues(req.Method, "error").Observe(duration.Seconds())
 	} else {
-		level.Info(c.logger).Log("msg", "HTTP client success", "status", resp.StatusCode, "url", req.URL, "duration", duration, "traceID", id)
+		level.Info(c.logger).Log("msg", "HTTP client success", "status_code", resp.StatusCode, "url", req.URL, "duration", duration, "traceID", id)
 		requestDuration.WithLabelValues(req.Method, strconv.Itoa(resp.StatusCode)).Observe(duration.Seconds())
 	}
 
