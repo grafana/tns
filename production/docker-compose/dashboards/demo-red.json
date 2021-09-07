@@ -18,9 +18,11 @@
        }
      ]
    },
+   "description": "",
    "editable": true,
    "gnetId": null,
    "graphTooltip": 0,
+   "id": 32,
    "iteration": 1630992189965,
    "links": [],
    "panels": [
@@ -197,20 +199,23 @@
              "axisPlacement": "auto",
              "barAlignment": 0,
              "drawStyle": "line",
-             "fillOpacity": 0,
-             "gradientMode": "none",
+             "fillOpacity": 12,
+             "gradientMode": "hue",
              "hideFrom": {
                "legend": false,
                "tooltip": false,
                "viz": false
              },
              "lineInterpolation": "linear",
+             "lineStyle": {
+               "fill": "solid"
+             },
              "lineWidth": 1,
              "pointSize": 5,
              "scaleDistribution": {
                "type": "linear"
              },
-             "showPoints": "auto",
+             "showPoints": "never",
              "spanNulls": false,
              "stacking": {
                "group": "A",
@@ -298,10 +303,11 @@
          },
          {
            "exemplar": true,
-           "expr": "sum(rate(tns_request_duration_seconds_sum{job=~\"$namespace/loadgen\"}[$__rate_interval])) * 1 / sum(rate(tns_request_duration_seconds_count{job=~\"$namespace/loadgen\"}[$__rate_interval]))",
+           "expr": "sum(rate(tns_request_duration_seconds_sum{job=~\"$namespace/loadgen\"}[5m])) * 1 / sum(rate(tns_request_duration_seconds_count{job=~\"$namespace/loadgen\"}[5m]))",
            "format": "time_series",
+           "interval": "",
            "intervalFactor": 2,
-           "legendFormat": "Average",
+           "legendFormat": "Average [5m]",
            "refId": "C",
            "step": 10
          }
@@ -558,7 +564,7 @@
              "axisPlacement": "auto",
              "barAlignment": 0,
              "drawStyle": "line",
-             "fillOpacity": 0,
+             "fillOpacity": 20,
              "gradientMode": "none",
              "hideFrom": {
                "legend": false,
@@ -571,7 +577,7 @@
              "scaleDistribution": {
                "type": "linear"
              },
-             "showPoints": "auto",
+             "showPoints": "never",
              "spanNulls": false,
              "stacking": {
                "group": "A",
@@ -643,6 +649,7 @@
            "exemplar": true,
            "expr": "histogram_quantile(0.99, sum(rate(tns_request_duration_seconds_bucket{job=~\"$namespace/app\"}[$__rate_interval])) by (le)) * 1",
            "format": "time_series",
+           "interval": "",
            "intervalFactor": 2,
            "legendFormat": "99th Percentile",
            "refId": "A",
@@ -659,10 +666,11 @@
          },
          {
            "exemplar": true,
-           "expr": "sum(rate(tns_request_duration_seconds_sum{job=~\"$namespace/app\"}[$__rate_interval])) * 1 / sum(rate(tns_request_duration_seconds_count{job=~\"$namespace/app\"}[$__rate_interval]))",
+           "expr": "sum(rate(tns_request_duration_seconds_sum{job=~\"$namespace/app\"}[10m])) * 1 / sum(rate(tns_request_duration_seconds_count{job=~\"$namespace/app\"}[10m]))",
            "format": "time_series",
+           "interval": "",
            "intervalFactor": 2,
-           "legendFormat": "Average",
+           "legendFormat": "Average [10m]",
            "refId": "C",
            "step": 10
          }
@@ -885,7 +893,7 @@
        ],
        "timeFrom": null,
        "timeShift": null,
-       "title": "Requests Per Second (QPS)",
+       "title": "Requests Per Second (RPS)",
        "type": "timeseries"
      },
      {
@@ -904,7 +912,7 @@
              "axisPlacement": "auto",
              "barAlignment": 0,
              "drawStyle": "line",
-             "fillOpacity": 0,
+             "fillOpacity": 20,
              "gradientMode": "none",
              "hideFrom": {
                "legend": false,
@@ -917,7 +925,7 @@
              "scaleDistribution": {
                "type": "linear"
              },
-             "showPoints": "auto",
+             "showPoints": "never",
              "spanNulls": false,
              "stacking": {
                "group": "A",
@@ -1005,10 +1013,11 @@
          },
          {
            "exemplar": true,
-           "expr": "sum(rate(tns_request_duration_seconds_sum{job=~\"$namespace/db\"}[$__rate_interval])) * 1 / sum(rate(tns_request_duration_seconds_count{job=~\"$namespace/db\"}[$__rate_interval]))",
+           "expr": "sum(rate(tns_request_duration_seconds_sum{job=~\"$namespace/db\"}[10m])) * 1 / sum(rate(tns_request_duration_seconds_count{job=~\"$namespace/db\"}[10m]))",
            "format": "time_series",
+           "interval": "",
            "intervalFactor": 2,
-           "legendFormat": "Average",
+           "legendFormat": "Average [10m]",
            "refId": "C",
            "step": 10
          }
@@ -1113,8 +1122,8 @@
      ]
    },
    "time": {
-     "from": "2021-09-06T19:31:26.215Z",
-     "to": "2021-09-06T20:59:45.668Z"
+     "from": "now-30m",
+     "to": "now"
    },
    "timepicker": {
      "refresh_intervals": [
@@ -1142,7 +1151,7 @@
      ]
    },
    "timezone": "",
-   "title": "Demo App",
+   "title": "The New Stack (TNS) Demo Application RED dashboard",
    "uid": "62440ddb0b6b14e05c6cdd3940eda2d1",
    "version": 1
  }
