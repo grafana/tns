@@ -138,3 +138,11 @@ $ rm -rf tanka
 
 * Tempo 404's when trying to load traces
     - This is likely because the jaeger agent is not running correctly. Check that all pods were successfully scheduled
+
+
+## Development instructions
+
+- After modifying source code of the TNS apps, do a `make`. This will compile the code and tag new images in your local Docker image registry.
+- Tell `k3d` to pull the new images on a pod restart (and not use the image from it's local cache), for example: `k3d image import -c tns grafana/tns-app  && k3d image import -c tns grafana/tns-db &&  k3d image import -c tns grafana/tns-loadgen`
+- Kill the relevant pod(s), for example: `kubectl delete pod app-69db48747b-s6qq6 --namespace=tns`
+
