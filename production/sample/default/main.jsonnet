@@ -113,7 +113,7 @@ prometheus + promtail + {
             type: 'tempo',
             access: 'browser',
             uid: 'tempo',
-            url: 'http://tempo.tempo.svc.cluster.local:16686/',
+            url: 'http://tempo.tempo.svc.cluster.local/',
             isDefault: false,
             version: 1,
             editable: false,

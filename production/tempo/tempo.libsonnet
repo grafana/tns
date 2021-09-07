@@ -13,7 +13,6 @@
   local servicePort = service.mixin.spec.portsType,
 
   local tempo_config_volume = 'tempo-conf',
-  local tempo_query_config_volume = 'tempo-query-conf',
 
   namespace:
     $.core.v1.namespace.new($._config.namespace),
@@ -31,25 +30,11 @@
       volumeMount.new(tempo_config_volume, '/conf'),
     ]),
 
-  tempo_query_container::
-    container.new('tempo-query', $._images.tempo_query) +
-    container.withPorts([
-      containerPort.new('jaeger-ui', 16686),
-    ]) +
-    container.withArgs([
-      '--query.base-path=' + $._config.jaeger_ui.base_path,
-      '--grpc-storage-plugin.configuration-file=/conf/tempo-query.yaml',
-    ]) +
-    container.withVolumeMounts([
-      volumeMount.new(tempo_query_config_volume, '/conf'),
-    ]),
-
   tempo_deployment:
     deployment.new('tempo',
                    1,
                    [
-                     $.tempo_container,
-                     $.tempo_query_container,
+                     $.tempo_container
                    ],
                    { app: 'tempo' }) +
     deployment.mixin.spec.template.metadata.withAnnotations({
@@ -58,7 +43,6 @@
     deployment.mixin.spec.strategy.rollingUpdate.withMaxSurge(0) +
     deployment.mixin.spec.strategy.rollingUpdate.withMaxUnavailable(1) +
     deployment.mixin.spec.template.spec.withVolumes([
-      volume.fromConfigMap(tempo_query_config_volume, $.tempo_query_configmap.metadata.name),
       volume.fromConfigMap(tempo_config_volume, $.tempo_configmap.metadata.name),
     ]),
 
@@ -67,11 +51,10 @@
     + service.mixin.spec.withPortsMixin([
       servicePort.withName('http') +
       servicePort.withPort(80) +
-      servicePort.withTargetPort(16686),
+      servicePort.withTargetPort($._config.port),
       servicePort.withName('receiver') +
       servicePort.withPort(6831) +
       servicePort.withProtocol('UDP') +
       servicePort.withTargetPort(6831),
-      // servicePort.newNamed(name='http', port=90, targetPort=16686)
     ]),
 }
