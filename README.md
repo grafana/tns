@@ -142,7 +142,13 @@ $ rm -rf tanka
 
 ## Development instructions
 
+### Updating Go code:
+
 - After modifying source code of the TNS apps, do a `make`. This will compile the code and tag new images in your local Docker image registry.
 - Tell `k3d` to pull the new images on a pod restart (and not use the image from it's local cache), for example: `k3d image import -c tns grafana/tns-app  && k3d image import -c tns grafana/tns-db &&  k3d image import -c tns grafana/tns-loadgen`
 - Kill the relevant pod(s), for example: `kubectl delete pod app-69db48747b-s6qq6 --namespace=tns`
 
+### Updating Grafana Dashboards and k8s infrastucture: 
+
+- You can update the manifests by running tanka: `tk apply --force environments/<ENV>/main.jsonnet`
+- For updating Grafana, for example when changing the dashboards, you can run:`tk apply --force environments/default/main.jsonnet`
