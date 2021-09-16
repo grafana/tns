@@ -104,6 +104,8 @@ func (db *db) handlePanic(next http.Handler) http.Handler {
 }
 
 func (db *db) Fetch(w http.ResponseWriter, r *http.Request) {
+	traceId, _ := middleware.ExtractTraceID(r.Context())
+
 	db.mtx.Lock()
 	defer db.mtx.Unlock()
 
@@ -118,7 +120,7 @@ func (db *db) Fetch(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if db.fail {
-		level.Error(db.logger).Log("err", "spline matriculation failed")
+		level.Error(db.logger).Log("err", "spline matriculation failed", "traceID", traceId)
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
@@ -147,14 +149,16 @@ func (db *db) Fetch(w http.ResponseWriter, r *http.Request) {
 	}{
 		Links: links,
 	}); err != nil {
-		level.Error(db.logger).Log("msg", "error encoding response", "err", err)
+		level.Error(db.logger).Log("msg", "error encoding response", "err", err, "traceID", traceId)
 	}
 }
 
 func (db *db) Post(w http.ResponseWriter, r *http.Request) {
+	traceId, _ := middleware.ExtractTraceID(r.Context())
+
 	var link Link
 	if err := json.NewDecoder(r.Body).Decode(&link); err != nil {
-		level.Error(db.logger).Log("msg", "error decoding link", "err", err)
+		level.Error(db.logger).Log("msg", "error decoding link", "err", err, "traceID", traceId)
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
@@ -172,11 +176,13 @@ func (db *db) Post(w http.ResponseWriter, r *http.Request) {
 }
 
 func (db *db) Vote(w http.ResponseWriter, r *http.Request) {
+	traceId, _ := middleware.ExtractTraceID(r.Context())
+
 	var req struct {
 		ID int
 	}
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
-		level.Error(db.logger).Log("msg", "error decoding link", "err", err)
+		level.Error(db.logger).Log("msg", "error decoding link", "err", err, "traceID", traceId)
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}

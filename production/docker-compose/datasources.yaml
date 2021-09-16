@@ -35,11 +35,11 @@ datasources:
     uid: tempo
     url: http://tempo/
     access: proxy
-    editable: false
+    editable: true
     isDefault: false
     jsonData:
       httpMethod: GET
       tracesToLogs:
         datasourceUid: 'loki'
-        tags: ['job', 'instance']
+        tags: ['job', 'instance', 'pod', 'namespace']
     version: 1
