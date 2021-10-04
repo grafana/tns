@@ -18,7 +18,7 @@ your docker daemon has at least 2.5 GB of total memory available for all pods in
 ### k3d
 To run this demo, you need a Kubernetes cluster. While the demo should work against any
 Kubernetes cluster, these docs will assume a locally running `k3d` cluster. Download and
-install `k3d` from [here](https://github.com/rancher/k3d/releases/tag/v3.2.0).
+install `k3d` from [here](https://github.com/rancher/k3d/releases/tag/v4.4.8).
 
 ### kubectl
 `kubectl` is used to interact with Kubernetes clusters. Follow the instructions
