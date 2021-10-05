@@ -4,38 +4,46 @@ A simple three-tier demo application, fully instrumented with Prometheus, Jaeger
 
 The "TNS" name comes from "The New Stack", where the original demo code was used for [an article](https://thenewstack.io/how-to-detect-map-and-monitor-docker-containers-with-weave-scope-from-weaveworks/).
 
-## Prerequisites
+## 1. Running/deployment
+
+### Local docker-compose deployment
+
+To deploy the TNS demo using `docker-compose`, look for the instructions under [production/docker-compose/README](production/docker-compose/README.md).
+
+### Local Kubernetes-like deployment (using k3d)
+
+#### Prerequisites
 
 There are a set of tools you will need to download and install.
 
 _Note_: You can run this app without kubernetes. See the instructions [here](https://github.com/grafana/tns/blob/main/production/docker-compose/README.md).
-### Docker
+##### Docker
 This demo assumes you have Docker installed. Follow instructions [here](https://docs.docker.com/install/) for more details.
 
 _Note_: The `k3d` kubernetes distribution used for this demo runs as a single node cluster inside docker. Make sure
 your docker daemon has at least 2.5 GB of total memory available for all pods in this deployment to be scheduled.
 
-### k3d
+##### k3d
 To run this demo, you need a Kubernetes cluster. While the demo should work against any
 Kubernetes cluster, these docs will assume a locally running `k3d` cluster. Download and
 install `k3d` from [here](https://github.com/rancher/k3d/releases/tag/v4.4.8).
 
-### kubectl
+##### kubectl
 `kubectl` is used to interact with Kubernetes clusters. Follow the instructions
 [here](https://kubernetes.io/docs/tasks/tools/install-kubectl/) to install it.
 
-### tanka
+##### tanka
 Tanka uses the Jsonnet language to interact with Kubernetes, via the `kubectl` tool.
 Download and install it from [here](https://github.com/grafana/tanka/releases/tag/v0.7.1).
 
-### jsonnet-bundler
+##### jsonnet-bundler
 Jsonnet bundler downloads Jsonnet dependencies. Download and install it from
 [here](https://github.com/jsonnet-bundler/jsonnet-bundler/releases/tag/v0.4.0).). Rename the downloaded binary to jb and move it to the location where $PATH points. Also make sure the  binary is executable:
 ```
 $ chmod +x /usr/local/bin/jb
 ```
 
-## Instructions
+#### Instructions
 
 If you wish to use a Kubernetes cluster other than a local `k3d` one, please adjust these
 instructions accordingly.
@@ -82,11 +90,11 @@ $ kubectl get pods -A
 All pods should be listed as either `running` or `completed`. If this is the case,
 your cluster should be ready for use.
 
-## Accessing the Demo
+#### Accessing the Demo
 
 You should now be able to access the demo via [http://localhost:8080/](http://localhost:8080).
 
-## Demoable things
+## 2. Demoable things
 
 ### Metrics -> Logs -> Traces
 - Go to the TNS dashboard
@@ -134,7 +142,10 @@ $ k3d cluster delete tns
 $ rm -rf tanka
 ```
 
-## Troubleshooting
+## 3. Troubleshooting
 
-* Tempo 404's when trying to load traces
+* A. Tempo 404's when trying to load traces
     - This is likely because the jaeger agent is not running correctly. Check that all pods were successfully scheduled
+
+* B. `local-path-provisioner` pod from `kube-system` namespace crashing with error `User \"system:serviceaccount:kube-system:local-path-provisioner-service-account\" cannot get resource \"configmaps\" in API group \"\" in the namespace \"kube-system\""`
+    - The `local-path-provisioner` example manifest isn't creating the necessary rolebindings ([this issue is documented](https://github.com/rancher/local-path-provisioner/issues/211)). If you are just trying to test the project, you might consider just trying the `docker-compose` deployment instead.
