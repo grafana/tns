@@ -29,10 +29,14 @@ fi
 mkdir "$BASEDIR/tanka" && cd "$BASEDIR/tanka"
 tk init                  # Initialises Tanka, and downloads the Kubernetes libaries Tanka needs
 cp "$PROD"/jsonnetfile.* . # copies dependency list into current directory
+#fix deprication notice of k8s
+jb install github.com/jsonnet-libs/k8s-libsonnet/1.21@main
+echo "import 'github.com/jsonnet-libs/k8s-libsonnet/1.21/main.libsonnet'" > lib/k.libsonnet
 jb install               # Installs dependencies
 
 # Install apps into separate namespaces
-install_env default # Install default monitoring stack
 install_env loki    # Install loki logging app
 install_env tns     # Install TNS demo app
 install_env tempo   # Install tempo tracing app
+install_env default # Install default monitoring stack
+
