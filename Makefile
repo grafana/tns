@@ -56,9 +56,9 @@ fmt-jsonnet: $(JSONNET_FILES)
 .PHONY: lint-jsonnet
 lint-jsonnet: $(JSONNET_FILES)
 	@RESULT=0;
-	for f in $?; do
-		if !(jsonnetfmt -- "$$f" | diff -u "$$f" -); then
-			RESULT=1
-		fi
+	for f in $?; do \
+		if !(jsonnetfmt -- "$$f" | diff -u "$$f" -); then \
+			RESULT=1; \
+		fi; \
 	done
 	exit $$RESULT
