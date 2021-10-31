@@ -16,7 +16,7 @@ version: '3.4'
 services:
 
   db:
-    image: grafana/tns-db:9c1ab38
+    image: grafana/tns-db:842bd3b
     command:
       - '-log.level=debug'
     ports:
@@ -31,7 +31,7 @@ services:
     logging: *default-logging
 
   app:
-    image: grafana/tns-app:9c1ab38
+    image: grafana/tns-app:842bd3b
     command:
       - '-log.level=debug'
       - 'http://db'
@@ -49,7 +49,7 @@ services:
     logging: *default-logging
 
   loadgen:
-    image: grafana/tns-loadgen:9c1ab38
+    image: grafana/tns-loadgen:842bd3b
     command:
       - '-log.level=debug'
       - 'http://app'
@@ -67,7 +67,7 @@ services:
     logging: *default-logging
 
   grafana:
-    image: grafana/grafana:8.0.4
+    image: grafana/grafana:8.2.2
     volumes:
       - ./datasources.yaml:/etc/grafana/provisioning/datasources/datasources.yaml
       - ./dashboards.yaml:/etc/grafana/provisioning/dashboards/dashboards.yaml
@@ -83,7 +83,7 @@ services:
     logging: *default-logging
 
   prometheus:
-    image: prom/prometheus:v2.28.1
+    image: prom/prometheus:v2.30.3
     user: root
     command:
       - --config.file=/etc/prometheus/prometheus.yml
@@ -135,7 +135,7 @@ services:
     logging: *default-logging
 
   loki:
-    image: grafana/loki:2.1.0
+    image: grafana/loki:2.3.0
     command:
       - -config.file=/etc/loki/local-config.yaml
       - -table-manager.retention-period=1d
@@ -147,7 +147,7 @@ services:
     logging: *default-logging
 
   tempo:
-    image: grafana/tempo:df7225ae
+    image: grafana/tempo:1.1.0
     command:
       - --target=all
       - --storage.trace.backend=local
