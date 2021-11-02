@@ -7,8 +7,8 @@ prometheus + promtail + {
   // from Loki logs to Jaeger traces on traceID.
   local service = $.core.v1.service,
   _images+:: {
-    grafana: 'grafana/grafana:latest',
-    prometheus: 'prom/prometheus:latest',
+    grafana: 'grafana/grafana:8.2.2',
+    prometheus: 'prom/prometheus:v2.30.3',
   },
   _config+:: {
     namespace: 'default',
