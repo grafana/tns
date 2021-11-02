@@ -10,7 +10,7 @@ publish: lint-image/.published
 
 IMAGE_TAG?=$(shell git rev-parse --short HEAD)
 DOCKER_IMAGE_BASE?=grafana
-GOENV=GOOS=linux GOARCH=amd64 CGO_ENABLED=0 GO111MODULE=on
+GOENV=GOOS=linux GOARCH=$(shell go env GOARCH) CGO_ENABLED=0 GO111MODULE=on
 
 db/db: db/*.go
 	env $(GOENV) go build -o $@ ./db
