@@ -7,8 +7,8 @@ prometheus + promtail + {
   // from Loki logs to Jaeger traces on traceID.
   local service = $.core.v1.service,
   _images+:: {
-    grafana: 'grafana/grafana:7.3.x-exemplars',
-    prometheus: 'cstyan/prometheus:exemplars-64206a',
+    grafana: 'grafana/grafana:8.2.2',
+    prometheus: 'prom/prometheus:v2.30.3',
   },
   _config+:: {
     namespace: 'default',
@@ -100,11 +100,12 @@ prometheus + promtail + {
             editable: false,
             basicAuth: false,
             jsonData: {
-              httpMethod: 'GET',
-              exemplarTraceIDDestination: {
+              disableMetricsLookup: false,
+              httpMethod: 'POST',
+              exemplarTraceIdDestinations: [{
                 name: 'traceID',
-                url: 'http://localhost:8080/grafana/explore?orgId=1&left=%5B%22now-1h%22,%22now%22,%22Tempo%22,%7B%22query%22:%22$${value}%22%7D%5D',
-              },
+                datasourceUid: 'tempo'
+              }],
             },
           },
           {
@@ -112,11 +113,17 @@ prometheus + promtail + {
             type: 'tempo',
             access: 'browser',
             uid: 'tempo',
-            url: 'http://tempo.tempo.svc.cluster.local:16686/',
+            url: 'http://tempo.tempo.svc.cluster.local/',
             isDefault: false,
             version: 1,
             editable: false,
             basicAuth: false,
+            jsonData: {
+              tracesToLogs: {
+                datasourceUid: 'Loki',
+                tags: ['job', 'instance', 'pod', 'namespace']
+              }
+            }
           },
         ],
       }),

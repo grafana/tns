@@ -1,664 +1,1157 @@
 {
-      "annotations": {
-         "list": [ ]
-      },
-      "editable": true,
-      "gnetId": null,
-      "graphTooltip": 0,
-      "hideControls": false,
-      "links": [ ],
-      "refresh": "10s",
-      "rows": [
-         {
-            "collapse": false,
-            "height": "250px",
-            "panels": [
-               {
-                  "aliasColors": {
-                     "200": "#7EB26D",
-                     "500": "#E24D42"
-                  },
-                  "bars": false,
-                  "dashLength": 10,
-                  "dashes": false,
-                  "datasource": "$datasource",
-                  "fill": 10,
-                  "id": 1,
-                  "legend": {
-                     "avg": false,
-                     "current": false,
-                     "max": false,
-                     "min": false,
-                     "show": true,
-                     "total": false,
-                     "values": false
-                  },
-                  "lines": true,
-                  "linewidth": 0,
-                  "links": [ ],
-                  "nullPointMode": "null as zero",
-                  "percentage": false,
-                  "pointradius": 5,
-                  "points": false,
-                  "renderer": "flot",
-                  "seriesOverrides": [ ],
-                  "spaceLength": 10,
-                  "span": 6,
-                  "stack": true,
-                  "steppedLine": false,
-                  "targets": [
-                     {
-                        "expr": "sum by (status_code) (rate(tns_request_duration_seconds_count{job=~\"$namespace/loadgen\"}[1m]))",
-                        "format": "time_series",
-                        "intervalFactor": 2,
-                        "legendFormat": "{{status_code}}",
-                        "refId": "A",
-                        "step": 10
-                     }
-                  ],
-                  "thresholds": [ ],
-                  "timeFrom": null,
-                  "timeShift": null,
-                  "title": "QPS",
-                  "tooltip": {
-                     "shared": false,
-                     "sort": 0,
-                     "value_type": "individual"
-                  },
-                  "type": "graph",
-                  "xaxis": {
-                     "buckets": null,
-                     "mode": "time",
-                     "name": null,
-                     "show": true,
-                     "values": [ ]
-                  },
-                  "yaxes": [
-                     {
-                        "format": "short",
-                        "label": null,
-                        "logBase": 1,
-                        "max": null,
-                        "min": 0,
-                        "show": true
-                     },
-                     {
-                        "format": "short",
-                        "label": null,
-                        "logBase": 1,
-                        "max": null,
-                        "min": null,
-                        "show": false
-                     }
-                  ]
-               },
-               {
-                  "aliasColors": { },
-                  "bars": false,
-                  "dashLength": 10,
-                  "dashes": false,
-                  "datasource": "$datasource",
-                  "fieldConfig": {
-                     "defaults": {
-                        "unit": "s"
-                     }
-                  },
-                  "fill": 1,
-                  "id": 2,
-                  "legend": {
-                     "avg": false,
-                     "current": false,
-                     "max": false,
-                     "min": false,
-                     "show": true,
-                     "total": false,
-                     "values": false
-                  },
-                  "lines": true,
-                  "linewidth": 1,
-                  "links": [ ],
-                  "nullPointMode": "null as zero",
-                  "percentage": false,
-                  "pointradius": 5,
-                  "points": false,
-                  "renderer": "flot",
-                  "seriesOverrides": [ ],
-                  "spaceLength": 10,
-                  "span": 6,
-                  "stack": false,
-                  "steppedLine": false,
-                  "targets": [
-                     {
-                        "exemplar": true,
-                        "expr": "histogram_quantile(0.99, sum(rate(tns_request_duration_seconds_bucket{job=~\"$namespace/loadgen\"}[$__rate_interval])) by (le)) * 1",
-                        "format": "time_series",
-                        "intervalFactor": 2,
-                        "legendFormat": "99th Percentile",
-                        "refId": "A",
-                        "step": 10
-                     },
-                     {
-                        "exemplar": true,
-                        "expr": "histogram_quantile(0.50, sum(rate(tns_request_duration_seconds_bucket{job=~\"$namespace/loadgen\"}[$__rate_interval])) by (le)) * 1",
-                        "format": "time_series",
-                        "intervalFactor": 2,
-                        "legendFormat": "50th Percentile",
-                        "refId": "B",
-                        "step": 10
-                     },
-                     {
-                        "exemplar": true,
-                        "expr": "sum(rate(tns_request_duration_seconds_sum{job=~\"$namespace/loadgen\"}[$__rate_interval])) * 1 / sum(rate(tns_request_duration_seconds_count{job=~\"$namespace/loadgen\"}[$__rate_interval]))",
-                        "format": "time_series",
-                        "intervalFactor": 2,
-                        "legendFormat": "Average",
-                        "refId": "C",
-                        "step": 10
-                     }
-                  ],
-                  "thresholds": [ ],
-                  "timeFrom": null,
-                  "timeShift": null,
-                  "title": "Latency",
-                  "tooltip": {
-                     "shared": false,
-                     "sort": 0,
-                     "value_type": "individual"
-                  },
-                  "type": "timeseries",
-                  "xaxis": {
-                     "buckets": null,
-                     "mode": "time",
-                     "name": null,
-                     "show": true,
-                     "values": [ ]
-                  },
-                  "yaxes": [
-                     {
-                        "format": "s",
-                        "label": null,
-                        "logBase": 1,
-                        "max": null,
-                        "min": 0,
-                        "show": true
-                     },
-                     {
-                        "format": "short",
-                        "label": null,
-                        "logBase": 1,
-                        "max": null,
-                        "min": null,
-                        "show": false
-                     }
-                  ]
-               }
-            ],
-            "repeat": null,
-            "repeatIteration": null,
-            "repeatRowId": null,
-            "showTitle": true,
-            "title": "Load balancer",
-            "titleSize": "h6"
+   "annotations": {
+     "list": [
+       {
+         "builtIn": 1,
+         "datasource": "-- Grafana --",
+         "enable": true,
+         "hide": true,
+         "iconColor": "rgba(0, 211, 255, 1)",
+         "name": "Annotations & Alerts",
+         "target": {
+           "limit": 100,
+           "matchAny": false,
+           "tags": [],
+           "type": "dashboard"
          },
-         {
-            "collapse": false,
-            "height": "250px",
-            "panels": [
+         "type": "dashboard"
+       }
+     ]
+   },
+   "description": "",
+   "editable": true,
+   "gnetId": null,
+   "graphTooltip": 0,
+   "id": 32,
+   "iteration": 1630992189965,
+   "links": [],
+   "panels": [
+     {
+       "datasource": null,
+       "gridPos": {
+         "h": 7,
+         "w": 24,
+         "x": 0,
+         "y": 0
+       },
+       "id": 11,
+       "options": {
+         "content": "# The RED Method\n\nThis TNS demo service dashboard is using the RED Method. A microservices-oriented monitoring philosophy. The RED Method is a good proxy to how happy your customers will be\n\nFor every resource, monitor:\n\n- Rate (the number of requests per second)\n- Errors (the number of those requests that are failing)\n- Duration (the amount of time those requests take)\n\n[Read More...](https://grafana.com/blog/2018/08/02/the-red-method-how-to-instrument-your-services/)",
+         "mode": "markdown"
+       },
+       "pluginVersion": "8.1.2",
+       "type": "text"
+     },
+     {
+       "collapsed": false,
+       "datasource": null,
+       "fieldConfig": {
+         "defaults": {},
+         "overrides": []
+       },
+       "gridPos": {
+         "h": 1,
+         "w": 24,
+         "x": 0,
+         "y": 7
+       },
+       "id": 7,
+       "panels": [],
+       "repeat": null,
+       "title": "Load balancer",
+       "type": "row"
+     },
+     {
+       "datasource": "$datasource",
+       "description": "",
+       "fieldConfig": {
+         "defaults": {
+           "color": {
+             "mode": "palette-classic"
+           },
+           "custom": {
+             "axisLabel": "",
+             "axisPlacement": "auto",
+             "barAlignment": 0,
+             "drawStyle": "line",
+             "fillOpacity": 100,
+             "gradientMode": "hue",
+             "hideFrom": {
+               "legend": false,
+               "tooltip": false,
+               "viz": false
+             },
+             "lineInterpolation": "smooth",
+             "lineWidth": 0,
+             "pointSize": 5,
+             "scaleDistribution": {
+               "type": "linear"
+             },
+             "showPoints": "never",
+             "spanNulls": false,
+             "stacking": {
+               "group": "A",
+               "mode": "normal"
+             },
+             "thresholdsStyle": {
+               "mode": "off"
+             }
+           },
+           "mappings": [],
+           "min": 0,
+           "thresholds": {
+             "mode": "absolute",
+             "steps": [
                {
-                  "aliasColors": {
-                     "200": "#7EB26D",
-                     "500": "#E24D42"
-                  },
-                  "bars": false,
-                  "dashLength": 10,
-                  "dashes": false,
-                  "datasource": "$datasource",
-                  "fill": 10,
-                  "id": 3,
-                  "legend": {
-                     "avg": false,
-                     "current": false,
-                     "max": false,
-                     "min": false,
-                     "show": true,
-                     "total": false,
-                     "values": false
-                  },
-                  "lines": true,
-                  "linewidth": 0,
-                  "links": [ ],
-                  "nullPointMode": "null as zero",
-                  "percentage": false,
-                  "pointradius": 5,
-                  "points": false,
-                  "renderer": "flot",
-                  "seriesOverrides": [ ],
-                  "spaceLength": 10,
-                  "span": 6,
-                  "stack": true,
-                  "steppedLine": false,
-                  "targets": [
-                     {
-                        "expr": "sum by (status_code) (rate(tns_request_duration_seconds_count{job=~\"$namespace/app\"}[1m]))",
-                        "format": "time_series",
-                        "intervalFactor": 2,
-                        "legendFormat": "{{status_code}}",
-                        "refId": "A",
-                        "step": 10
-                     }
-                  ],
-                  "thresholds": [ ],
-                  "timeFrom": null,
-                  "timeShift": null,
-                  "title": "QPS",
-                  "tooltip": {
-                     "shared": false,
-                     "sort": 0,
-                     "value_type": "individual"
-                  },
-                  "type": "graph",
-                  "xaxis": {
-                     "buckets": null,
-                     "mode": "time",
-                     "name": null,
-                     "show": true,
-                     "values": [ ]
-                  },
-                  "yaxes": [
-                     {
-                        "format": "short",
-                        "label": null,
-                        "logBase": 1,
-                        "max": null,
-                        "min": 0,
-                        "show": true
-                     },
-                     {
-                        "format": "short",
-                        "label": null,
-                        "logBase": 1,
-                        "max": null,
-                        "min": null,
-                        "show": false
-                     }
-                  ]
+                 "color": "green",
+                 "value": null
                },
                {
-                  "aliasColors": { },
-                  "bars": false,
-                  "dashLength": 10,
-                  "dashes": false,
-                  "datasource": "$datasource",
-                  "fieldConfig": {
-                     "defaults": {
-                        "unit": "s"
-                     }
-                  },
-                  "fill": 1,
-                  "id": 4,
-                  "legend": {
-                     "avg": false,
-                     "current": false,
-                     "max": false,
-                     "min": false,
-                     "show": true,
-                     "total": false,
-                     "values": false
-                  },
-                  "lines": true,
-                  "linewidth": 1,
-                  "links": [ ],
-                  "nullPointMode": "null as zero",
-                  "percentage": false,
-                  "pointradius": 5,
-                  "points": false,
-                  "renderer": "flot",
-                  "seriesOverrides": [ ],
-                  "spaceLength": 10,
-                  "span": 6,
-                  "stack": false,
-                  "steppedLine": false,
-                  "targets": [
-                     {
-                        "exemplar": true,
-                        "expr": "histogram_quantile(0.99, sum(rate(tns_request_duration_seconds_bucket{job=~\"$namespace/app\"}[$__rate_interval])) by (le)) * 1",
-                        "format": "time_series",
-                        "intervalFactor": 2,
-                        "legendFormat": "99th Percentile",
-                        "refId": "A",
-                        "step": 10
-                     },
-                     {
-                        "exemplar": true,
-                        "expr": "histogram_quantile(0.50, sum(rate(tns_request_duration_seconds_bucket{job=~\"$namespace/app\"}[$__rate_interval])) by (le)) * 1",
-                        "format": "time_series",
-                        "intervalFactor": 2,
-                        "legendFormat": "50th Percentile",
-                        "refId": "B",
-                        "step": 10
-                     },
-                     {
-                        "exemplar": true,
-                        "expr": "sum(rate(tns_request_duration_seconds_sum{job=~\"$namespace/app\"}[$__rate_interval])) * 1 / sum(rate(tns_request_duration_seconds_count{job=~\"$namespace/app\"}[$__rate_interval]))",
-                        "format": "time_series",
-                        "intervalFactor": 2,
-                        "legendFormat": "Average",
-                        "refId": "C",
-                        "step": 10
-                     }
-                  ],
-                  "thresholds": [ ],
-                  "timeFrom": null,
-                  "timeShift": null,
-                  "title": "Latency",
-                  "tooltip": {
-                     "shared": false,
-                     "sort": 0,
-                     "value_type": "individual"
-                  },
-                  "type": "timeseries",
-                  "xaxis": {
-                     "buckets": null,
-                     "mode": "time",
-                     "name": null,
-                     "show": true,
-                     "values": [ ]
-                  },
-                  "yaxes": [
-                     {
-                        "format": "s",
-                        "label": null,
-                        "logBase": 1,
-                        "max": null,
-                        "min": 0,
-                        "show": true
-                     },
-                     {
-                        "format": "short",
-                        "label": null,
-                        "logBase": 1,
-                        "max": null,
-                        "min": null,
-                        "show": false
-                     }
-                  ]
+                 "color": "red",
+                 "value": 80
                }
-            ],
-            "repeat": null,
-            "repeatIteration": null,
-            "repeatRowId": null,
-            "showTitle": true,
-            "title": "App",
-            "titleSize": "h6"
+             ]
+           },
+           "unit": "short"
          },
-         {
-            "collapse": false,
-            "height": "250px",
-            "panels": [
+         "overrides": [
+           {
+             "matcher": {
+               "id": "byName",
+               "options": "200"
+             },
+             "properties": [
                {
-                  "aliasColors": {
-                     "200": "#7EB26D",
-                     "500": "#E24D42"
-                  },
-                  "bars": false,
-                  "dashLength": 10,
-                  "dashes": false,
-                  "datasource": "$datasource",
-                  "fill": 10,
-                  "id": 5,
-                  "legend": {
-                     "avg": false,
-                     "current": false,
-                     "max": false,
-                     "min": false,
-                     "show": true,
-                     "total": false,
-                     "values": false
-                  },
-                  "lines": true,
-                  "linewidth": 0,
-                  "links": [ ],
-                  "nullPointMode": "null as zero",
-                  "percentage": false,
-                  "pointradius": 5,
-                  "points": false,
-                  "renderer": "flot",
-                  "seriesOverrides": [ ],
-                  "spaceLength": 10,
-                  "span": 6,
-                  "stack": true,
-                  "steppedLine": false,
-                  "targets": [
-                     {
-                        "expr": "sum by (status_code) (rate(tns_request_duration_seconds_count{job=~\"$namespace/db\"}[1m]))",
-                        "format": "time_series",
-                        "intervalFactor": 2,
-                        "legendFormat": "{{status_code}}",
-                        "refId": "A",
-                        "step": 10
-                     }
-                  ],
-                  "thresholds": [ ],
-                  "timeFrom": null,
-                  "timeShift": null,
-                  "title": "QPS",
-                  "tooltip": {
-                     "shared": false,
-                     "sort": 0,
-                     "value_type": "individual"
-                  },
-                  "type": "graph",
-                  "xaxis": {
-                     "buckets": null,
-                     "mode": "time",
-                     "name": null,
-                     "show": true,
-                     "values": [ ]
-                  },
-                  "yaxes": [
-                     {
-                        "format": "short",
-                        "label": null,
-                        "logBase": 1,
-                        "max": null,
-                        "min": 0,
-                        "show": true
-                     },
-                     {
-                        "format": "short",
-                        "label": null,
-                        "logBase": 1,
-                        "max": null,
-                        "min": null,
-                        "show": false
-                     }
-                  ]
-               },
-               {
-                  "aliasColors": { },
-                  "bars": false,
-                  "dashLength": 10,
-                  "dashes": false,
-                  "datasource": "$datasource",
-                  "fieldConfig": {
-                     "defaults": {
-                        "unit": "s"
-                     }
-                  },
-                  "fill": 1,
-                  "id": 6,
-                  "legend": {
-                     "avg": false,
-                     "current": false,
-                     "max": false,
-                     "min": false,
-                     "show": true,
-                     "total": false,
-                     "values": false
-                  },
-                  "lines": true,
-                  "linewidth": 1,
-                  "links": [ ],
-                  "nullPointMode": "null as zero",
-                  "percentage": false,
-                  "pointradius": 5,
-                  "points": false,
-                  "renderer": "flot",
-                  "seriesOverrides": [ ],
-                  "spaceLength": 10,
-                  "span": 6,
-                  "stack": false,
-                  "steppedLine": false,
-                  "targets": [
-                     {
-                        "exemplar": true,
-                        "expr": "histogram_quantile(0.99, sum(rate(tns_request_duration_seconds_bucket{job=~\"$namespace/db\"}[$__rate_interval])) by (le)) * 1",
-                        "format": "time_series",
-                        "intervalFactor": 2,
-                        "legendFormat": "99th Percentile",
-                        "refId": "A",
-                        "step": 10
-                     },
-                     {
-                        "exemplar": true,
-                        "expr": "histogram_quantile(0.50, sum(rate(tns_request_duration_seconds_bucket{job=~\"$namespace/db\"}[$__rate_interval])) by (le)) * 1",
-                        "format": "time_series",
-                        "intervalFactor": 2,
-                        "legendFormat": "50th Percentile",
-                        "refId": "B",
-                        "step": 10
-                     },
-                     {
-                        "exemplar": true,
-                        "expr": "sum(rate(tns_request_duration_seconds_sum{job=~\"$namespace/db\"}[$__rate_interval])) * 1 / sum(rate(tns_request_duration_seconds_count{job=~\"$namespace/db\"}[$__rate_interval]))",
-                        "format": "time_series",
-                        "intervalFactor": 2,
-                        "legendFormat": "Average",
-                        "refId": "C",
-                        "step": 10
-                     }
-                  ],
-                  "thresholds": [ ],
-                  "timeFrom": null,
-                  "timeShift": null,
-                  "title": "Latency",
-                  "tooltip": {
-                     "shared": false,
-                     "sort": 0,
-                     "value_type": "individual"
-                  },
-                  "type": "timeseries",
-                  "xaxis": {
-                     "buckets": null,
-                     "mode": "time",
-                     "name": null,
-                     "show": true,
-                     "values": [ ]
-                  },
-                  "yaxes": [
-                     {
-                        "format": "s",
-                        "label": null,
-                        "logBase": 1,
-                        "max": null,
-                        "min": 0,
-                        "show": true
-                     },
-                     {
-                        "format": "short",
-                        "label": null,
-                        "logBase": 1,
-                        "max": null,
-                        "min": null,
-                        "show": false
-                     }
-                  ]
+                 "id": "color",
+                 "value": {
+                   "fixedColor": "#7EB26D",
+                   "mode": "fixed"
+                 }
                }
-            ],
-            "repeat": null,
-            "repeatIteration": null,
-            "repeatRowId": null,
-            "showTitle": true,
-            "title": "DB",
-            "titleSize": "h6"
+             ]
+           },
+           {
+             "matcher": {
+               "id": "byName",
+               "options": "500"
+             },
+             "properties": [
+               {
+                 "id": "color",
+                 "value": {
+                   "fixedColor": "#E24D42",
+                   "mode": "fixed"
+                 }
+               }
+             ]
+           }
+         ]
+       },
+       "gridPos": {
+         "h": 7,
+         "w": 12,
+         "x": 0,
+         "y": 8
+       },
+       "id": 1,
+       "links": [],
+       "options": {
+         "legend": {
+           "calcs": [],
+           "displayMode": "list",
+           "placement": "bottom"
+         },
+         "tooltip": {
+           "mode": "single"
          }
-      ],
-      "schemaVersion": 14,
-      "style": "dark",
-      "tags": [ ],
-      "templating": {
-         "list": [
-            {
-               "current": {
-                  "text": "default",
-                  "value": "default"
+       },
+       "pluginVersion": "8.1.2",
+       "targets": [
+         {
+           "exemplar": true,
+           "expr": "sum by (status_code) (rate(tns_request_duration_seconds_count{job=~\"$namespace/loadgen\"}[1m]))",
+           "format": "time_series",
+           "interval": "",
+           "intervalFactor": 2,
+           "legendFormat": "HTTP Status {{status_code}}",
+           "refId": "A",
+           "step": 10
+         }
+       ],
+       "timeFrom": null,
+       "timeShift": null,
+       "title": "Requests Per Second (RPS)",
+       "type": "timeseries"
+     },
+     {
+       "aliasColors": {},
+       "bars": false,
+       "dashLength": 10,
+       "dashes": false,
+       "datasource": "$datasource",
+       "fieldConfig": {
+         "defaults": {
+           "color": {
+             "mode": "palette-classic"
+           },
+           "custom": {
+             "axisLabel": "",
+             "axisPlacement": "auto",
+             "barAlignment": 0,
+             "drawStyle": "line",
+             "fillOpacity": 12,
+             "gradientMode": "hue",
+             "hideFrom": {
+               "legend": false,
+               "tooltip": false,
+               "viz": false
+             },
+             "lineInterpolation": "linear",
+             "lineStyle": {
+               "fill": "solid"
+             },
+             "lineWidth": 1,
+             "pointSize": 5,
+             "scaleDistribution": {
+               "type": "linear"
+             },
+             "showPoints": "never",
+             "spanNulls": false,
+             "stacking": {
+               "group": "A",
+               "mode": "none"
+             },
+             "thresholdsStyle": {
+               "mode": "off"
+             }
+           },
+           "mappings": [],
+           "thresholds": {
+             "mode": "absolute",
+             "steps": [
+               {
+                 "color": "green",
+                 "value": null
                },
-               "hide": 0,
-               "label": null,
-               "name": "datasource",
-               "options": [ ],
-               "query": "prometheus",
-               "refresh": 1,
-               "regex": "",
-               "type": "datasource"
-            },
-            {
-               "allValue": ".+",
-               "current": {
-                  "selected": true,
-                  "text": "All",
-                  "value": "$__all"
+               {
+                 "color": "red",
+                 "value": 80
+               }
+             ]
+           },
+           "unit": "s"
+         },
+         "overrides": []
+       },
+       "fill": 1,
+       "gridPos": {
+         "h": 7,
+         "w": 12,
+         "x": 12,
+         "y": 8
+       },
+       "id": 2,
+       "legend": {
+         "avg": false,
+         "current": false,
+         "max": false,
+         "min": false,
+         "show": true,
+         "total": false,
+         "values": false
+       },
+       "lines": true,
+       "linewidth": 1,
+       "links": [],
+       "nullPointMode": "null as zero",
+       "options": {
+         "legend": {
+           "calcs": [],
+           "displayMode": "list",
+           "placement": "bottom"
+         },
+         "tooltip": {
+           "mode": "single"
+         }
+       },
+       "percentage": false,
+       "pointradius": 5,
+       "points": false,
+       "renderer": "flot",
+       "seriesOverrides": [],
+       "spaceLength": 10,
+       "stack": false,
+       "steppedLine": false,
+       "targets": [
+         {
+           "exemplar": true,
+           "expr": "histogram_quantile(0.99, sum(rate(tns_request_duration_seconds_bucket{job=~\"$namespace/loadgen\"}[$__rate_interval])) by (le)) * 1",
+           "format": "time_series",
+           "intervalFactor": 2,
+           "legendFormat": "99th Percentile",
+           "refId": "A",
+           "step": 10
+         },
+         {
+           "exemplar": true,
+           "expr": "histogram_quantile(0.50, sum(rate(tns_request_duration_seconds_bucket{job=~\"$namespace/loadgen\"}[$__rate_interval])) by (le)) * 1",
+           "format": "time_series",
+           "intervalFactor": 2,
+           "legendFormat": "50th Percentile",
+           "refId": "B",
+           "step": 10
+         },
+         {
+           "exemplar": true,
+           "expr": "sum(rate(tns_request_duration_seconds_sum{job=~\"$namespace/loadgen\"}[5m])) * 1 / sum(rate(tns_request_duration_seconds_count{job=~\"$namespace/loadgen\"}[5m]))",
+           "format": "time_series",
+           "interval": "",
+           "intervalFactor": 2,
+           "legendFormat": "Average [5m]",
+           "refId": "C",
+           "step": 10
+         }
+       ],
+       "thresholds": [],
+       "timeFrom": null,
+       "timeShift": null,
+       "title": "Latency",
+       "tooltip": {
+         "shared": false,
+         "sort": 0,
+         "value_type": "individual"
+       },
+       "type": "timeseries",
+       "xaxis": {
+         "buckets": null,
+         "mode": "time",
+         "name": null,
+         "show": true,
+         "values": []
+       },
+       "yaxes": [
+         {
+           "format": "s",
+           "label": null,
+           "logBase": 1,
+           "max": null,
+           "min": 0,
+           "show": true
+         },
+         {
+           "format": "short",
+           "label": null,
+           "logBase": 1,
+           "max": null,
+           "min": null,
+           "show": false
+         }
+       ]
+     },
+     {
+       "collapsed": false,
+       "datasource": null,
+       "fieldConfig": {
+         "defaults": {},
+         "overrides": []
+       },
+       "gridPos": {
+         "h": 1,
+         "w": 24,
+         "x": 0,
+         "y": 15
+       },
+       "id": 8,
+       "panels": [],
+       "title": "Web application",
+       "type": "row"
+     },
+     {
+       "datasource": "$datasource",
+       "description": "",
+       "fieldConfig": {
+         "defaults": {
+           "color": {
+             "mode": "palette-classic"
+           },
+           "custom": {
+             "axisLabel": "",
+             "axisPlacement": "auto",
+             "barAlignment": 0,
+             "drawStyle": "line",
+             "fillOpacity": 100,
+             "gradientMode": "hue",
+             "hideFrom": {
+               "legend": false,
+               "tooltip": false,
+               "viz": false
+             },
+             "lineInterpolation": "smooth",
+             "lineWidth": 0,
+             "pointSize": 5,
+             "scaleDistribution": {
+               "type": "linear"
+             },
+             "showPoints": "never",
+             "spanNulls": false,
+             "stacking": {
+               "group": "A",
+               "mode": "normal"
+             },
+             "thresholdsStyle": {
+               "mode": "off"
+             }
+           },
+           "mappings": [],
+           "min": 0,
+           "thresholds": {
+             "mode": "absolute",
+             "steps": [
+               {
+                 "color": "green",
+                 "value": null
                },
-               "datasource": "$datasource",
-               "hide": 0,
-               "includeAll": true,
-               "label": "namespace",
-               "multi": true,
-               "name": "namespace",
-               "options": [ ],
-               "query": "label_values(kube_pod_container_info{image=~\".*grafana/tns.*\"}, namespace)",
-               "refresh": 1,
-               "regex": "",
-               "sort": 2,
-               "tagValuesQuery": "",
-               "tags": [ ],
-               "tagsQuery": "",
-               "type": "query",
-               "useTags": false
-            }
+               {
+                 "color": "red",
+                 "value": 80
+               }
+             ]
+           },
+           "unit": "short"
+         },
+         "overrides": [
+           {
+             "matcher": {
+               "id": "byName",
+               "options": "200"
+             },
+             "properties": [
+               {
+                 "id": "color",
+                 "value": {
+                   "fixedColor": "#7EB26D",
+                   "mode": "fixed"
+                 }
+               }
+             ]
+           },
+           {
+             "matcher": {
+               "id": "byName",
+               "options": "500"
+             },
+             "properties": [
+               {
+                 "id": "color",
+                 "value": {
+                   "fixedColor": "#E24D42",
+                   "mode": "fixed"
+                 }
+               }
+             ]
+           },
+           {
+             "matcher": {
+               "id": "byName",
+               "options": "HTTP Status 500"
+             },
+             "properties": [
+               {
+                 "id": "color",
+                 "value": {
+                   "fixedColor": "red",
+                   "mode": "fixed"
+                 }
+               }
+             ]
+           },
+           {
+             "matcher": {
+               "id": "byName",
+               "options": "HTTP Status 503"
+             },
+             "properties": [
+               {
+                 "id": "color",
+                 "value": {
+                   "fixedColor": "red",
+                   "mode": "fixed"
+                 }
+               }
+             ]
+           },
+           {
+             "matcher": {
+               "id": "byName",
+               "options": "HTTP Status 400"
+             },
+             "properties": [
+               {
+                 "id": "color",
+                 "value": {
+                   "fixedColor": "orange",
+                   "mode": "fixed"
+                 }
+               }
+             ]
+           },
+           {
+             "matcher": {
+               "id": "byName",
+               "options": "HTTP Status 302"
+             },
+             "properties": [
+               {
+                 "id": "color",
+                 "value": {
+                   "fixedColor": "yellow",
+                   "mode": "fixed"
+                 }
+               }
+             ]
+           }
          ]
-      },
-      "time": {
-         "from": "now-1h",
-         "to": "now"
-      },
-      "timepicker": {
-         "refresh_intervals": [
-            "5s",
-            "10s",
-            "30s",
-            "1m",
-            "5m",
-            "15m",
-            "30m",
-            "1h",
-            "2h",
-            "1d"
-         ],
-         "time_options": [
-            "5m",
-            "15m",
-            "1h",
-            "6h",
-            "12h",
-            "24h",
-            "2d",
-            "7d",
-            "30d"
+       },
+       "gridPos": {
+         "h": 7,
+         "w": 12,
+         "x": 0,
+         "y": 16
+       },
+       "id": 3,
+       "links": [],
+       "options": {
+         "legend": {
+           "calcs": [],
+           "displayMode": "list",
+           "placement": "bottom"
+         },
+         "tooltip": {
+           "mode": "single"
+         }
+       },
+       "pluginVersion": "8.1.2",
+       "targets": [
+         {
+           "exemplar": true,
+           "expr": "sum by (status_code) (rate(tns_request_duration_seconds_count{job=~\"$namespace/app\"}[1m]))",
+           "format": "time_series",
+           "interval": "",
+           "intervalFactor": 2,
+           "legendFormat": "HTTP Status {{status_code}}",
+           "refId": "A",
+           "step": 10
+         }
+       ],
+       "timeFrom": null,
+       "timeShift": null,
+       "title": "Request Per Second (RPS)",
+       "type": "timeseries"
+     },
+     {
+       "aliasColors": {},
+       "bars": false,
+       "dashLength": 10,
+       "dashes": false,
+       "datasource": "$datasource",
+       "fieldConfig": {
+         "defaults": {
+           "color": {
+             "mode": "palette-classic"
+           },
+           "custom": {
+             "axisLabel": "",
+             "axisPlacement": "auto",
+             "barAlignment": 0,
+             "drawStyle": "line",
+             "fillOpacity": 20,
+             "gradientMode": "none",
+             "hideFrom": {
+               "legend": false,
+               "tooltip": false,
+               "viz": false
+             },
+             "lineInterpolation": "linear",
+             "lineWidth": 1,
+             "pointSize": 5,
+             "scaleDistribution": {
+               "type": "linear"
+             },
+             "showPoints": "never",
+             "spanNulls": false,
+             "stacking": {
+               "group": "A",
+               "mode": "none"
+             },
+             "thresholdsStyle": {
+               "mode": "off"
+             }
+           },
+           "mappings": [],
+           "thresholds": {
+             "mode": "absolute",
+             "steps": [
+               {
+                 "color": "green",
+                 "value": null
+               },
+               {
+                 "color": "red",
+                 "value": 80
+               }
+             ]
+           },
+           "unit": "s"
+         },
+         "overrides": []
+       },
+       "fill": 1,
+       "gridPos": {
+         "h": 7,
+         "w": 12,
+         "x": 12,
+         "y": 16
+       },
+       "id": 4,
+       "legend": {
+         "avg": false,
+         "current": false,
+         "max": false,
+         "min": false,
+         "show": true,
+         "total": false,
+         "values": false
+       },
+       "lines": true,
+       "linewidth": 1,
+       "links": [],
+       "nullPointMode": "null as zero",
+       "options": {
+         "legend": {
+           "calcs": [],
+           "displayMode": "list",
+           "placement": "bottom"
+         },
+         "tooltip": {
+           "mode": "single"
+         }
+       },
+       "percentage": false,
+       "pointradius": 5,
+       "points": false,
+       "renderer": "flot",
+       "seriesOverrides": [],
+       "spaceLength": 10,
+       "stack": false,
+       "steppedLine": false,
+       "targets": [
+         {
+           "exemplar": true,
+           "expr": "histogram_quantile(0.99, sum(rate(tns_request_duration_seconds_bucket{job=~\"$namespace/app\"}[$__rate_interval])) by (le)) * 1",
+           "format": "time_series",
+           "interval": "",
+           "intervalFactor": 2,
+           "legendFormat": "99th Percentile",
+           "refId": "A",
+           "step": 10
+         },
+         {
+           "exemplar": true,
+           "expr": "histogram_quantile(0.50, sum(rate(tns_request_duration_seconds_bucket{job=~\"$namespace/app\"}[$__rate_interval])) by (le)) * 1",
+           "format": "time_series",
+           "intervalFactor": 2,
+           "legendFormat": "50th Percentile",
+           "refId": "B",
+           "step": 10
+         },
+         {
+           "exemplar": true,
+           "expr": "sum(rate(tns_request_duration_seconds_sum{job=~\"$namespace/app\"}[10m])) * 1 / sum(rate(tns_request_duration_seconds_count{job=~\"$namespace/app\"}[10m]))",
+           "format": "time_series",
+           "interval": "",
+           "intervalFactor": 2,
+           "legendFormat": "Average [10m]",
+           "refId": "C",
+           "step": 10
+         }
+       ],
+       "thresholds": [],
+       "timeFrom": null,
+       "timeShift": null,
+       "title": "Latency",
+       "tooltip": {
+         "shared": false,
+         "sort": 0,
+         "value_type": "individual"
+       },
+       "type": "timeseries",
+       "xaxis": {
+         "buckets": null,
+         "mode": "time",
+         "name": null,
+         "show": true,
+         "values": []
+       },
+       "yaxes": [
+         {
+           "format": "s",
+           "label": null,
+           "logBase": 1,
+           "max": null,
+           "min": 0,
+           "show": true
+         },
+         {
+           "format": "short",
+           "label": null,
+           "logBase": 1,
+           "max": null,
+           "min": null,
+           "show": false
+         }
+       ]
+     },
+     {
+       "collapsed": false,
+       "datasource": null,
+       "fieldConfig": {
+         "defaults": {},
+         "overrides": []
+       },
+       "gridPos": {
+         "h": 1,
+         "w": 24,
+         "x": 0,
+         "y": 23
+       },
+       "id": 9,
+       "panels": [],
+       "title": "Database",
+       "type": "row"
+     },
+     {
+       "datasource": "$datasource",
+       "description": "",
+       "fieldConfig": {
+         "defaults": {
+           "color": {
+             "mode": "palette-classic"
+           },
+           "custom": {
+             "axisLabel": "",
+             "axisPlacement": "auto",
+             "barAlignment": 0,
+             "drawStyle": "line",
+             "fillOpacity": 100,
+             "gradientMode": "hue",
+             "hideFrom": {
+               "legend": false,
+               "tooltip": false,
+               "viz": false
+             },
+             "lineInterpolation": "linear",
+             "lineWidth": 0,
+             "pointSize": 5,
+             "scaleDistribution": {
+               "type": "linear"
+             },
+             "showPoints": "never",
+             "spanNulls": false,
+             "stacking": {
+               "group": "A",
+               "mode": "normal"
+             },
+             "thresholdsStyle": {
+               "mode": "off"
+             }
+           },
+           "mappings": [],
+           "min": 0,
+           "thresholds": {
+             "mode": "absolute",
+             "steps": [
+               {
+                 "color": "green",
+                 "value": null
+               },
+               {
+                 "color": "red",
+                 "value": 80
+               }
+             ]
+           },
+           "unit": "short"
+         },
+         "overrides": [
+           {
+             "matcher": {
+               "id": "byName",
+               "options": "200"
+             },
+             "properties": [
+               {
+                 "id": "color",
+                 "value": {
+                   "fixedColor": "#7EB26D",
+                   "mode": "fixed"
+                 }
+               }
+             ]
+           },
+           {
+             "matcher": {
+               "id": "byName",
+               "options": "500"
+             },
+             "properties": [
+               {
+                 "id": "color",
+                 "value": {
+                   "fixedColor": "#E24D42",
+                   "mode": "fixed"
+                 }
+               }
+             ]
+           },
+           {
+             "matcher": {
+               "id": "byName",
+               "options": "HTTP Status 204"
+             },
+             "properties": [
+               {
+                 "id": "color",
+                 "value": {
+                   "fixedColor": "green",
+                   "mode": "fixed"
+                 }
+               }
+             ]
+           },
+           {
+             "matcher": {
+               "id": "byName",
+               "options": "HTTP Status 208"
+             },
+             "properties": [
+               {
+                 "id": "color",
+                 "value": {
+                   "fixedColor": "green",
+                   "mode": "fixed"
+                 }
+               }
+             ]
+           },
+           {
+             "matcher": {
+               "id": "byName",
+               "options": "HTTP Status 500"
+             },
+             "properties": [
+               {
+                 "id": "color",
+                 "value": {
+                   "fixedColor": "red",
+                   "mode": "fixed"
+                 }
+               }
+             ]
+           }
          ]
-      },
-      "timezone": "utc",
-      "title": "Demo App",
-      "uid": "",
-      "version": 0
-   }
+       },
+       "gridPos": {
+         "h": 7,
+         "w": 12,
+         "x": 0,
+         "y": 24
+       },
+       "id": 5,
+       "links": [],
+       "options": {
+         "legend": {
+           "calcs": [],
+           "displayMode": "list",
+           "placement": "bottom"
+         },
+         "tooltip": {
+           "mode": "single"
+         }
+       },
+       "pluginVersion": "8.1.2",
+       "targets": [
+         {
+           "exemplar": true,
+           "expr": "sum by (status_code) (rate(tns_request_duration_seconds_count{job=~\"$namespace/db\"}[1m]))",
+           "format": "time_series",
+           "interval": "",
+           "intervalFactor": 2,
+           "legendFormat": "HTTP Status {{status_code}}",
+           "refId": "A",
+           "step": 10
+         }
+       ],
+       "timeFrom": null,
+       "timeShift": null,
+       "title": "Requests Per Second (RPS)",
+       "type": "timeseries"
+     },
+     {
+       "aliasColors": {},
+       "bars": false,
+       "dashLength": 10,
+       "dashes": false,
+       "datasource": "$datasource",
+       "fieldConfig": {
+         "defaults": {
+           "color": {
+             "mode": "palette-classic"
+           },
+           "custom": {
+             "axisLabel": "",
+             "axisPlacement": "auto",
+             "barAlignment": 0,
+             "drawStyle": "line",
+             "fillOpacity": 20,
+             "gradientMode": "none",
+             "hideFrom": {
+               "legend": false,
+               "tooltip": false,
+               "viz": false
+             },
+             "lineInterpolation": "linear",
+             "lineWidth": 1,
+             "pointSize": 5,
+             "scaleDistribution": {
+               "type": "linear"
+             },
+             "showPoints": "never",
+             "spanNulls": false,
+             "stacking": {
+               "group": "A",
+               "mode": "none"
+             },
+             "thresholdsStyle": {
+               "mode": "off"
+             }
+           },
+           "mappings": [],
+           "thresholds": {
+             "mode": "absolute",
+             "steps": [
+               {
+                 "color": "green",
+                 "value": null
+               },
+               {
+                 "color": "red",
+                 "value": 80
+               }
+             ]
+           },
+           "unit": "s"
+         },
+         "overrides": []
+       },
+       "fill": 1,
+       "gridPos": {
+         "h": 7,
+         "w": 12,
+         "x": 12,
+         "y": 24
+       },
+       "id": 6,
+       "legend": {
+         "avg": false,
+         "current": false,
+         "max": false,
+         "min": false,
+         "show": true,
+         "total": false,
+         "values": false
+       },
+       "lines": true,
+       "linewidth": 1,
+       "links": [],
+       "nullPointMode": "null as zero",
+       "options": {
+         "legend": {
+           "calcs": [],
+           "displayMode": "list",
+           "placement": "bottom"
+         },
+         "tooltip": {
+           "mode": "single"
+         }
+       },
+       "percentage": false,
+       "pointradius": 5,
+       "points": false,
+       "renderer": "flot",
+       "seriesOverrides": [],
+       "spaceLength": 10,
+       "stack": false,
+       "steppedLine": false,
+       "targets": [
+         {
+           "exemplar": true,
+           "expr": "histogram_quantile(0.99, sum(rate(tns_request_duration_seconds_bucket{job=~\"$namespace/db\"}[$__rate_interval])) by (le)) * 1",
+           "format": "time_series",
+           "intervalFactor": 2,
+           "legendFormat": "99th Percentile",
+           "refId": "A",
+           "step": 10
+         },
+         {
+           "exemplar": true,
+           "expr": "histogram_quantile(0.50, sum(rate(tns_request_duration_seconds_bucket{job=~\"$namespace/db\"}[$__rate_interval])) by (le)) * 1",
+           "format": "time_series",
+           "intervalFactor": 2,
+           "legendFormat": "50th Percentile",
+           "refId": "B",
+           "step": 10
+         },
+         {
+           "exemplar": true,
+           "expr": "sum(rate(tns_request_duration_seconds_sum{job=~\"$namespace/db\"}[10m])) * 1 / sum(rate(tns_request_duration_seconds_count{job=~\"$namespace/db\"}[10m]))",
+           "format": "time_series",
+           "interval": "",
+           "intervalFactor": 2,
+           "legendFormat": "Average [10m]",
+           "refId": "C",
+           "step": 10
+         }
+       ],
+       "thresholds": [],
+       "timeFrom": null,
+       "timeShift": null,
+       "title": "Latency",
+       "tooltip": {
+         "shared": false,
+         "sort": 0,
+         "value_type": "individual"
+       },
+       "type": "timeseries",
+       "xaxis": {
+         "buckets": null,
+         "mode": "time",
+         "name": null,
+         "show": true,
+         "values": []
+       },
+       "yaxes": [
+         {
+           "format": "s",
+           "label": null,
+           "logBase": 1,
+           "max": null,
+           "min": 0,
+           "show": true
+         },
+         {
+           "format": "short",
+           "label": null,
+           "logBase": 1,
+           "max": null,
+           "min": null,
+           "show": false
+         }
+       ]
+     }
+   ],
+   "refresh": "10s",
+   "schemaVersion": 30,
+   "style": "dark",
+   "tags": [],
+   "templating": {
+     "list": [
+       {
+         "current": {
+           "selected": false,
+           "text": "default",
+           "value": "default"
+         },
+         "description": null,
+         "error": null,
+         "hide": 0,
+         "includeAll": false,
+         "label": null,
+         "multi": false,
+         "name": "datasource",
+         "options": [],
+         "query": "prometheus",
+         "refresh": 1,
+         "regex": "",
+         "skipUrlSync": false,
+         "type": "datasource"
+       },
+       {
+         "allValue": ".+",
+         "current": {
+           "selected": true,
+           "text": [
+             "All"
+           ],
+           "value": [
+             "$__all"
+           ]
+         },
+         "datasource": "$datasource",
+         "definition": "",
+         "description": null,
+         "error": null,
+         "hide": 0,
+         "includeAll": true,
+         "label": "namespace",
+         "multi": true,
+         "name": "namespace",
+         "options": [],
+         "query": {
+           "query": "label_values(kube_pod_container_info{image=~\".*grafana/tns.*\"}, namespace)",
+           "refId": "prometheus-namespace-Variable-Query"
+         },
+         "refresh": 1,
+         "regex": "",
+         "skipUrlSync": false,
+         "sort": 2,
+         "tagValuesQuery": "",
+         "tagsQuery": "",
+         "type": "query",
+         "useTags": false
+       }
+     ]
+   },
+   "time": {
+     "from": "now-30m",
+     "to": "now"
+   },
+   "timepicker": {
+     "refresh_intervals": [
+       "5s",
+       "10s",
+       "30s",
+       "1m",
+       "5m",
+       "15m",
+       "30m",
+       "1h",
+       "2h",
+       "1d"
+     ],
+     "time_options": [
+       "5m",
+       "15m",
+       "1h",
+       "6h",
+       "12h",
+       "24h",
+       "2d",
+       "7d",
+       "30d"
+     ]
+   },
+   "timezone": "",
+   "title": "The New Stack (TNS) Demo Application RED dashboard",
+   "uid": "62440ddb0b6b14e05c6cdd3940eda2d1",
+   "version": 1
+ }

@@ -23,6 +23,7 @@ import (
 	"github.com/go-kit/kit/log/level"
 	"github.com/grafana/tns/client"
 	"github.com/weaveworks/common/logging"
+	"github.com/weaveworks/common/middleware"
 	"github.com/weaveworks/common/server"
 	"github.com/weaveworks/common/tracing"
 )
@@ -127,6 +128,7 @@ func new(logger log.Logger, databases []*url.URL) (*app, error) {
 }
 
 func (a *app) Index(w http.ResponseWriter, r *http.Request) {
+	traceId, _ := middleware.ExtractTraceID(r.Context())
 	db := a.databases[rand.Intn(len(a.databases))].String()
 	req, err := http.NewRequest("GET", db, nil)
 	if err != nil {
@@ -137,6 +139,7 @@ func (a *app) Index(w http.ResponseWriter, r *http.Request) {
 	req = req.WithContext(r.Context())
 
 	resp, err := a.client.Do(req)
+
 	if err != nil {
 		w.WriteHeader(http.StatusServiceUnavailable)
 		fmt.Fprintf(w, "%v\n", err)
@@ -146,7 +149,7 @@ func (a *app) Index(w http.ResponseWriter, r *http.Request) {
 
 	if resp.StatusCode/100 != 2 {
 		body, _ := ioutil.ReadAll(io.LimitReader(resp.Body, 1024))
-		level.Error(a.logger).Log("msg", "HTTP request faild", "status", resp.StatusCode, "body", body)
+		level.Error(a.logger).Log("msg", "HTTP request failed", "status", resp.StatusCode, "body", body)
 		w.WriteHeader(http.StatusInternalServerError)
 		fmt.Fprintf(w, "%s\n", body)
 		return
@@ -176,13 +179,15 @@ func (a *app) Index(w http.ResponseWriter, r *http.Request) {
 		ID:    a.id,
 		Links: response.Links,
 	}); err != nil {
-		level.Error(a.logger).Log("msg", "failed to execute template", "err", err)
+		level.Error(a.logger).Log("msg", "failed to execute template", "err", err, "traceID", traceId)
 	}
 }
 
 func (a *app) Post(w http.ResponseWriter, r *http.Request) {
+	traceId, _ := middleware.ExtractTraceID(r.Context())
+
 	if err := r.ParseForm(); err != nil {
-		level.Error(a.logger).Log("msg", "error parsing form", "err", err)
+		level.Error(a.logger).Log("msg", "error parsing form", "err", err, "traceID", traceId)
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
@@ -196,7 +201,7 @@ func (a *app) Post(w http.ResponseWriter, r *http.Request) {
 
 	parsed, err := url.Parse(u)
 	if err != nil {
-		level.Error(a.logger).Log("msg", "invalid url", "url", u, "err", err)
+		level.Error(a.logger).Log("msg", "invalid url", "url", u, "err", err, "traceID", traceId)
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
@@ -225,7 +230,7 @@ func (a *app) Post(w http.ResponseWriter, r *http.Request) {
 		URL:   parsed.String(),
 		Title: title,
 	}); err != nil {
-		level.Error(a.logger).Log("msg", "error encoding post", "err", err)
+		level.Error(a.logger).Log("msg", "error encoding post", "err", err, "traceID", traceId)
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
@@ -233,7 +238,7 @@ func (a *app) Post(w http.ResponseWriter, r *http.Request) {
 	db := a.databases[rand.Intn(len(a.databases))].String()
 	req, err := http.NewRequest("POST", db+"/post", &buf)
 	if err != nil {
-		level.Error(a.logger).Log("msg", "error building request", "err", err)
+		level.Error(a.logger).Log("msg", "error building request", "err", err, "traceID", traceId)
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
@@ -249,7 +254,7 @@ func (a *app) Post(w http.ResponseWriter, r *http.Request) {
 
 	if resp.StatusCode/100 != 2 {
 		body, _ := ioutil.ReadAll(io.LimitReader(resp.Body, 1024))
-		level.Error(a.logger).Log("msg", "HTTP request faild", "status", resp.StatusCode, "body", body)
+		level.Error(a.logger).Log("msg", "HTTP request failed", "status", resp.StatusCode, "body", body, "traceID", traceId)
 		w.WriteHeader(http.StatusInternalServerError)
 		fmt.Fprintf(w, "%s\n", body)
 		return
@@ -262,15 +267,17 @@ func (a *app) Post(w http.ResponseWriter, r *http.Request) {
 }
 
 func (a *app) Vote(w http.ResponseWriter, r *http.Request) {
+	traceId, _ := middleware.ExtractTraceID(r.Context())
+
 	if err := r.ParseForm(); err != nil {
-		level.Error(a.logger).Log("msg", "error parsing form", "err", err)
+		level.Error(a.logger).Log("msg", "error parsing form", "err", err, "traceID", traceId)
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
 
 	id, err := strconv.Atoi(r.Form.Get("id"))
 	if err != nil {
-		level.Error(a.logger).Log("msg", "invalid id", "err", err)
+		level.Error(a.logger).Log("msg", "invalid id", "err", err, "traceID", traceId)
 		http.Error(w, "invalid id", http.StatusBadRequest)
 		return
 	}
@@ -281,7 +288,7 @@ func (a *app) Vote(w http.ResponseWriter, r *http.Request) {
 	}{
 		ID: id,
 	}); err != nil {
-		level.Error(a.logger).Log("msg", "error encoding post", "err", err)
+		level.Error(a.logger).Log("msg", "error encoding post", "err", err, "traceID", traceId)
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
@@ -289,7 +296,7 @@ func (a *app) Vote(w http.ResponseWriter, r *http.Request) {
 	db := a.databases[rand.Intn(len(a.databases))].String()
 	req, err := http.NewRequest("POST", db+"/vote", &buf)
 	if err != nil {
-		level.Error(a.logger).Log("msg", "error building request", "err", err)
+		level.Error(a.logger).Log("msg", "error building request", "err", err, "traceID", traceId)
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
@@ -305,7 +312,7 @@ func (a *app) Vote(w http.ResponseWriter, r *http.Request) {
 
 	if resp.StatusCode/100 != 2 {
 		body, _ := ioutil.ReadAll(io.LimitReader(resp.Body, 1024))
-		level.Error(a.logger).Log("msg", "HTTP request faild", "status", resp.StatusCode, "body", body)
+		level.Error(a.logger).Log("msg", "HTTP request failed", "status", resp.StatusCode, "body", body, "traceID", traceId)
 		w.WriteHeader(http.StatusInternalServerError)
 		fmt.Fprintf(w, "%s\n", body)
 		return
