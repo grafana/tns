@@ -19,13 +19,13 @@ import (
 	"text/template"
 	"time"
 
-	"github.com/go-kit/kit/log"
-	"github.com/go-kit/kit/log/level"
-	"github.com/grafana/tns/client"
+	"github.com/go-kit/log"
+	"github.com/go-kit/log/level"
 	"github.com/weaveworks/common/logging"
-	"github.com/weaveworks/common/middleware"
 	"github.com/weaveworks/common/server"
 	"github.com/weaveworks/common/tracing"
+
+	"github.com/grafana/tns/client"
 )
 
 func main() {
@@ -128,7 +128,7 @@ func new(logger log.Logger, databases []*url.URL) (*app, error) {
 }
 
 func (a *app) Index(w http.ResponseWriter, r *http.Request) {
-	traceId, _ := middleware.ExtractTraceID(r.Context())
+	traceId, _ := tracing.ExtractTraceID(r.Context())
 	db := a.databases[rand.Intn(len(a.databases))].String()
 	req, err := http.NewRequest("GET", db, nil)
 	if err != nil {
@@ -184,7 +184,7 @@ func (a *app) Index(w http.ResponseWriter, r *http.Request) {
 }
 
 func (a *app) Post(w http.ResponseWriter, r *http.Request) {
-	traceId, _ := middleware.ExtractTraceID(r.Context())
+	traceId, _ := tracing.ExtractTraceID(r.Context())
 
 	if err := r.ParseForm(); err != nil {
 		level.Error(a.logger).Log("msg", "error parsing form", "err", err, "traceID", traceId)
@@ -267,7 +267,7 @@ func (a *app) Post(w http.ResponseWriter, r *http.Request) {
 }
 
 func (a *app) Vote(w http.ResponseWriter, r *http.Request) {
-	traceId, _ := middleware.ExtractTraceID(r.Context())
+	traceId, _ := tracing.ExtractTraceID(r.Context())
 
 	if err := r.ParseForm(); err != nil {
 		level.Error(a.logger).Log("msg", "error parsing form", "err", err, "traceID", traceId)

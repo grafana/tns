@@ -11,8 +11,8 @@ import (
 	"sync"
 	"time"
 
-	"github.com/go-kit/kit/log"
-	"github.com/go-kit/kit/log/level"
+	"github.com/go-kit/log"
+	"github.com/go-kit/log/level"
 	"github.com/weaveworks/common/logging"
 	"github.com/weaveworks/common/middleware"
 	"github.com/weaveworks/common/server"
@@ -104,7 +104,7 @@ func (db *db) handlePanic(next http.Handler) http.Handler {
 }
 
 func (db *db) Fetch(w http.ResponseWriter, r *http.Request) {
-	traceId, _ := middleware.ExtractTraceID(r.Context())
+	traceId, _ := tracing.ExtractTraceID(r.Context())
 
 	db.mtx.Lock()
 	defer db.mtx.Unlock()
@@ -154,7 +154,7 @@ func (db *db) Fetch(w http.ResponseWriter, r *http.Request) {
 }
 
 func (db *db) Post(w http.ResponseWriter, r *http.Request) {
-	traceId, _ := middleware.ExtractTraceID(r.Context())
+	traceId, _ := tracing.ExtractTraceID(r.Context())
 
 	var link Link
 	if err := json.NewDecoder(r.Body).Decode(&link); err != nil {
@@ -176,7 +176,7 @@ func (db *db) Post(w http.ResponseWriter, r *http.Request) {
 }
 
 func (db *db) Vote(w http.ResponseWriter, r *http.Request) {
-	traceId, _ := middleware.ExtractTraceID(r.Context())
+	traceId, _ := tracing.ExtractTraceID(r.Context())
 
 	var req struct {
 		ID int

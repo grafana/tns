@@ -1,14 +1,13 @@
-local prometheus = import 'prometheus-ksonnet/prometheus-ksonnet.libsonnet';
-local promtail = import 'promtail/promtail.libsonnet';
 local tns_mixin = import 'tns-mixin/mixin.libsonnet';
 
-prometheus + promtail + {
+(import 'ksonnet-util/kausal.libsonnet') +
+(import 'prometheus-ksonnet/prometheus-ksonnet.libsonnet') +
+(import 'promtail/promtail.libsonnet') +
+{
   // A known data source UID is necessary to configure the Loki datasource such that users can pivot
   // from Loki logs to Jaeger traces on traceID.
-  local service = $.core.v1.service,
   _images+:: {
     grafana: 'grafana/grafana:8.2.2',
-    prometheus: 'prom/prometheus:v2.30.3',
   },
   _config+:: {
     namespace: 'default',
@@ -51,6 +50,7 @@ prometheus + promtail + {
     },
   },
 
+  local service = $.core.v1.service,
   nginx_service+:
     service.mixin.spec.withType('ClusterIP') +
     service.mixin.spec.withPorts({
@@ -66,8 +66,9 @@ prometheus + promtail + {
     },
   },
 
+  local configMap = $.core.v1.configMap,
   grafana_datasource_config_map+:
-    $.core.v1.configMap.withDataMixin({
+    configMap.withDataMixin({
       'datasources.yml': $.util.manifestYaml({
         apiVersion: 1,
         datasources: [
@@ -104,7 +105,7 @@ prometheus + promtail + {
               httpMethod: 'POST',
               exemplarTraceIdDestinations: [{
                 name: 'traceID',
-                datasourceUid: 'tempo'
+                datasourceUid: 'tempo',
               }],
             },
           },
@@ -121,9 +122,9 @@ prometheus + promtail + {
             jsonData: {
               tracesToLogs: {
                 datasourceUid: 'Loki',
-                tags: ['job', 'instance', 'pod', 'namespace']
-              }
-            }
+                tags: ['job', 'instance', 'pod', 'namespace'],
+              },
+            },
           },
         ],
       }),
@@ -132,6 +133,7 @@ prometheus + promtail + {
   local ingress = $.extensions.v1beta1.ingress,
   local ingressRule = $.extensions.v1beta1.ingressRule,
   local httpIngressPath = $.extensions.v1beta1.httpIngressPath,
+
   ingress: ingress.new() +
            ingress.mixin.metadata.withName('ingress')
            + ingress.mixin.metadata.withAnnotationsMixin({
