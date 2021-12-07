@@ -19,8 +19,8 @@ services:
     image: grafana/tns-db:842bd3b
     command:
       - '-log.level=debug'
-    ports:
-      - 0.0.0.0:8000:80
+    # ports:
+    #   - 0.0.0.0:8000:80
     environment:
       JAEGER_ENDPOINT: 'http://tempo:14268/api/traces'
       JAEGER_TAGS: job=tns/db
@@ -29,6 +29,7 @@ services:
     labels:
       namespace: tns
     logging: *default-logging
+    scale: 3
 
   app:
     image: grafana/tns-app:842bd3b
@@ -37,8 +38,8 @@ services:
       - 'http://db'
     links:
       - db
-    ports:
-      - 0.0.0.0:8001:80
+    # ports:
+    #   - 0.0.0.0:8001:80
     environment:
       JAEGER_ENDPOINT: 'http://tempo:14268/api/traces'
       JAEGER_TAGS: job=tns/app
@@ -47,6 +48,17 @@ services:
     labels:
       namespace: tns
     logging: *default-logging
+    scale: 8
+  
+  # use nginx when scaling the app server
+  expose-app:
+    image: nginx:latest
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf:ro
+    depends_on:
+      - app
+    ports:
+      - "8001:8001"
 
   loadgen:
     image: grafana/tns-loadgen:842bd3b
