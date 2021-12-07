@@ -28,6 +28,7 @@ services:
       JAEGER_SAMPLER_PARAM: 1
     labels:
       namespace: tns
+      prometheus-job: "tns/db"
     logging: *default-logging
     scale: 3
 
@@ -36,8 +37,8 @@ services:
     command:
       - '-log.level=debug'
       - 'http://db'
-    links:
-      - db
+    depends_on:
+      - db 
     # ports:
     #   - 0.0.0.0:8001:80
     environment:
@@ -47,6 +48,7 @@ services:
       JAEGER_SAMPLER_PARAM: 1
     labels:
       namespace: tns
+      prometheus-job: "tns/app"
     logging: *default-logging
     scale: 8
   
@@ -65,7 +67,7 @@ services:
     command:
       - '-log.level=debug'
       - 'http://app'
-    links:
+    depends_on:
       - app
     ports:
       - 0.0.0.0:8002:80
@@ -76,6 +78,7 @@ services:
       JAEGER_SAMPLER_PARAM: 1
     labels:
       namespace: tns
+      prometheus-job: "tns/loadgen"
     logging: *default-logging
 
   grafana:
@@ -95,7 +98,7 @@ services:
     logging: *default-logging
 
   prometheus:
-    image: prom/prometheus:v2.30.3
+    image: prom/prometheus:v2.31.1
     user: root
     command:
       - --config.file=/etc/prometheus/prometheus.yml
@@ -106,6 +109,7 @@ services:
       - --web.enable-admin-api
     volumes:
       - ./prometheus.yaml:/etc/prometheus/prometheus.yml
+      - /var/run/docker.sock:/var/run/docker.sock
     links:
       - app
       - db

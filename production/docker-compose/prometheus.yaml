@@ -32,15 +32,15 @@ scrape_configs:
   - job_name: 'monitoring/tempo'
     static_configs:
     - targets: ['tempo:80']
-  - job_name: 'tns/app'
-    static_configs:
-    - targets: ['app:80']
-  - job_name: 'tns/db'
-    static_configs:
-    - targets: ['db:80']
-  - job_name: 'tns/loadgen'
-    static_configs:
-    - targets: ['loadgen:80']
+  # - job_name: 'tns/app'
+  #   static_configs:
+  #   - targets: ['app:80']
+  # - job_name: 'tns/db'
+  #   static_configs:
+  #   - targets: ['db:80']
+  # - job_name: 'tns/loadgen'
+  #   static_configs:
+  #   - targets: ['loadgen:80']
   - job_name: 'monitoring/docker'
     static_configs:
     - targets: ['docker.for.mac.host.internal:9323']
@@ -50,3 +50,15 @@ scrape_configs:
   - job_name: 'monitoring/cadvisor'
     static_configs:
     - targets: ['cadvisor:8080']
+  - job_name: "docker-containers"
+    docker_sd_configs:
+      - host: unix:///var/run/docker.sock # You can also use http/https to connect to the Docker daemon.
+    relabel_configs:
+      # Only keep containers that have a `prometheus-job` label.
+      - source_labels: [__meta_docker_container_label_prometheus_job]
+        regex: .+
+        action: keep
+      # Use the task labels that are prefixed by `prometheus-`.
+      - regex: __meta_docker_container_label_prometheus_(.+)
+        action: labelmap
+        replacement: $1
