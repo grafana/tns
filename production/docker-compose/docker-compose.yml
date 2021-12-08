@@ -16,7 +16,25 @@ version: '3.4'
 services:
 
   db:
-    image: grafana/tns-db:842bd3b
+    image: grafana/tns-db:gtm-hackathon-1
+    command:
+      - '-log.level=debug'
+      - '-smooth=true'
+    # ports:
+    #   - 0.0.0.0:8000:80
+    environment:
+      JAEGER_ENDPOINT: 'http://tempo:14268/api/traces'
+      JAEGER_TAGS: job=tns/db
+      JAEGER_SAMPLER_TYPE: const
+      JAEGER_SAMPLER_PARAM: 1
+    labels:
+      namespace: tns
+      prometheus-job: "tns/db"
+    logging: *default-logging
+    scale: 2
+
+  broke-db:
+    image: grafana/tns-db:gtm-hackathon-1
     command:
       - '-log.level=debug'
     # ports:
@@ -30,13 +48,14 @@ services:
       namespace: tns
       prometheus-job: "tns/db"
     logging: *default-logging
-    scale: 3
+    scale: 1
 
   app:
     image: grafana/tns-app:842bd3b
     command:
       - '-log.level=debug'
       - 'http://db'
+      - 'http://broke-db'
     depends_on:
       - db 
     # ports:
@@ -110,10 +129,6 @@ services:
     volumes:
       - ./prometheus.yaml:/etc/prometheus/prometheus.yml
       - /var/run/docker.sock:/var/run/docker.sock
-    links:
-      - app
-      - db
-      - loadgen
     ports:
       - 0.0.0.0:9090:9090
     labels:

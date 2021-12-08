@@ -19,11 +19,14 @@ import (
 	"github.com/weaveworks/common/tracing"
 )
 
+var isSmooth bool
+
 func main() {
 	serverConfig := server.Config{
 		MetricsNamespace: "tns",
 	}
 	serverConfig.RegisterFlags(flag.CommandLine)
+	flag.BoolVar(&isSmooth, "smooth", false, "If the db should run smoothly without errors")
 	flag.Parse()
 
 	// Use a gokit logger, and tell the server to use it.
@@ -38,7 +41,7 @@ func main() {
 	}
 	defer trace.Close()
 
-	db := New(logger)
+	db := New(logger, isSmooth)
 	serverConfig.HTTPMiddleware = []middleware.Interface{middleware.Func(db.handlePanic)}
 
 	s, err := server.New(serverConfig)
@@ -61,9 +64,10 @@ func main() {
 type db struct {
 	logger log.Logger
 
-	mtx   sync.Mutex
-	fail  bool
-	links map[int]*Link
+	mtx    sync.Mutex
+	fail   bool
+	smooth bool // Run the database smoothly if this is true
+	links  map[int]*Link
 }
 
 type Link struct {
@@ -73,9 +77,10 @@ type Link struct {
 	Title  string
 }
 
-func New(logger log.Logger) *db {
+func New(logger log.Logger, isSmooth bool) *db {
 	return &db{
 		logger: logger,
+		smooth: isSmooth,
 		links:  map[int]*Link{},
 	}
 }
@@ -109,8 +114,8 @@ func (db *db) Fetch(w http.ResponseWriter, r *http.Request) {
 	db.mtx.Lock()
 	defer db.mtx.Unlock()
 
-	// Every 5mins, randomly fail 40% of requests for 30 seconds.
-	if time.Now().Unix()%(5*60) < 30 && rand.Intn(10) <= 8 {
+	// Every 5mins, randomly fail 80% of requests for 30 seconds.
+	if !db.smooth && time.Now().Unix()%(5*60) < 30 && rand.Intn(10) <= 8 {
 		time.Sleep(50 * time.Millisecond)
 		if rand.Intn(10) <= 4 {
 			panic("too many open connections")
