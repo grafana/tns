@@ -16,7 +16,7 @@ version: '3.4'
 services:
 
   db:
-    image: grafana/tns-db:gtm-hackathon-1
+    image: grafana/tns-db:gtm-hackathon-3
     command:
       - '-log.level=debug'
       - '-smooth=true'
@@ -34,7 +34,7 @@ services:
     scale: 2
 
   broke-db:
-    image: grafana/tns-db:gtm-hackathon-1
+    image: grafana/tns-db:gtm-hackathon-3
     command:
       - '-log.level=debug'
     # ports:
@@ -82,7 +82,7 @@ services:
       - "8001:8001"
 
   loadgen:
-    image: grafana/tns-loadgen:842bd3b
+    image: grafana/tns-loadgen:gtm-hackathon-2
     command:
       - '-log.level=debug'
       - 'http://app'
