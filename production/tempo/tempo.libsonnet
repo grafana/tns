@@ -34,7 +34,7 @@
     deployment.new('tempo',
                    1,
                    [
-                     $.tempo_container
+                     $.tempo_container,
                    ],
                    { app: 'tempo' }) +
     deployment.mixin.spec.template.metadata.withAnnotations({
