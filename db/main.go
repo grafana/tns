@@ -13,6 +13,8 @@ import (
 
 	"github.com/go-kit/log"
 	"github.com/go-kit/log/level"
+	"github.com/prometheus/client_golang/prometheus"
+	"github.com/prometheus/client_golang/prometheus/promauto"
 	"github.com/weaveworks/common/logging"
 	"github.com/weaveworks/common/middleware"
 	"github.com/weaveworks/common/server"
@@ -38,7 +40,7 @@ func main() {
 	}
 	defer trace.Close()
 
-	db := New(logger)
+	db := New(logger, prometheus.DefaultRegisterer)
 	serverConfig.HTTPMiddleware = []middleware.Interface{middleware.Func(db.handlePanic)}
 
 	s, err := server.New(serverConfig)
@@ -59,7 +61,10 @@ func main() {
 }
 
 type db struct {
-	logger log.Logger
+	logger  log.Logger
+	fetches prometheus.Counter
+	posts   prometheus.Histogram
+	votes   prometheus.Histogram
 
 	mtx   sync.Mutex
 	fail  bool
@@ -73,10 +78,22 @@ type Link struct {
 	Title  string
 }
 
-func New(logger log.Logger) *db {
+func New(logger log.Logger, reg prometheus.Registerer) *db {
 	return &db{
 		logger: logger,
-		links:  map[int]*Link{},
+		fetches: promauto.With(reg).NewCounter(prometheus.CounterOpts{
+			Name: "tns_db_fetches_total",
+			Help: "Number of fetch requests handled by the database",
+		}),
+		posts: promauto.With(reg).NewHistogram(prometheus.HistogramOpts{
+			Name: "tns_db_post_time_seconds",
+			Help: "Time taken to submit new links to the database",
+		}),
+		votes: promauto.With(reg).NewHistogram(prometheus.HistogramOpts{
+			Name: "tns_db_vote_time_seconds",
+			Help: "Time taken to vote on links in the database",
+		}),
+		links: map[int]*Link{},
 	}
 }
 
@@ -105,6 +122,9 @@ func (db *db) handlePanic(next http.Handler) http.Handler {
 
 func (db *db) Fetch(w http.ResponseWriter, r *http.Request) {
 	traceId, _ := tracing.ExtractTraceID(r.Context())
+	if c, ok := db.fetches.(prometheus.ExemplarAdder); ok {
+		c.AddWithExemplar(1, prometheus.Labels{"traceID": traceId})
+	}
 
 	db.mtx.Lock()
 	defer db.mtx.Unlock()
@@ -155,6 +175,13 @@ func (db *db) Fetch(w http.ResponseWriter, r *http.Request) {
 
 func (db *db) Post(w http.ResponseWriter, r *http.Request) {
 	traceId, _ := tracing.ExtractTraceID(r.Context())
+	start := time.Now()
+	defer func() {
+		elapsed := time.Since(start)
+		if h, ok := db.posts.(prometheus.ExemplarObserver); ok {
+			h.ObserveWithExemplar(elapsed.Seconds(), prometheus.Labels{"traceID": traceId})
+		}
+	}()
 
 	var link Link
 	if err := json.NewDecoder(r.Body).Decode(&link); err != nil {
@@ -177,6 +204,13 @@ func (db *db) Post(w http.ResponseWriter, r *http.Request) {
 
 func (db *db) Vote(w http.ResponseWriter, r *http.Request) {
 	traceId, _ := tracing.ExtractTraceID(r.Context())
+	start := time.Now()
+	defer func() {
+		elapsed := time.Since(start)
+		if h, ok := db.votes.(prometheus.ExemplarObserver); ok {
+			h.ObserveWithExemplar(elapsed.Seconds(), prometheus.Labels{"traceID": traceId})
+		}
+	}()
 
 	var req struct {
 		ID int
