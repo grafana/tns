@@ -2,7 +2,7 @@
   _config+:: {
     tns+: {
       jaeger: {
-        host: 'jaeger-agent.tempo.svc.cluster.local',
+        host: 'grafana-agent.default.svc.cluster.local',
         tags: 'cluster=tns,namespace=tns',
         sampler_type: 'const',
         sampler_param: '1',

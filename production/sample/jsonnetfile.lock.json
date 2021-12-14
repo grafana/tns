@@ -4,6 +4,16 @@
     {
       "source": {
         "git": {
+          "remote": "https://github.com/grafana/agent.git",
+          "subdir": "production/tanka/grafana-agent"
+        }
+      },
+      "version": "5bf8cf452fa76c75387e30b6373630923679221c",
+      "sum": "U7uF6KmVbuHINEHgpxcHChctDf3/ylh8ipnnXTfHanE="
+    },
+    {
+      "source": {
+        "git": {
           "remote": "https://github.com/grafana/grafana.git",
           "subdir": "grafana-mixin"
         }
@@ -220,14 +230,6 @@
       },
       "version": "f6580d47a121aa383bfda8ad0fd64afb0bec1257",
       "sum": "X/zxeRr6ZGVzvyiQ/2dTWvVQe0m3rwe2uRy12M7dSEs="
-    },
-    {
-      "source": {
-        "local": {
-          "directory": "../production/jaeger"
-        }
-      },
-      "version": ""
     },
     {
       "source": {
