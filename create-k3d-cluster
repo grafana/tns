@@ -11,6 +11,11 @@ EXPOSE=8080:80@loadbalancer
 VOLUME=$BASEDIR/.volume
 
 mkdir -p $VOLUME
+
+# Expose the machine ID as a volume (if available) since this is used
+# by promtail and the Grafana Agent for reading the Systemd journal. If
+# it doesn't exist on the machine k3d is being run on (i.e. non-GNU/Linux
+# machines), just create an empty file.
 if [ -f /etc/machine-id ]; then
   cp -f /etc/machine-id $VOLUME/
 else

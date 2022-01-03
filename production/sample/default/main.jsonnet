@@ -58,8 +58,6 @@ local tns_mixin = import 'tns-mixin/mixin.libsonnet';
       containerPort.new('thrift-binary', 6832) + containerPort.withProtocol('UDP'),
       containerPort.new('thrift-http', 14268),
       containerPort.new('thrift-grpc', 14250),
-      containerPort.new('zipkin', 9411),
-      containerPort.new('oltp', 55680),
     ]) +
     gragent.withService({}) +
     gragent.withAgentConfig({
@@ -68,7 +66,7 @@ local tns_mixin = import 'tns-mixin/mixin.libsonnet';
       },
       metrics+: {
         global+: {
-          scrape_interval: '15s',
+          scrape_interval: '60s',
           external_labels: {
             cluster: 'tns',
           },
