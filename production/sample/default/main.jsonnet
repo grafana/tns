@@ -47,19 +47,17 @@ local tns_mixin = import 'tns-mixin/mixin.libsonnet';
   daemonset_agent:
     gragent.new(name='grafana-agent', namespace='default') +
     gragent.withDaemonSetController() +
+    gragent.withService({}) +
     gragent.withLogVolumeMounts({}) +
     gragent.withLogPermissions({}) +
     gragent.withConfigHash(true) +
     gragent.withPortsMixin([
-      // Create container ports for the various ways that the agent can collect traces. Note that it's
-      // important to create the ports before creating the service for the agent since the method that
-      // creates the service will look at container ports to know which ports the service should have.
+      // Create container ports for the various ways that the agent can collect traces.
       containerPort.new('thrift-compact', 6831) + containerPort.withProtocol('UDP'),
       containerPort.new('thrift-binary', 6832) + containerPort.withProtocol('UDP'),
       containerPort.new('thrift-http', 14268),
       containerPort.new('thrift-grpc', 14250),
     ]) +
-    gragent.withService({}) +
     gragent.withAgentConfig({
       server: {
         log_level: 'debug',
