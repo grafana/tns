@@ -57,11 +57,12 @@
     },
     {
       "source": {
-        "local": {
-          "directory": "../production/jaeger"
+        "git": {
+          "remote": "https://github.com/grafana/agent.git",
+          "subdir": "production/tanka/grafana-agent"
         }
       },
-      "version": ""
+      "version": "main"
     },
     {
       "source": {

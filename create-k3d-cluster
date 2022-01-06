@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-set -euo pipefail
+set -x -euo pipefail
 IFS=$'\n\t'
 
 CLUSTER_NAME=tns
@@ -10,11 +10,22 @@ API_PORT=8555
 EXPOSE=8080:80@loadbalancer
 VOLUME=$BASEDIR/.volume
 
-mkdir -p .volume
+mkdir -p $VOLUME
+
+# Expose the machine ID as a volume (if available) since this is used
+# by promtail and the Grafana Agent for reading the Systemd journal. If
+# it doesn't exist on the machine k3d is being run on (i.e. non-GNU/Linux
+# machines), just create an empty file.
+if [ -f /etc/machine-id ]; then
+  cp -f /etc/machine-id $VOLUME/
+else
+  touch $VOLUME/machine-id
+fi
 
 k3d cluster create $CLUSTER_NAME \
   --volume $VOLUME:/kubernetes \
   --volume $VOLUME/local:/opt/local-path-provisioner \
+  --volume $VOLUME/machine-id:/etc/machine-id \
   --api-port $API_PORT \
   --port $EXPOSE \
   --kubeconfig-update-default=false
@@ -29,7 +40,6 @@ set -e
 echo 'done'
 
 export KUBECONFIG=$(k3d kubeconfig write $CLUSTER_NAME)
-kubectl apply -f https://raw.githubusercontent.com/rancher/local-path-provisioner/master/deploy/local-path-storage.yaml
 kubectl patch storageclass local-path -p '{"metadata":{"annotations":{"storageclass.kubernetes.io/is-default-class":"true"}}}'
 
 kubectl config use-context k3d-$CLUSTER_NAME

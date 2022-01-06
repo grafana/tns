@@ -1,11 +1,10 @@
+local gragent = import 'grafana-agent/v2/main.libsonnet';
+local k = import 'ksonnet-util/kausal.libsonnet';
 local tns_mixin = import 'tns-mixin/mixin.libsonnet';
 
 (import 'ksonnet-util/kausal.libsonnet') +
 (import 'prometheus-ksonnet/prometheus-ksonnet.libsonnet') +
-(import 'promtail/promtail.libsonnet') +
 {
-  // A known data source UID is necessary to configure the Loki datasource such that users can pivot
-  // from Loki logs to Jaeger traces on traceID.
   _images+:: {
     grafana: 'grafana/grafana:8.2.2',
   },
@@ -15,42 +14,118 @@ local tns_mixin = import 'tns-mixin/mixin.libsonnet';
     admin_services+: [
       { title: 'TNS Demo', path: 'tns-demo', url: 'http://app.tns.svc.cluster.local/', subfilter: true },
     ],
-    promtail_config+: {
-      clients: [{
-        username:: '',
-        password:: '',
-        scheme:: 'http',
-        hostname:: 'loki.loki.svc.cluster.local:3100',
-        external_labels: {
-          cluster: 'tns',
-        },
-      }],
-      pipeline_stages+: [
-        {
-          regex: {
-            expression: '\\((?P<status_code>\\d{3})\\)',
-          },
-        },
-        {
-          labels: {
-            status_code: '',
-          },
-        },
-        {
-          regex: {
-            expression: '(level|lvl|severity)=(?P<level>\\w+)',
-          },
-        },
-        {
-          labels: {
-            level: '',
-          },
-        },
-      ],
-    },
+
+    // Allow the Grafana Agent to remote write directly to Prometheus. This allows us to use
+    // the Agent for all scraping duties and treat Prometheus as a remote write target similar
+    // to Cortex/GEM/Grafana Cloud.
+    prometheus_enabled_features+: [
+      'remote-write-receiver',
+    ],
   },
 
-  local service = $.core.v1.service,
+  local configMap = k.core.v1.configMap,
+  local container = k.core.v1.container,
+  local containerPort = k.core.v1.containerPort,
+  local envVar = k.core.v1.envVar,
+  local httpIngressPath = k.extensions.v1beta1.httpIngressPath,
+  local ingress = k.extensions.v1beta1.ingress,
+  local ingressRule = k.extensions.v1beta1.ingressRule,
+  local service = k.core.v1.service,
+
+  // Create a Grafana Agent daemon set to collect metrics, logs, and traces
+  //
+  // Metrics, logs, and traces are enriched with Kubernetes metadata. Metrics and logs from
+  // the local Kubernetes node are collected while traces use a push model (clients send traces
+  // to the agent).
+  //
+  // The agent runs as a privileged container and as root since this is a requirement of
+  // collecting logs. The path /var/log on the Kubernetes node is mounted into the container
+  // along with /var/lib/docker/containers.
+  //
+  // A service for the agent is created so that other pods within the cluster can send traces
+  // to the agent.
+  daemonset_agent:
+    gragent.new(name='grafana-agent', namespace='default') +
+    gragent.withDaemonSetController() +
+    gragent.withService({}) +
+    gragent.withLogVolumeMounts({}) +
+    gragent.withLogPermissions({}) +
+    gragent.withConfigHash(true) +
+    gragent.withPortsMixin([
+      // Create container ports for the various ways that the agent can collect traces.
+      containerPort.new('thrift-compact', 6831) + containerPort.withProtocol('UDP'),
+      containerPort.new('thrift-binary', 6832) + containerPort.withProtocol('UDP'),
+      containerPort.new('thrift-http', 14268),
+      containerPort.new('thrift-grpc', 14250),
+    ]) +
+    gragent.withAgentConfig({
+      server: {
+        log_level: 'debug',
+      },
+      metrics+: {
+        global+: {
+          scrape_interval: '60s',
+          external_labels: {
+            cluster: 'tns',
+          },
+        },
+        wal_directory: '/tmp/agent/prom',
+        configs: [{
+          name: 'kubernetes-metrics',
+          remote_write: [{
+            url: 'http://prometheus.default.svc.cluster.local/prometheus/api/v1/write',
+            send_exemplars: true,
+          }],
+          scrape_configs: gragent.newKubernetesMetrics({}),
+        }],
+      },
+      logs+: {
+        positions_directory: '/tmp/agent/loki',
+        configs: [{
+          name: 'kubernetes-logs',
+          clients: [{
+            url: 'http://loki.loki.svc.cluster.local:3100/loki/api/v1/push',
+            external_labels: {
+              cluster: 'tns',
+            },
+          }],
+          scrape_configs: gragent.newKubernetesLogs({}),
+        }],
+      },
+      traces+: {
+        configs: [{
+          name: 'kubernetes-traces',
+          receivers: {
+            jaeger: {
+              protocols: {
+                grpc: null,
+                thrift_binary: null,
+                thrift_compact: null,
+                thrift_http: null,
+              },
+            },
+          },
+          remote_write: [{
+            endpoint: 'tempo.tempo.svc.cluster.local:55680',
+            insecure: true,
+            retry_on_failure: {
+              enabled: true,
+            },
+          }],
+          scrape_configs: gragent.newKubernetesTraces({}),
+        }],
+      },
+    }),
+
+  // Remove all scrape configs from the Prometheus instance we're running since we'll be
+  // using the Grafana Agent to scrape all pods in the cluster. We've also enabled the remote
+  // write endpoint on the Prometheus instance. We're basically just treating it as a simpler
+  // (and easier to configure) version of Cortex: just a remote write endpoint for metric storage.
+  prometheus_config+:: {
+    scrape_configs: [],
+  },
+
+
   nginx_service+:
     service.mixin.spec.withType('ClusterIP') +
     service.mixin.spec.withPorts({
@@ -66,7 +141,7 @@ local tns_mixin = import 'tns-mixin/mixin.libsonnet';
     },
   },
 
-  local configMap = $.core.v1.configMap,
+
   grafana_datasource_config_map+:
     configMap.withDataMixin({
       'datasources.yml': $.util.manifestYaml({
@@ -129,10 +204,6 @@ local tns_mixin = import 'tns-mixin/mixin.libsonnet';
         ],
       }),
     }),
-
-  local ingress = $.extensions.v1beta1.ingress,
-  local ingressRule = $.extensions.v1beta1.ingressRule,
-  local httpIngressPath = $.extensions.v1beta1.httpIngressPath,
 
   ingress: ingress.new() +
            ingress.mixin.metadata.withName('ingress')
