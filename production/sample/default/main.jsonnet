@@ -64,7 +64,7 @@ local tns_mixin = import 'tns-mixin/mixin.libsonnet';
       },
       metrics+: {
         global+: {
-          scrape_interval: '60s',
+          scrape_interval: '15s',
           external_labels: {
             cluster: 'tns',
           },
