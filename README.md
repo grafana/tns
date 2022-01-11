@@ -105,7 +105,7 @@ You should now be able to access the demo via [http://localhost:8080/](http://lo
 ### LogQLV2
 - Go to Explore
 - Choose Datasource Loki
-- Run this query `{job="tns/app", level="info"} | logfmt | status>=500 and status <=599 and duration > 50ms`
+- Run this query `{job="tns/app"} | logfmt | level="info" | status>=500 and status <=599 and duration > 50ms`
 - Choose a log line with a traceID -> Tempo
 
 ## Reviewing the Tanka Code
