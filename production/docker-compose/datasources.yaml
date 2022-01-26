@@ -6,8 +6,6 @@ datasources:
     access: proxy
     editable: true
     isDefault: true
-    jsonData:
-        httpMethod: GET
     version: 1
     jsonData:
       exemplarTraceIdDestinations:
