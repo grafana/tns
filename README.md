@@ -8,10 +8,10 @@ This readme has the following sections.
 - [Explore metrics to logs to traces](#explore-metrics-to-logs-to-traces)
 - [Explore metrics to traces to logs](#explore-metrics-to-logs-to-traces)
 - [Explore LogQL V2](#explore-logql-v2)
-- [Disable TNS cluster](disable-tns-cluster)
-- [Remove TNS cluster](remove-tns-cluster)
-- [Troubleshooting](troubleshooting)
-- [Notes for developers](notes-for-developers)
+- [Disable TNS cluster](#disable-tns-cluster)
+- [Remove TNS cluster](#remove-tns-cluster)
+- [Troubleshooting](#troubleshooting)
+- [Notes for developers](#notes-for-developers)
 
 ## Overview
 
