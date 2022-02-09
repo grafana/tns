@@ -182,4 +182,4 @@ $ rm -rf tanka
 ### Update Grafana dashboards and kubernetes infrastructure: 
 
 - Update the manifests by running the following tanka command: `tk apply --force environments/<ENV>/main.jsonnet`.
-- Update Grafana, for example when changing dashboards by running the following tanka command: `tk apply --force environments/default/main.jsonnet`.
+- Update Grafana, for example, when changing dashboards by running the following tanka command: `tk apply --force environments/default/main.jsonnet`.
