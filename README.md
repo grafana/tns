@@ -166,9 +166,9 @@ $ rm -rf tanka
 
 ## Troubleshooting
 
-**Issue** 404 error when trying to load Tempo traces.
+**Issue:** 404 error when trying to load Tempo traces.
    
-**Solution** This is likely because the jaeger agent is not running correctly. Check that all pods were successfully scheduled.
+**Solution:** This is likely because the jaeger agent is not running correctly. Check that all pods were successfully scheduled.
 
 
 ## Contributing guidelines
