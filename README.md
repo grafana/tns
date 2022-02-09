@@ -91,7 +91,7 @@ These instructions assume that you are using a local `k3d`. If you plan to use a
     ```sh
     $ sudo usermod -aG docker <username>
     ```
-Logout and then login again for the changes to take effect.
+    Logout and then login again for the changes to take effect.
 
 1. Install TNS demo application:
     ```sh
