@@ -2,22 +2,22 @@
 
 This readme has the following sections.
 
-[Overview](#overview)
-[Prerequisites](#prerequisites)
-[Install TNS demo](#install-tns-demo)
-[Explore metrics to logs to traces](#explore-metrics-to-logs-to-traces)
-[Explore metrics to traces to logs](#explore-metrics-to-logs-to-traces)
-[Explore LogQL V2](#explore-logql-v2)
-[Disable TNS cluster](disable-tns-cluster)
-[Remove TNS cluster](remove-tns-cluster)
-[Troubleshooting](troubleshooting)
-[Notes for developers](notes-for-developers)
+- [Overview](#overview)
+- [Prerequisites](#prerequisites)
+- [Install TNS demo](#install-tns-demo)
+- [Explore metrics to logs to traces](#explore-metrics-to-logs-to-traces)
+- [Explore metrics to traces to logs](#explore-metrics-to-logs-to-traces)
+- [Explore LogQL V2](#explore-logql-v2)
+- [Disable TNS cluster](disable-tns-cluster)
+- [Remove TNS cluster](remove-tns-cluster)
+- [Troubleshooting](troubleshooting)
+- [Notes for developers](notes-for-developers)
 
 ## Overview
 
 The New Stack (TNS) is a simple three-tier demo application, fully instrumented with the 3 pillars of observability: metrics, logs, and traces. It offers an insight on what a modern observability stack looks like and experience what it's like to pivot among different types of observability data.
 
-![TNS workflow](./images/TNS-Arc-Diagram-1.png)
+![TNS workflow](./img/TNS-Arc-Diagram-1.png)
 
 The TNS app is an example three-tier web app built by Weaveworks. It consists of a data layer, application logic layer, and load-balancing layer. To learn more about it, see [How To Detect, Map and Monitor Docker Containers with Weave Scope from Weaveworks](https://thenewstack.io/how-to-detect-map-and-monitor-docker-containers-with-weave-scope-from-weaveworks/).
 
@@ -25,7 +25,7 @@ The instrumentation for the TNS app is as follows:
 
 - Metrics: Each tier of the TNS app exposes metrics on /metrics endpoints, which are scraped by the Grafana Agent. Additionally, these metrics are additionally tagged with exemplar information. The Grafana Agent then writes these metrics to a Prometheus (with remote-read enabled) for storage. [While the Prometheus could scrape metrics from the TNS App directly, the demo is configured to make the Agent the central point through which metrics, logs, and traces are collected. The Prometheus can be substituted for any backend which accepts Prometheus remote write, such as Thanos or Cortex.]
 - Logs: Each tier of the TNS app writes logs to <somewhere>, which are then collected by the Grafana Agent, which forwards them on to Loki for storage. 
-- - Traces: Each tier of the TNS app sends traces in Jaeger format to the Grafana Agent, which then converts them to OTel format and forwards them to Tempo for storage. 
+- Traces: Each tier of the TNS app sends traces in Jaeger format to the Grafana Agent, which then converts them to OTel format and forwards them to Tempo for storage. 
 Visualization: A Grafana instance configured to talk to the Prometheus, Loki, and Tempo instances make it possible to query and visualize the metrics, logs, and traces data. 
 
 
