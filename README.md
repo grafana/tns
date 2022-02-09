@@ -17,7 +17,7 @@ This readme has the following sections.
 
 The New Stack (TNS) is a simple three-tier demo application, fully instrumented with the 3 pillars of observability: metrics, logs, and traces. It offers an insight on what a modern observability stack looks like and experience what it's like to pivot among different types of observability data.
 
-![TNS workflow](./images/TNS-Arc-Diagram-1.png)
+![TNS workflow](./img/TNS-Arc-Diagram-1.png)
 
 The TNS app is an example three-tier web app built by Weaveworks. It consists of a data layer, application logic layer, and load-balancing layer. To learn more about it, see [How To Detect, Map and Monitor Docker Containers with Weave Scope from Weaveworks](https://thenewstack.io/how-to-detect-map-and-monitor-docker-containers-with-weave-scope-from-weaveworks/).
 
