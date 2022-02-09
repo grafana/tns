@@ -39,9 +39,9 @@ Verify you have Docker installed. For download and installation instructions, cl
 
 ### K3D
 
-To run the TNS demo, you will need a Kubernetes cluster. Download `k3d` from [here](https://github.com/rancher/k3d/releases/tag/v3.2.0). The `k3d` Kubernetes distribution used here runs as a single node cluster inside docker. 
+To run the TNS demo, you need a Kubernetes cluster. Download `k3d` from [here](https://github.com/rancher/k3d/releases/tag/v3.2.0). The `k3d` Kubernetes distribution used here runs as a single node cluster inside docker. 
 
-**Note** Ensure that your Docker daemon has a minimum of 2.5 GB of total memory available for all pods in this deployment to be scheduled.
+**Note:** Ensure that your Docker daemon has a minimum of 2.5 GB of total memory available for all pods in this deployment to be scheduled.
 
 You can also run the TNS demo without Kubernetes. Click [here](https://github.com/grafana/tns/blob/main/production/docker-compose/README.md).
  for more information.
