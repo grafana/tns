@@ -76,38 +76,38 @@ After downloading the library:
 These instructions assume that you are using a local `k3d`. If you plan to use a Kubernetes cluster other than a local `k3d` one, you will need to modify these instructions for your setup.
 
 1. Clone the TNS repository.
-```sh
-$ git clone https://github.com/grafana/tns
-$ cd tns
-```
+    ```sh
+    $ git clone https://github.com/grafana/tns
+    $ cd tns
+    ```
 
 1. Install K3D cluster.
-```sh
-$ ./create-k3d-cluster
-$ export KUBECONFIG=$(k3d kubeconfig write tns)
-```
+    ```sh
+    $ ./create-k3d-cluster
+    $ export KUBECONFIG=$(k3d kubeconfig write tns)
+    ```
 
-If you see an error similar to `permission denied while trying to connect to the Docker daemon socket at unix:///var/run/docker.sock`, then add yourself to the `docker` group. This will ensure that you are able to run Docker without using the `sudo` command.
-```sh
-$ sudo usermod -aG docker <username>
-```
+    If you see an error similar to `permission denied while trying to connect to the Docker daemon socket at unix:///var/run/docker.sock`, then add yourself to the `docker` group. This will ensure that you are able to run Docker without using the `sudo` command.
+    ```sh
+    $ sudo usermod -aG docker <username>
+    ```
 Logout and then login again for the changes to take effect.
 
 1. Install TNS demo application:
-```sh
-$ ./install
-```
+    ```sh
+    $ ./install
+    ```
 
 1. Confirm `yes` when prompted. You will be prompted four times during the installation.
 
-Wait for the installation to finish. It can take over ten minutes for everything to download and then start up.
+    Wait for the installation to finish. It can take over ten minutes for everything to download and then start up.
 
 1. Verify the status of your cluster by running this command.
 
-```sh
-$ kubectl get pods -A
-```
-If all the pods are listed as either `running` or `completed`, your cluster is ready for use.
+    ```sh
+    $ kubectl get pods -A
+    ```
+    If all the pods are listed as either `running` or `completed`, your cluster is ready for use.
 
 1. Access TNS using the [URL](http://localhost:8080/](http://localhost:8080).
 
