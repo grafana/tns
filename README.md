@@ -11,7 +11,7 @@ This readme has the following sections.
 - [Disable TNS cluster](#disable-tns-cluster)
 - [Remove TNS cluster](#remove-tns-cluster)
 - [Troubleshooting](#troubleshooting)
-- [Notes for developers](#notes-for-developers)
+- [Notes for developers](#contributing-guidelines)
 
 ## Overview
 
