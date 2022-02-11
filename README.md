@@ -24,7 +24,8 @@ The TNS app is an example three-tier web app built by Weaveworks. It consists of
 The instrumentation for the TNS app is as follows:
 
 - Metrics: Each tier of the TNS app exposes metrics on /metrics endpoints, which are scraped by the Grafana Agent. Additionally, these metrics are additionally tagged with exemplar information. The Grafana Agent then writes these metrics to a Prometheus (with remote-read enabled) for storage. [While the Prometheus could scrape metrics from the TNS App directly, the demo is configured to make the Agent the central point through which metrics, logs, and traces are collected. The Prometheus can be substituted for any backend which accepts Prometheus remote write, such as Thanos or Cortex.]
-- Logs: The Grafana Agent collects logs from the TNS app and then forwards them on to Loki for storage. 
+- Logs: Each tier of the TNS app writes logs to standard output or standard error which is captured by Kubernetes, which are then collected by the Grafana Agent, which forwards them on to Loki for storage. 
+
 - Traces: Each tier of the TNS app sends traces in Jaeger format to the Grafana Agent, which then converts them to OTel format and forwards them to Tempo for storage. 
 Visualization: A Grafana instance configured to talk to the Prometheus, Loki, and Tempo instances makes it possible to query and visualize the metrics, logs, and traces data. 
 
