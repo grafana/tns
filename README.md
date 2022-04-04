@@ -2,16 +2,25 @@
 
 This readme has the following sections.
 
-- [Overview](#overview)
-- [Prerequisites](#prerequisites)
-- [Install TNS demo](#install-tns-demo)
-- [Explore metrics to logs to traces](#explore-metrics-to-logs-to-traces)
-- [Explore metrics to traces to logs](#explore-metrics-to-logs-to-traces)
-- [Explore LogQL V2](#explore-logql-v2)
-- [Disable TNS cluster](#disable-tns-cluster)
-- [Remove TNS cluster](#remove-tns-cluster)
-- [Troubleshooting](#troubleshooting)
-- [Contributing guidelines](#contributing-guidelines)
+- [The New Stack (TNS) observability app](#the-new-stack-tns-observability-app)
+  - [Overview](#overview)
+  - [Prerequisites](#prerequisites)
+    - [Docker](#docker)
+    - [K3D](#k3d)
+    - [kubectl](#kubectl)
+    - [Tanka](#tanka)
+      - [Reviewing the Tanka code](#reviewing-the-tanka-code)
+    - [Jsonnet-bundle](#jsonnet-bundle)
+  - [Install TNS demo](#install-tns-demo)
+  - [Explore metrics to logs to traces](#explore-metrics-to-logs-to-traces)
+  - [Explore metrics to traces to logs](#explore-metrics-to-traces-to-logs)
+    - [Explore LogQL V2](#explore-logql-v2)
+  - [Disable TNS cluster](#disable-tns-cluster)
+  - [Remove TNS cluster](#remove-tns-cluster)
+  - [Troubleshooting](#troubleshooting)
+  - [Contributing guidelines](#contributing-guidelines)
+    - [Modify TNS application:](#modify-tns-application)
+    - [Update Grafana dashboards and kubernetes infrastructure:](#update-grafana-dashboards-and-kubernetes-infrastructure)
 
 ## Overview
 
@@ -40,7 +49,9 @@ Verify you have Docker installed. For download and installation instructions, cl
 
 ### K3D
 
-To run the TNS demo, you need a Kubernetes cluster. Download `k3d` from [here](https://github.com/rancher/k3d/releases/tag/v3.2.0). The `k3d` Kubernetes distribution used here runs as a single node cluster inside docker. 
+To run the TNS demo, you need a Kubernetes cluster. The cluster creation script uses `k3d` which runs as a single node cluster inside Docker. The specific version to use depends on your operating system:
+- For Ubuntu 20.04 and lower, use (https://github.com/rancher/k3d/releases/tag/v3.2.0).
+- For Ubuntu 21.10 and higher (which has cgroups v2 enabled by default, and k8s fails to start thinking cgroups are not available), use (https://github.com/rancher/k3d/releases/tag/v5.0.0)
 
 **Note:** Ensure that your Docker daemon has a minimum of 2.5 GB of total memory available for all pods in this deployment to be scheduled.
 
@@ -171,6 +182,11 @@ $ rm -rf tanka
    
 **Solution:** This is likely because the jaeger agent is not running correctly. Check that all pods were successfully scheduled.
 
+**Issue:** ./install.sh fails complaining about Ingress. You're using a `k3d` that runs a newer version of k8s. That means that Ingress got promoted and the `extensions.v1beta1.ingress` in [production/sample/default/main.jsonnet] is not valid anymore.
+
+**Solution:** You're using a newer version of `k3s`, which has a version of `k8s` that no longer supports Ingress under `extensions.v1beta1`. Verify you version by running `kubectl version`. As per [this blog post](https://kubernetes.io/blog/2019/07/18/api-deprecations-in-1-16/) k8s v1.22 and higher no longer serve that API.
+
+To resolve the issue, use an older version of `k3d` which will run an older version of `k8s`. For example, use version `k3d` 5.0.0 (runs `k8s` v1.21.5).
 
 ## Contributing guidelines
 
