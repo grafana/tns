@@ -64,7 +64,7 @@ The TNS demo uses `kubectl` to interact with the Kubernetes clusters. Click [her
 
 ### Tanka
 
-Tanka uses the Jsonnet language to interact with Kubernetes, via the `kubectl` tool. Click [here]((https://github.com/grafana/tanka/releases/tag/v0.7.1) for installation instructions.
+Tanka uses the Jsonnet language to interact with Kubernetes, via the `kubectl` tool. Click [here](https://github.com/grafana/tanka/releases/tag/v0.7.1) for installation instructions.
 
 #### Reviewing the Tanka code
 
@@ -73,7 +73,7 @@ To find out more about Tanka, see https://tanka.dev.
 
 ### Jsonnet-bundle
 
-The Jsonnet bundler download Jsonnet dependencies. Click [here]((https://github.com/jsonnet-bundler/jsonnet-bundler/releases/tag/v0.4.0) for download instructions.
+The Jsonnet bundler download Jsonnet dependencies. Click [here](https://github.com/jsonnet-bundler/jsonnet-bundler/releases/tag/v0.4.0) for download instructions.
 
 After downloading the library:
 
@@ -121,8 +121,9 @@ These instructions assume that you are using a local `k3d`. If you plan to use a
     ```
     If all the pods are listed as either `running` or `completed`, your cluster is ready for use.
 
-1. Access TNS using the [URL](http://localhost:8080/](http://localhost:8080).
+1. Access TNS using the URL [http://localhost:8080/](http://localhost:8080).
 
+Note: If you need to re-do this process to get everything running, you can run `k3d cluster delete tns` to delete the cluster, then run `./create-k3d-cluster` and re-start the process. 
 
 ## Explore metrics to logs to traces
 
