@@ -28,7 +28,7 @@ k3d cluster create $CLUSTER_NAME \
   --volume $VOLUME/machine-id:/etc/machine-id \
   --api-port $API_PORT \
   --port $EXPOSE \
-  --kubeconfig-update-default=false
+  --update-default-kubeconfig=false
 
 echo -n 'creating'
 set +e
