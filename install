@@ -31,6 +31,9 @@ mkdir "$BASEDIR/tanka" && cd "$BASEDIR/tanka"
 # Initialise Tanka
 tk init --k8s=1.22
 
+# Workaround for https://github.com/jsonnet-libs/k8s/issues/132
+echo "(import 'github.com/jsonnet-libs/k8s-libsonnet/1.22/main.libsonnet') + { extensions:: null }" > lib/k.libsonnet
+
 # Copy dependency list into workdir
 ln -sf "$PROD"/jsonnetfile.json jsonnetfile.json
 ln -sf "$PROD"/jsonnetfile.lock.json jsonnetfile.lock.json
@@ -43,4 +46,3 @@ install_env loki    # Install loki logging app
 install_env tns     # Install TNS demo app
 install_env tempo   # Install tempo tracing app
 install_env default # Install default monitoring stack
-
