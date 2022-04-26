@@ -4,6 +4,15 @@
     {
       "source": {
         "git": {
+          "remote": "https://github.com/grafana/agent.git",
+          "subdir": "production/tanka/grafana-agent"
+        }
+      },
+      "version": "main"
+    },
+    {
+      "source": {
+        "git": {
           "remote": "https://github.com/grafana/jsonnet-libs.git",
           "subdir": "ksonnet-util"
         }
@@ -32,16 +41,7 @@
       "source": {
         "git": {
           "remote": "https://github.com/jsonnet-libs/k8s-libsonnet.git",
-          "subdir": "1.20"
-        }
-      },
-      "version": "main"
-    },
-    {
-      "source": {
-        "git": {
-          "remote": "https://github.com/jsonnet-libs/k8s-libsonnet.git",
-          "subdir": "1.21"
+          "subdir": "1.22"
         }
       },
       "version": "main"
@@ -54,15 +54,6 @@
         }
       },
       "version": "master"
-    },
-    {
-      "source": {
-        "git": {
-          "remote": "https://github.com/grafana/agent.git",
-          "subdir": "production/tanka/grafana-agent"
-        }
-      },
-      "version": "main"
     },
     {
       "source": {
