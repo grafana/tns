@@ -212,6 +212,7 @@ local tns_mixin = import 'tns-mixin/mixin.libsonnet';
            + ingress.mixin.spec.withRules([
              ingressRule.mixin.http.withPaths(
                httpIngressPath.withPath('/') +
+               httpIngressPath.withPathType('ImplementationSpecific') +
                httpIngressPath.backend.service.withName('nginx') +
                httpIngressPath.backend.service.port.withNumber(80)
              ),
