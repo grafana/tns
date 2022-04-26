@@ -32,7 +32,8 @@ mkdir "$BASEDIR/tanka" && cd "$BASEDIR/tanka"
 tk init --k8s=1.22
 
 # Copy dependency list into workdir
-cp "$PROD"/jsonnetfile.* .
+ln -sf "$PROD"/jsonnetfile.json jsonnetfile.json
+ln -sf "$PROD"/jsonnetfile.lock.json jsonnetfile.lock.json
 
 # Install dependencies
 jb install
