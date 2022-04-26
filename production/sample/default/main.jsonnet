@@ -27,9 +27,9 @@ local tns_mixin = import 'tns-mixin/mixin.libsonnet';
   local container = k.core.v1.container,
   local containerPort = k.core.v1.containerPort,
   local envVar = k.core.v1.envVar,
-  local httpIngressPath = k.extensions.v1beta1.httpIngressPath,
-  local ingress = k.extensions.v1beta1.ingress,
-  local ingressRule = k.extensions.v1beta1.ingressRule,
+  local httpIngressPath = k.networking.v1.httpIngressPath,
+  local ingress = k.networking.v1.ingress,
+  local ingressRule = k.networking.v1.ingressRule,
   local service = k.core.v1.service,
 
   // Create a Grafana Agent daemon set to collect metrics, logs, and traces
@@ -205,16 +205,15 @@ local tns_mixin = import 'tns-mixin/mixin.libsonnet';
       }),
     }),
 
-  ingress: ingress.new() +
-           ingress.mixin.metadata.withName('ingress')
-           + ingress.mixin.metadata.withAnnotationsMixin({
+  ingress: ingress.new('ingress') +
+           ingress.mixin.metadata.withAnnotationsMixin({
              'ingress.kubernetes.io/ssl-redirect': 'false',
            })
            + ingress.mixin.spec.withRules([
              ingressRule.mixin.http.withPaths(
                httpIngressPath.withPath('/') +
-               httpIngressPath.backend.withServiceName('nginx') +
-               httpIngressPath.backend.withServicePort(80)
+               httpIngressPath.backend.service.withName('nginx') +
+               httpIngressPath.backend.service.port.withNumber(80)
              ),
            ])
   ,
