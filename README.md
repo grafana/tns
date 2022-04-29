@@ -33,10 +33,10 @@ The TNS app is an example three-tier web app built by Weaveworks. It consists of
 The instrumentation for the TNS app is as follows:
 
 - Metrics: Each tier of the TNS app exposes metrics on /metrics endpoints, which are scraped by the Grafana Agent. Additionally, these metrics are additionally tagged with exemplar information. The Grafana Agent then writes these metrics to a Prometheus (with remote-read enabled) for storage. [While the Prometheus could scrape metrics from the TNS App directly, the demo is configured to make the Agent the central point through which metrics, logs, and traces are collected. The Prometheus can be substituted for any backend which accepts Prometheus remote write, such as Thanos or Cortex.]
-- Logs: Each tier of the TNS app writes logs to standard output or standard error which is captured by Kubernetes, which are then collected by the Grafana Agent, which forwards them on to Loki for storage. 
+- Logs: Each tier of the TNS app writes logs to standard output or standard error. It is captured by Kubernetes, which are then collected by the Grafana Agent. Finally, the Agent forwards them to Loki for storage.
 
-- Traces: Each tier of the TNS app sends traces in Jaeger format to the Grafana Agent, which then converts them to OTel format and forwards them to Tempo for storage. 
-Visualization: A Grafana instance configured to talk to the Prometheus, Loki, and Tempo instances makes it possible to query and visualize the metrics, logs, and traces data. 
+- Traces: Each tier of the TNS app sends traces in Jaeger format to the Grafana Agent, which then converts them to OTel format and forwards them to Tempo for storage.
+Visualization: A Grafana instance configured to talk to the Prometheus, Loki, and Tempo instances makes it possible to query and visualize the metrics, logs, and traces data.
 
 
 ## Prerequisites
@@ -123,7 +123,7 @@ These instructions assume that you are using a local `k3d`. If you plan to use a
 
 1. Access TNS using the URL [http://localhost:8080/](http://localhost:8080).
 
-Note: If you need to re-do this process to get everything running, you can run `k3d cluster delete tns` to delete the cluster, then run `./create-k3d-cluster` and re-start the process. 
+Note: If you need to re-do this process to get everything running, you can run `k3d cluster delete tns` to delete the cluster, then run `./create-k3d-cluster` and re-start the process.
 
 ## Explore metrics to logs to traces
 
@@ -180,14 +180,8 @@ $ rm -rf tanka
 ## Troubleshooting
 
 **Issue:** 404 error when trying to load Tempo traces.
-   
-**Solution:** This is likely because the jaeger agent is not running correctly. Check that all pods were successfully scheduled.
 
-**Issue:** ./install.sh fails complaining about Ingress. You're using a `k3d` that runs a newer version of k8s. That means that Ingress got promoted and the `extensions.v1beta1.ingress` in [production/sample/default/main.jsonnet] is not valid anymore.
-
-**Solution:** You're using a newer version of `k3s`, which has a version of `k8s` that no longer supports Ingress under `extensions.v1beta1`. Verify you version by running `kubectl version`. As per [this blog post](https://kubernetes.io/blog/2019/07/18/api-deprecations-in-1-16/) k8s v1.22 and higher no longer serve that API.
-
-To resolve the issue, use an older version of `k3d` which will run an older version of `k8s`. For example, use version `k3d` 5.0.0 (runs `k8s` v1.21.5).
+**Solution:** Your Jaeger agent is likely not running correctly. Check that all pods were successfully scheduled.
 
 ## Contributing guidelines
 
@@ -197,7 +191,7 @@ To resolve the issue, use an older version of `k3d` which will run an older vers
 - Instruct `k3d` to pull the new images on a pod restart (and not use the image from it's local cache): `k3d image import -c tns grafana/tns-app  && k3d image import -c tns grafana/tns-db &&  k3d image import -c tns grafana/tns-loadgen`.
 - Kill relevant pod(s) by running the following command: `kubectl delete pod app-69db48747b-s6qq6 --namespace=tns`.
 
-### Update Grafana dashboards and kubernetes infrastructure: 
+### Update Grafana dashboards and kubernetes infrastructure:
 
 - Update the manifests by running the following tanka command: `tk apply --force environments/<ENV>/main.jsonnet`.
 - Update Grafana, for example, when changing dashboards by running the following tanka command: `tk apply --force environments/default/main.jsonnet`.

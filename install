@@ -5,10 +5,11 @@ BASEDIR="$(cd "`dirname $0`"; pwd)"
 PROD="$BASEDIR/production/sample"
 
 function install_env {
+    echo "installing ${1}"
     ENV=$1
     tk env add environments/$ENV --server-from-context $CONTEXT --namespace $ENV # Creates/configures the environment.
     ln -sf "$PROD/$ENV/main.jsonnet" environments/$ENV/main.jsonnet # Copies the base configuration for your env.
-    tk apply environments/$ENV                                    # Installs everything for your environment.
+    tk apply environments/$ENV                                      # Installs everything for your environment.
 }
 
 if [[ $(docker info --format "{{.MemTotal}}") -lt 2560000000 ]]; then
@@ -25,18 +26,23 @@ if ! kubectl --context $CONTEXT get ns>/dev/null 2>&1; then
   exit 2
 fi
 
-# Initialise Tanka
 mkdir "$BASEDIR/tanka" && cd "$BASEDIR/tanka"
-tk init                  # Initialises Tanka, and downloads the Kubernetes libaries Tanka needs
-cp "$PROD"/jsonnetfile.* . # copies dependency list into current directory
-#fix deprication notice of k8s
-jb install github.com/jsonnet-libs/k8s-libsonnet/1.21@main
-echo "import 'github.com/jsonnet-libs/k8s-libsonnet/1.21/main.libsonnet'" > lib/k.libsonnet
-jb install               # Installs dependencies
+
+# Initialise Tanka
+tk init --k8s=1.22
+
+# Workaround for https://github.com/jsonnet-libs/k8s/issues/132
+echo "(import 'github.com/jsonnet-libs/k8s-libsonnet/1.22/main.libsonnet') + { extensions:: null }" > lib/k.libsonnet
+
+# Copy dependency list into workdir
+ln -sf "$PROD"/jsonnetfile.json jsonnetfile.json
+ln -sf "$PROD"/jsonnetfile.lock.json jsonnetfile.lock.json
+
+# Install dependencies
+jb install
 
 # Install apps into separate namespaces
 install_env loki    # Install loki logging app
 install_env tns     # Install TNS demo app
 install_env tempo   # Install tempo tracing app
 install_env default # Install default monitoring stack
-
