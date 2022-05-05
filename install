@@ -3,6 +3,7 @@
 CONTEXT=${1-k3d-tns}
 BASEDIR="$(cd "`dirname $0`"; pwd)"
 PROD="$BASEDIR/production/sample"
+MODE=${2-standard}
 
 function install_env {
     echo "installing ${1}"
@@ -12,7 +13,11 @@ function install_env {
     tk apply environments/$ENV                                      # Installs everything for your environment.
 }
 
-if [[ $(docker info --format "{{.MemTotal}}") -lt 2560000000 ]]; then
+function install_cloud {
+    install_env tns-cloud
+}
+
+if [[ "$MODE" != "cloud" ]] && [[ $(docker info --format "{{.MemTotal}}") -lt 2560000000 ]]; then
   echo "WARNING: your docker daemon will likely need more memory in order to schedule all required pods"
 fi
 
@@ -42,7 +47,11 @@ ln -sf "$PROD"/jsonnetfile.lock.json jsonnetfile.lock.json
 jb install
 
 # Install apps into separate namespaces
-install_env loki    # Install loki logging app
-install_env tns     # Install TNS demo app
-install_env tempo   # Install tempo tracing app
-install_env default # Install default monitoring stack
+if [[ "$MODE" != "cloud" ]]; then 
+    install_env loki    # Install loki logging app
+    install_env tns     # Install TNS demo app
+    install_env tempo   # Install tempo tracing app
+    install_env default # Install default monitoring stack
+else
+    install_cloud       # Only install (modified) TNS demo app into existing K8s cluster 
+fi
