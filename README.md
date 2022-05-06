@@ -41,7 +41,9 @@ Visualization: A Grafana instance configured to talk to the Prometheus, Loki, an
 
 ## Prerequisites
 
-Before you begin, install and configure the following software applications.
+If you are running the full metrics, logs and traces stack locally, install and configure _all_ of the following software applications.
+
+If you wish to only deploy the TNS app to an existing K8s cluster using the `app-only` option, install and configure `kubectl`, `tanka`, and `jsonnet-bundler`.
 
 ### Docker
 
@@ -55,8 +57,7 @@ To run the TNS demo, you need a Kubernetes cluster. The cluster creation script 
 
 **Note:** Ensure that your Docker daemon has a minimum of 2.5 GB of total memory available for all pods in this deployment to be scheduled.
 
-You can also run the TNS demo without Kubernetes. Click [here](https://github.com/grafana/tns/blob/main/production/docker-compose/README.md).
- for more information.
+You can also run the TNS demo without Kubernetes. Click [here](https://github.com/grafana/tns/blob/main/production/docker-compose/README.md) for more information.
 
 ### kubectl
 
@@ -71,7 +72,7 @@ Tanka uses the Jsonnet language to interact with Kubernetes, via the `kubectl` t
 When you install the TNS demo application, it will create a `tanka` directory in your TNS checkout. This directory contains all of the Jsonnet resources used to install this demo.
 To find out more about Tanka, see https://tanka.dev.
 
-### Jsonnet-bundle
+### Jsonnet-bundler
 
 The Jsonnet bundler download Jsonnet dependencies. Click [here](https://github.com/jsonnet-bundler/jsonnet-bundler/releases/tag/v0.4.0) for download instructions.
 
@@ -83,7 +84,7 @@ After downloading the library:
     $ chmod +x /usr/local/bin/jb
     ```
 
-## Install TNS demo
+## Install TNS demo (running MLT stack locally)
 
 These instructions assume that you are using a local `k3d`. If you plan to use a Kubernetes cluster other than a local `k3d` one, you will need to modify these instructions for your setup.
 
@@ -124,6 +125,32 @@ These instructions assume that you are using a local `k3d`. If you plan to use a
 1. Access TNS using the URL [http://localhost:8080/](http://localhost:8080).
 
 Note: If you need to re-do this process to get everything running, you can run `k3d cluster delete tns` to delete the cluster, then run `./create-k3d-cluster` and re-start the process.
+
+## Install TNS demo app into an existing K8s cluster (`app-only` option)
+
+If you already have a K8s cluster *and* cloud metrics, logs, and traces services available to you, use the `app-only` option to deploy _only_ the instrumented TNS app to a Kubernetes cluster.
+
+A tutorial using this method will soon be available in Grafana Cloud's docs.
+
+1. Get Kubernetes context
+    ```sh
+    $ kubectl config get-contexts
+    ```
+    Note down the context you'd like to use to deploy the app.
+
+1. Deploy the app
+    ```sh
+    $ ./install CONTEXT_YOU_NOTED app-only
+    ```
+
+1. Confirm `yes` when prompted.
+
+1. Verify the status of your cluster by running this command.
+
+    ```sh
+    $ kubectl get pods -n tns-cloud
+    ```
+    If all the pods are listed as either `running`, your app is ready for use.
 
 ## Explore metrics to logs to traces
 

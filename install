@@ -13,7 +13,7 @@ function install_env {
     tk apply environments/$ENV                                      # Installs everything for your environment.
 }
 
-if [[ "$MODE" != "cloud" ]] && [[ $(docker info --format "{{.MemTotal}}") -lt 2560000000 ]]; then
+if [[ "$MODE" != "app-only" ]] && [[ $(docker info --format "{{.MemTotal}}") -lt 2560000000 ]]; then
   echo "WARNING: your docker daemon will likely need more memory in order to schedule all required pods"
 fi
 
@@ -43,7 +43,7 @@ ln -sf "$PROD"/jsonnetfile.lock.json jsonnetfile.lock.json
 jb install
 
 # Install apps into separate namespaces
-if [[ "$MODE" == "cloud" ]]; then 
+if [[ "$MODE" == "app-only" ]]; then
     install_env tns-cloud       # Only install (modified) TNS demo app into existing K8s cluster 
 else
     install_env loki            # Install loki logging app
