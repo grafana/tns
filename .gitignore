@@ -6,3 +6,4 @@ vendor
 /tanka
 .volume
 production/tns-mixin/jsonnetfile.lock.json
+.DS_Store

@@ -6,7 +6,7 @@ local g = (import 'grafana-builder/grafana.libsonnet') + {
     },
     targets: [
       {
-        expr: 'sum by (status_code) (rate(' + selector + '[1m]))',
+        expr: 'sum by (status_code) (rate(' + selector + '[$__rate_interval]))',
         format: 'time_series',
         intervalFactor: 2,
         legendFormat: '{{status_code}}',
@@ -131,7 +131,7 @@ local g = (import 'grafana-builder/grafana.libsonnet') + {
                 steppedLine: false,
                 targets: [
                   {
-                    expr: 'sum by (status_code) (rate(tns_request_duration_seconds_count{job=~"$namespace/loadgen"}[1m]))',
+                    expr: 'sum by (status_code) (rate(tns_request_duration_seconds_count{job=~"$namespace/loadgen"}[$__rate_interval]))',
                     format: 'time_series',
                     intervalFactor: 2,
                     legendFormat: '{{status_code}}',
@@ -322,7 +322,7 @@ local g = (import 'grafana-builder/grafana.libsonnet') + {
                 steppedLine: false,
                 targets: [
                   {
-                    expr: 'sum by (status_code) (rate(tns_request_duration_seconds_count{job=~"$namespace/app"}[1m]))',
+                    expr: 'sum by (status_code) (rate(tns_request_duration_seconds_count{job=~"$namespace/app"}[$__rate_interval]))',
                     format: 'time_series',
                     intervalFactor: 2,
                     legendFormat: '{{status_code}}',
@@ -513,7 +513,7 @@ local g = (import 'grafana-builder/grafana.libsonnet') + {
                 steppedLine: false,
                 targets: [
                   {
-                    expr: 'sum by (status_code) (rate(tns_request_duration_seconds_count{job=~"$namespace/db"}[1m]))',
+                    expr: 'sum by (status_code) (rate(tns_request_duration_seconds_count{job=~"$namespace/db"}[$__rate_interval]))',
                     format: 'time_series',
                     intervalFactor: 2,
                     legendFormat: '{{status_code}}',
