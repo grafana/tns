@@ -54,6 +54,7 @@ Verify you have Docker installed. For download and installation instructions, cl
 To run the TNS demo, you need a Kubernetes cluster. The cluster creation script uses `k3d` which runs as a single node cluster inside Docker. The specific version to use depends on your operating system:
 - For Ubuntu 20.04 and lower, use (https://github.com/rancher/k3d/releases/tag/v3.2.0).
 - For Ubuntu 21.10 and higher (which has cgroups v2 enabled by default, and k8s fails to start thinking cgroups are not available), use (https://github.com/rancher/k3d/releases/tag/v5.0.0)
+- For MacOS, you can install the latest version via homebrew: ```brew install k3d```
 
 **Note:** Ensure that your Docker daemon has a minimum of 2.5 GB of total memory available for all pods in this deployment to be scheduled.
 
@@ -65,7 +66,7 @@ The TNS demo uses `kubectl` to interact with the Kubernetes clusters. Click [her
 
 ### Tanka
 
-Tanka uses the Jsonnet language to interact with Kubernetes, via the `kubectl` tool. Click [here](https://github.com/grafana/tanka/releases/tag/v0.7.1) for installation instructions.
+Tanka uses the Jsonnet language to interact with Kubernetes, via the `kubectl` tool. Click [here](https://github.com/grafana/tanka/releases) for installation instructions.
 
 #### Reviewing the Tanka code
 
@@ -74,15 +75,9 @@ To find out more about Tanka, see https://tanka.dev.
 
 ### Jsonnet-bundler
 
-The Jsonnet bundler download Jsonnet dependencies. Click [here](https://github.com/jsonnet-bundler/jsonnet-bundler/releases/tag/v0.4.0) for download instructions.
+The Jsonnet bundler downloads Jsonnet dependencies. Click [here](https://github.com/jsonnet-bundler/jsonnet-bundler/tree/master#install) for installation instructions.
 
-After downloading the library:
-
-1. Rename the downloaded binary to `jb` and move it to a location specified in `$PATH`, for example, `/usr/local/bin`.
-1. Verify that the binary is executable:
-    ```
-    $ chmod +x /usr/local/bin/jb
-    ```
+After the installation type ```jb``` in the terminal to make sure it is added to the system path and working.
 
 ## Install TNS demo (running MLT stack locally)
 
@@ -167,10 +162,10 @@ The following instructions will help you go from metrics to logs to traces.
 The following instructions will help you go from metrics to logs to traces.
 
 1. In Grafana, go to the Explore view.
-2. From the data source drop-down and select Prometheus.
+2. From the data source drop-down select "Prometheus-Exemplars".
 3. Run the following query.
 `histogram_quantile(.99, sum(rate(tns_request_duration_seconds_bucket{}[1m])) by (le))`
-4. Click on an exemplar data.
+4. Click on a data point to see the exemplar data as a tooltip.
 5. Click on the log icon on a span line to view the log details.
 
 ### Explore LogQL V2
