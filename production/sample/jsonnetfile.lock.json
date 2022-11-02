@@ -232,6 +232,14 @@
     {
       "source": {
         "local": {
+          "directory": "../production/mimir"
+        }
+      },
+      "version": ""
+    },
+    {
+      "source": {
+        "local": {
           "directory": "../production/tempo"
         }
       },

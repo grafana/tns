@@ -70,14 +70,22 @@ local tns_mixin = import 'tns-mixin/mixin.libsonnet';
           },
         },
         wal_directory: '/tmp/agent/prom',
-        configs: [{
-          name: 'kubernetes-metrics',
-          remote_write: [{
-            url: 'http://prometheus.default.svc.cluster.local/prometheus/api/v1/write',
-            send_exemplars: true,
-          }],
-          scrape_configs: gragent.newKubernetesMetrics({}),
-        }],
+        configs: [
+          {
+            name: 'kubernetes-metrics',
+            remote_write: [
+              {
+                url: 'http://prometheus.default.svc.cluster.local/prometheus/api/v1/write',
+                send_exemplars: true,
+              },
+              {
+                url: 'http://mimir.mimir.svc.cluster.local/api/v1/push',
+                send_exemplars: true
+              }
+            ],
+            scrape_configs: gragent.newKubernetesMetrics({}),
+          },
+        ],
       },
       logs+: {
         positions_directory: '/tmp/agent/loki',
@@ -171,6 +179,24 @@ local tns_mixin = import 'tns-mixin/mixin.libsonnet';
             type: 'prometheus',
             access: 'proxy',
             url: 'http://prometheus.default.svc.cluster.local/prometheus/',
+            isDefault: false,
+            version: 1,
+            editable: false,
+            basicAuth: false,
+            jsonData: {
+              disableMetricsLookup: false,
+              httpMethod: 'POST',
+              exemplarTraceIdDestinations: [{
+                name: 'traceID',
+                datasourceUid: 'tempo',
+              }],
+            },
+          },
+          {
+            name: 'Mimir',
+            type: 'prometheus',
+            access: 'proxy',
+            url: 'http://mimir.mimir.svc.cluster.local/prometheus',
             isDefault: false,
             version: 1,
             editable: false,

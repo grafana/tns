@@ -49,5 +49,6 @@ else
     install_env loki            # Install loki logging app
     install_env tns             # Install TNS demo app
     install_env tempo           # Install tempo tracing app
+    install_env mimir           # Install Mimir metrics app
     install_env default         # Install default monitoring stack
 fi
