@@ -6,7 +6,7 @@ local tns_mixin = import 'tns-mixin/mixin.libsonnet';
 (import 'prometheus-ksonnet/prometheus-ksonnet.libsonnet') +
 {
   _images+:: {
-    grafana: 'grafana/grafana:8.2.2',
+    grafana: 'grafana/grafana:9.2.3',
   },
   _config+:: {
     namespace: 'default',
