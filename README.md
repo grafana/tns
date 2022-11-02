@@ -152,29 +152,29 @@ A tutorial using this method will soon be available in Grafana Cloud's docs.
 The following instructions will help you go from metrics to logs to traces.
 
 1. Open the TNS dashboard.
-1. Zoom in on a section of a panel with failed requests.
-1. From the panel drop-down, click Explore.
-1. In the Explore view, go to the data source drop-down and select Loki.
-1. Choose a logline with a traceID of Tempo.
+2. Zoom in on a section of a panel with failed requests.
+3. From the panel drop-down, click Explore.
+4. In the Explore view, go to the data source drop-down and select Loki.
+5. Click to expand a logline with a `traceID` field.
+6. Click the Tempo button next to the `traceID` field to view the trace.
 
 ## Explore metrics to traces to logs
 
 The following instructions will help you go from metrics to logs to traces.
 
 1. In Grafana, go to the Explore view.
-2. From the data source drop-down select "Prometheus-Exemplars".
-3. Run the following query.
-`histogram_quantile(.99, sum(rate(tns_request_duration_seconds_bucket{}[1m])) by (le))`
-4. Click on a data point to see the exemplar data as a tooltip.
+2. From the data source drop-down, select "Prometheus-Exemplars".
+3. Run the following query: `histogram_quantile(.99, sum(rate(tns_request_duration_seconds_bucket{}[1m])) by (le))`
+4. Click on a data point to see the exemplar data as a tooltip. (If no data points appear, make sure exemplars are enabled in the query options.)
 5. Click on the log icon on a span line to view the log details.
 
-### Explore LogQL V2
+## Explore logs to traces with LogQL V2
 
 1. In Grafana, go to the Explore view.
-2. From the data source drop-down and select Loki.
-3. Run the following query.
- `{job="tns/app"} | logfmt | level="info" | status>=500 and status <=599 and duration > 50ms`
-4. Choose a logline with a traceID of Tempo.
+2. From the data source drop-down, select Loki.
+3. Run the following query: `{job="tns/app"} | logfmt | level="info" | status>=500 and status <=599 and duration > 50ms`
+4. Click to expand a logline with a `traceID` field.
+5. Click the Tempo button next to the `traceID` field to view the trace.
 
 ## Disable TNS cluster
 
