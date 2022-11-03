@@ -3,6 +3,7 @@
 (import 'config.libsonnet') +
 {
   local container = $.core.v1.container,
+  local containerPort = $.core.v1.containerPort,
   local volumeMount = $.core.v1.volumeMount,
   local deployment = $.apps.v1.deployment,
   local volume = $.core.v1.volume,
@@ -15,6 +16,9 @@
 
   mimir_container::
     container.new('mimir', $._images.mimir) +
+    container.withPorts([
+      containerPort.new('prom-metrics', $._config.http.port),
+    ]) +
     container.withArgs([
       '-config.file=/conf/mimir.yaml',
     ]) +
