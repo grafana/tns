@@ -22,9 +22,7 @@ local tns_mixin = import 'tns-mixin/mixin.libsonnet';
   },
 
   local configMap = k.core.v1.configMap,
-  local container = k.core.v1.container,
   local containerPort = k.core.v1.containerPort,
-  local envVar = k.core.v1.envVar,
   local httpIngressPath = k.networking.v1.httpIngressPath,
   local ingress = k.networking.v1.ingress,
   local ingressRule = k.networking.v1.ingressRule,
