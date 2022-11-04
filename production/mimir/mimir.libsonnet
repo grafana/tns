@@ -26,19 +26,21 @@
       volumeMount.new(mimir_config_volume, '/conf'),
     ]),
 
-  mimir_deployment: deployment.new('mimir', 1, [$.mimir_container], { app: 'mimir' }) +
-      deployment.mixin.spec.template.metadata.withAnnotations({
-        config_hash: std.md5(std.toString($.mimir_configmap)),
-      }) +
-      deployment.mixin.spec.strategy.rollingUpdate.withMaxSurge(0) +
-      deployment.mixin.spec.strategy.rollingUpdate.withMaxUnavailable(1) +
-      deployment.mixin.spec.template.spec.withVolumes([
-        volume.fromConfigMap(mimir_config_volume, $.mimir_configmap.metadata.name),
-      ]),
+  mimir_deployment:
+    deployment.new('mimir', 1, [$.mimir_container], { app: 'mimir' }) +
+    deployment.mixin.spec.template.metadata.withAnnotations({
+      config_hash: std.md5(std.toString($.mimir_configmap)),
+    }) +
+    deployment.mixin.spec.strategy.rollingUpdate.withMaxSurge(0) +
+    deployment.mixin.spec.strategy.rollingUpdate.withMaxUnavailable(1) +
+    deployment.mixin.spec.template.spec.withVolumes([
+      volume.fromConfigMap(mimir_config_volume, $.mimir_configmap.metadata.name),
+    ]),
 
-  mimir_service: $.util.serviceFor($.mimir_deployment) +
+  mimir_service:
+    $.util.serviceFor($.mimir_deployment) +
     service.mixin.spec.withPortsMixin([
       servicePort.withName('http') + servicePort.withPort(80) + servicePort.withTargetPort($._config.http.port),
       servicePort.withName('grpc') + servicePort.withPort(9095) + servicePort.withTargetPort($._config.grpc.port),
-    ])
+    ]),
 }

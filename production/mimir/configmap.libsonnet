@@ -9,14 +9,14 @@
     },
     ingester: {
       ring: {
-        replication_factor: 1
-      }
-    }
+        replication_factor: 1,
+      },
+    },
   },
 
   mimir_configmap:
     configMap.new('mimir') +
     configMap.withData({
       'mimir.yaml': $.util.manifestYaml($.mimir_config),
-    })
+    }),
 }

@@ -72,8 +72,8 @@ local tns_mixin = import 'tns-mixin/mixin.libsonnet';
             remote_write: [
               {
                 url: 'http://mimir.mimir.svc.cluster.local/api/v1/push',
-                send_exemplars: true
-              }
+                send_exemplars: true,
+              },
             ],
             scrape_configs: gragent.newKubernetesMetrics({}),
           },
