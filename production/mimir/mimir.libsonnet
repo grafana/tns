@@ -35,7 +35,15 @@
     container.withVolumeMounts([
       volumeMount.new(mimir_config_volume, mimir_config_path),
       volumeMount.new(mimir_pvc_name, $._config.storage.path),
-    ]),
+    ]) +
+    container.mixin.readinessProbe.httpGet.withPath('/ready') +
+    container.mixin.readinessProbe.httpGet.withPort($._config.http.port) +
+    container.mixin.readinessProbe.withInitialDelaySeconds(5) +
+    container.mixin.readinessProbe.withTimeoutSeconds(1) +
+    container.mixin.livenessProbe.httpGet.withPath('/ready') +
+    container.mixin.livenessProbe.httpGet.withPort($._config.http.port) +
+    container.mixin.livenessProbe.withInitialDelaySeconds(5) +
+    container.mixin.livenessProbe.withTimeoutSeconds(1),
 
   mimir_statefulset:
     statefulSet.new('mimir', 1, mimir_container, [mimir_pvc], { app: 'mimir' }) +
