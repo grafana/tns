@@ -6,5 +6,8 @@
     grpc: {
       port: 9095,
     },
+    storage: {
+      path: '/data',
+    },
   },
 }
