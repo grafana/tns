@@ -32,7 +32,7 @@ The TNS app is an example three-tier web app built by Weaveworks. It consists of
 
 The instrumentation for the TNS app is as follows:
 
-- Metrics: Each tier of the TNS app exposes metrics on `/metrics` endpoints, which are scraped by the Grafana Agent. Additionally, these metrics are additionally tagged with exemplar information. The Grafana Agent then writes these metrics to Mimir for storage. 
+- Metrics: Each tier of the TNS app exposes metrics on `/metrics` endpoints, which are scraped by the Grafana Agent. Additionally, these metrics are tagged with exemplar information. The Grafana Agent then writes these metrics to Mimir for storage. 
 
 - Logs: Each tier of the TNS app writes logs to standard output or standard error. It is captured by Kubernetes, which are then collected by the Grafana Agent. Finally, the Agent forwards them to Loki for storage.
 
@@ -165,6 +165,7 @@ The following instructions will help you go from metrics to logs to traces.
 The following instructions will help you go from metrics to logs to traces.
 
 1. In Grafana, go to the Explore view.
+1. From the data source drop-down, select Mimir.
 1. Run the following query: `histogram_quantile(.99, sum(rate(tns_request_duration_seconds_bucket{}[1m])) by (le))`
 1. Click on a data point to see the exemplar data as a tooltip. (If no data points appear, make sure exemplars are enabled in the query options.)
 1. Click on the log icon on a span line to view the log details.
