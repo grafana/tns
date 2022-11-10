@@ -85,6 +85,8 @@ After the installation type ```jb``` in the terminal to make sure it is added to
 
 These instructions assume that you are using a local `k3d`. If you plan to use a Kubernetes cluster other than a local `k3d` one, you will need to modify these instructions for your setup.
 
+In particular, if you are using `minikube`, make sure `kubectl` is configured with a `minikube` context, then set the `CONTEXT` variable in the `install` script to `minikube`.
+
 1. Clone the TNS repository.
     ```sh
     $ git clone https://github.com/grafana/tns
