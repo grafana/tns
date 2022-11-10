@@ -3,7 +3,8 @@ local k = import 'ksonnet-util/kausal.libsonnet';
 local tns_mixin = import 'tns-mixin/mixin.libsonnet';
 
 (import 'ksonnet-util/kausal.libsonnet') +
-(import 'prometheus-ksonnet/prometheus-ksonnet.libsonnet') +
+(import 'prometheus-ksonnet/grafana/grafana.libsonnet') +
+(import 'nginx-directory/directory.libsonnet') +
 {
   _images+:: {
     grafana: 'grafana/grafana:9.2.3',
@@ -11,22 +12,17 @@ local tns_mixin = import 'tns-mixin/mixin.libsonnet';
   _config+:: {
     namespace: 'default',
     cluster_name: 'docker',
+    cluster_dns_tld: 'local.',
+    cluster_dns_suffix: 'cluster.' + self.cluster_dns_tld,
+    grafana_namespace: self.namespace,
+    grafana_root_url: 'http://localhost:8080/grafana',
     admin_services+: [
       { title: 'TNS Demo', path: 'tns-demo', url: 'http://app.tns.svc.cluster.local/', subfilter: true },
-    ],
-
-    // Allow the Grafana Agent to remote write directly to Prometheus. This allows us to use
-    // the Agent for all scraping duties and treat Prometheus as a remote write target similar
-    // to Cortex/GEM/Grafana Cloud.
-    prometheus_enabled_features+: [
-      'remote-write-receiver',
     ],
   },
 
   local configMap = k.core.v1.configMap,
-  local container = k.core.v1.container,
   local containerPort = k.core.v1.containerPort,
-  local envVar = k.core.v1.envVar,
   local httpIngressPath = k.networking.v1.httpIngressPath,
   local ingress = k.networking.v1.ingress,
   local ingressRule = k.networking.v1.ingressRule,
@@ -70,14 +66,18 @@ local tns_mixin = import 'tns-mixin/mixin.libsonnet';
           },
         },
         wal_directory: '/tmp/agent/prom',
-        configs: [{
-          name: 'kubernetes-metrics',
-          remote_write: [{
-            url: 'http://prometheus.default.svc.cluster.local/prometheus/api/v1/write',
-            send_exemplars: true,
-          }],
-          scrape_configs: gragent.newKubernetesMetrics({}),
-        }],
+        configs: [
+          {
+            name: 'kubernetes-metrics',
+            remote_write: [
+              {
+                url: 'http://mimir.mimir.svc.cluster.local/api/v1/push',
+                send_exemplars: true,
+              },
+            ],
+            scrape_configs: gragent.newKubernetesMetrics({}),
+          },
+        ],
       },
       logs+: {
         positions_directory: '/tmp/agent/loki',
@@ -116,15 +116,6 @@ local tns_mixin = import 'tns-mixin/mixin.libsonnet';
         }],
       },
     }),
-
-  // Remove all scrape configs from the Prometheus instance we're running since we'll be
-  // using the Grafana Agent to scrape all pods in the cluster. We've also enabled the remote
-  // write endpoint on the Prometheus instance. We're basically just treating it as a simpler
-  // (and easier to configure) version of Cortex: just a remote write endpoint for metric storage.
-  prometheus_config+:: {
-    scrape_configs: [],
-  },
-
 
   nginx_service+:
     service.mixin.spec.withType('ClusterIP') +
@@ -167,11 +158,11 @@ local tns_mixin = import 'tns-mixin/mixin.libsonnet';
             },
           },
           {
-            name: 'prometheus-exemplars',
+            name: 'Mimir',
             type: 'prometheus',
             access: 'proxy',
-            url: 'http://prometheus.default.svc.cluster.local/prometheus/',
-            isDefault: false,
+            url: 'http://mimir.mimir.svc.cluster.local/prometheus',
+            isDefault: true,
             version: 1,
             editable: false,
             basicAuth: false,

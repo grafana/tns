@@ -23,6 +23,15 @@
       "source": {
         "git": {
           "remote": "https://github.com/grafana/jsonnet-libs.git",
+          "subdir": "nginx-directory"
+        }
+      },
+      "version": "master"
+    },
+    {
+      "source": {
+        "git": {
+          "remote": "https://github.com/grafana/jsonnet-libs.git",
           "subdir": "prometheus-ksonnet"
         }
       },
@@ -59,6 +68,14 @@
       "source": {
         "local": {
           "directory": "../production/loki"
+        }
+      },
+      "version": ""
+    },
+    {
+      "source": {
+        "local": {
+          "directory": "../production/mimir"
         }
       },
       "version": ""

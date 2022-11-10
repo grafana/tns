@@ -1,6 +1,6 @@
 # The New Stack (TNS) observability app
 
-This readme has the following sections.
+This readme has the following sections:
 
 - [The New Stack (TNS) observability app](#the-new-stack-tns-observability-app)
   - [Overview](#overview)
@@ -10,11 +10,11 @@ This readme has the following sections.
     - [kubectl](#kubectl)
     - [Tanka](#tanka)
       - [Reviewing the Tanka code](#reviewing-the-tanka-code)
-    - [Jsonnet-bundle](#jsonnet-bundle)
-  - [Install TNS demo](#install-tns-demo)
+    - [Jsonnet-bundler](#jsonnet-bundler)
+  - [Install TNS demo](#install-tns-demo-running-mlt-stack-locally)
   - [Explore metrics to logs to traces](#explore-metrics-to-logs-to-traces)
   - [Explore metrics to traces to logs](#explore-metrics-to-traces-to-logs)
-    - [Explore LogQL V2](#explore-logql-v2)
+  - [Explore logs to traces with LogQL v2](#explore-logs-to-traces-with-logql-v2)
   - [Disable TNS cluster](#disable-tns-cluster)
   - [Remove TNS cluster](#remove-tns-cluster)
   - [Troubleshooting](#troubleshooting)
@@ -26,17 +26,19 @@ This readme has the following sections.
 
 The New Stack (TNS) is a simple three-tier demo application, fully instrumented with the 3 pillars of observability: metrics, logs, and traces. It offers an insight on what a modern observability stack looks like and experience what it's like to pivot among different types of observability data.
 
-![TNS workflow](./img/TNS-Arc-Diagram-1.png)
+![TNS workflow](./img/Overview.png)
 
 The TNS app is an example three-tier web app built by Weaveworks. It consists of a data layer, application logic layer, and load-balancing layer. To learn more about it, see [How To Detect, Map and Monitor Docker Containers with Weave Scope from Weaveworks](https://thenewstack.io/how-to-detect-map-and-monitor-docker-containers-with-weave-scope-from-weaveworks/).
 
 The instrumentation for the TNS app is as follows:
 
-- Metrics: Each tier of the TNS app exposes metrics on /metrics endpoints, which are scraped by the Grafana Agent. Additionally, these metrics are additionally tagged with exemplar information. The Grafana Agent then writes these metrics to a Prometheus (with remote-read enabled) for storage. [While the Prometheus could scrape metrics from the TNS App directly, the demo is configured to make the Agent the central point through which metrics, logs, and traces are collected. The Prometheus can be substituted for any backend which accepts Prometheus remote write, such as Mimir, Thanos or Cortex.]
+- Metrics: Each tier of the TNS app exposes metrics on `/metrics` endpoints, which are scraped by the Grafana Agent. Additionally, these metrics are tagged with exemplar information. The Grafana Agent then writes these metrics to Mimir for storage. 
+
 - Logs: Each tier of the TNS app writes logs to standard output or standard error. It is captured by Kubernetes, which are then collected by the Grafana Agent. Finally, the Agent forwards them to Loki for storage.
 
 - Traces: Each tier of the TNS app sends traces in Jaeger format to the Grafana Agent, which then converts them to OTel format and forwards them to Tempo for storage.
-Visualization: A Grafana instance configured to talk to the Prometheus, Loki, and Tempo instances makes it possible to query and visualize the metrics, logs, and traces data.
+
+Visualization: A Grafana instance configured to talk to the Mimir, Loki, and Tempo instances makes it possible to query and visualize the metrics, logs, and traces data.
 
 
 ## Prerequisites
@@ -152,29 +154,29 @@ A tutorial using this method will soon be available in Grafana Cloud's docs.
 The following instructions will help you go from metrics to logs to traces.
 
 1. Open the TNS dashboard.
-2. Zoom in on a section of a panel with failed requests.
-3. From the panel drop-down, click Explore.
-4. In the Explore view, go to the data source drop-down and select Loki.
-5. Click to expand a logline with a `traceID` field.
-6. Click the Tempo button next to the `traceID` field to view the trace.
+1. Zoom in on a section of a panel with failed requests.
+1. From the panel drop-down, click Explore.
+1. In the Explore view, go to the data source drop-down and select Loki.
+1. Click to expand a logline with a `traceID` field.
+1. Click the Tempo button next to the `traceID` field to view the trace.
 
 ## Explore metrics to traces to logs
 
 The following instructions will help you go from metrics to logs to traces.
 
 1. In Grafana, go to the Explore view.
-2. From the data source drop-down, select "Prometheus-Exemplars".
-3. Run the following query: `histogram_quantile(.99, sum(rate(tns_request_duration_seconds_bucket{}[1m])) by (le))`
-4. Click on a data point to see the exemplar data as a tooltip. (If no data points appear, make sure exemplars are enabled in the query options.)
-5. Click on the log icon on a span line to view the log details.
+1. From the data source drop-down, select Mimir.
+1. Run the following query: `histogram_quantile(.99, sum(rate(tns_request_duration_seconds_bucket{}[1m])) by (le))`
+1. Click on a data point to see the exemplar data as a tooltip. (If no data points appear, make sure exemplars are enabled in the query options.)
+1. Click on the log icon on a span line to view the log details.
 
 ## Explore logs to traces with LogQL V2
 
 1. In Grafana, go to the Explore view.
-2. From the data source drop-down, select Loki.
-3. Run the following query: `{job="tns/app"} | logfmt | level="info" | status>=500 and status <=599 and duration > 50ms`
-4. Click to expand a logline with a `traceID` field.
-5. Click the Tempo button next to the `traceID` field to view the trace.
+1. From the data source drop-down, select Loki.
+1. Run the following query: `{job="tns/app"} | logfmt | level="info" | status>=500 and status <=599 and duration > 50ms`
+1. Click to expand a logline with a `traceID` field.
+1. Click the Tempo button next to the `traceID` field to view the trace.
 
 ## Disable TNS cluster
 
