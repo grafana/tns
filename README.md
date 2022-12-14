@@ -219,3 +219,7 @@ $ rm -rf tanka
 
 - Update the manifests by running the following tanka command: `tk apply --force environments/<ENV>/main.jsonnet`.
 - Update Grafana, for example, when changing dashboards by running the following tanka command: `tk apply --force environments/default/main.jsonnet`.
+
+## Using TNS for Grafana Development
+
+The setup in this repo can help provide you with everything you need to use TNS' setup to work with local Grafana development. For more information, see the README in production/docker-compose
