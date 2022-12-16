@@ -16,7 +16,7 @@ version: '3.4'
 services:
 
   db:
-    image: grafana/tns-db:842bd3b
+    image: grafana/tns-db:latest
     command:
       - '-log.level=debug'
     ports:
@@ -31,7 +31,7 @@ services:
     logging: *default-logging
 
   app:
-    image: grafana/tns-app:842bd3b
+    image: grafana/tns-app:latest
     command:
       - '-log.level=debug'
       - 'http://db'
@@ -49,7 +49,7 @@ services:
     logging: *default-logging
 
   loadgen:
-    image: grafana/tns-loadgen:842bd3b
+    image: grafana/tns-loadgen:latest
     command:
       - '-log.level=debug'
       - 'http://app'
@@ -64,44 +64,6 @@ services:
       JAEGER_SAMPLER_PARAM: 1
     labels:
       namespace: tns
-    logging: *default-logging
-
-  grafana:
-    image: grafana/grafana:8.2.2
-    volumes:
-      - ./datasources.yaml:/etc/grafana/provisioning/datasources/datasources.yaml
-      - ./dashboards.yaml:/etc/grafana/provisioning/dashboards/dashboards.yaml
-      - ./dashboards:/etc/grafana/dashboards
-    environment:
-     - GF_AUTH_ANONYMOUS_ENABLED=true
-     - GF_AUTH_ANONYMOUS_ORG_ROLE=Admin
-     - GF_AUTH_DISABLE_LOGIN_FORM=true
-    ports:
-     - 0.0.0.0:3000:3000
-    labels:
-      namespace: monitoring
-    logging: *default-logging
-
-  prometheus:
-    image: prom/prometheus:v2.30.3
-    user: root
-    command:
-      - --config.file=/etc/prometheus/prometheus.yml
-      - --storage.tsdb.path=/prometheus
-      - --storage.tsdb.retention.time=1d
-      - --enable-feature=exemplar-storage
-      - --log.level=debug
-      - --web.enable-admin-api
-    volumes:
-      - ./prometheus.yaml:/etc/prometheus/prometheus.yml
-    links:
-      - app
-      - db
-      - loadgen
-    ports:
-      - 0.0.0.0:9090:9090
-    labels:
-      namespace: monitoring
     logging: *default-logging
 
   cadvisor:

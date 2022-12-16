@@ -1,48 +1,44 @@
 {
     "stories": [
         {
-            "title": "Why was everyone talking about the Grafana Loki logo?",
-            "url": "https://news.ycombinator.com/item?id=18665083"
+            "title": "Superman",
+            "url": "https://www.youtube.com/watch?v=eBGIQ7ZuuiU"
         },
         {
-            "title": "Graduate from DataDog with Grafana Cloud.",
-            "url": "https://grafana.com/cloud"
+            "title": "Batman",
+            "url": "https://www.youtube.com/watch?v=eBGIQ7ZuuiU"
         },
         {
-            "title": "Grafana Labs announces: Cortex, like Loki but for metrics.",
-            "url": "https://github.com/cortexproject/cortex"
+            "title": "Thor",
+            "url": "https://www.youtube.com/watch?v=eBGIQ7ZuuiU"
         },
         {
-            "title": "Splunk acquires all companies in the known universe.",
-            "url": "https://www.youtube.com/watch?v=dQw4w9WgXcQ"
+            "title": "Loki",
+            "url": "https://www.youtube.com/watch?v=eBGIQ7ZuuiU"
         },
         {
-            "title": "Helm 3 launched with even more Jinga templates.",
-            "url": "https://www.influxdata.com/blog/influxdata-secures-60-million-in-series-d-funding-to-bring-the-value-of-time-series-to-the-enterprise-mainstream/"
+            "title": "Iron Man",
+            "url": "https://www.youtube.com/watch?v=eBGIQ7ZuuiU"
         },
         {
-            "title": "IBM acquires AWS, Google and Microsoft, still forth place in cloud.",
-            "url": "https://www.zdnet.com/article/top-cloud-providers-2018-how-aws-microsoft-google-ibm-oracle-alibaba-stack-up/"
+            "title": "Vision",
+            "url": "https://www.youtube.com/watch?v=eBGIQ7ZuuiU"
         },
         {
-            "title": "Thanos: Long term storage for half your Prometheus metrics.",
+            "title": "Thanos",
             "url": "https://github.com/thanos-io/thanos"
         },
         {
-            "title": "Google announces new dependency manager for Go.",
-            "url": "https://peter.bourgon.org/blog/2018/07/27/a-response-about-dep-and-vgo.html"
+            "title": "Yoda",
+            "url": "https://www.youtube.com/watch?v=eBGIQ7ZuuiU"
         },
         {
-            "title": "Grafana Labs revises history, raises VC money.",
-            "url": "https://techcrunch.com/2019/10/24/grafana-labs-nabs-24m-series-a-for-open-source-based-data-analytics-stack/"
+            "title": "Sauron",
+            "url": "https://www.youtube.com/watch?v=eBGIQ7ZuuiU"
         },
         {
-            "title": "Docker announces sales of office furniture to Mirantis.",
-            "url": "https://techcrunch.com/2019/11/13/mirantis-acquires-docker-enterprise/"
-        },
-        {
-            "title": "And the award for most ironic live tweeted outage goes to…",
-            "url": ""
+            "title": "Paul Blart",
+            "url": "https://www.youtube.com/watch?v=eBGIQ7ZuuiU"
         }
     ]
 }
