@@ -29,6 +29,7 @@ import (
 )
 
 func main() {
+	// Testing out CircleCI
 	serverConfig := server.Config{
 		MetricsNamespace: "tns",
 	}
