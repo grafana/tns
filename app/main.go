@@ -282,11 +282,15 @@ func (a *app) Vote(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	name := r.Form.Get("name")
+
 	var buf bytes.Buffer
 	if err := json.NewEncoder(&buf).Encode(struct {
-		ID int
+		ID   int
+		name string
 	}{
-		ID: id,
+		ID:   id,
+		name: name,
 	}); err != nil {
 		level.Error(a.logger).Log("msg", "error encoding post", "err", err, "traceID", traceId)
 		http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -317,6 +321,8 @@ func (a *app) Vote(w http.ResponseWriter, r *http.Request) {
 		fmt.Fprintf(w, "%s\n", body)
 		return
 	}
+
+	level.Info(a.logger).Log("msg", name, "type", "/vote")
 
 	// Implement PRG pattern to prevent double-POST.
 	newURL := strings.TrimSuffix(req.RequestURI, "/vote")
