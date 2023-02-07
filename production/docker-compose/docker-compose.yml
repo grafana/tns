@@ -135,11 +135,13 @@ services:
     logging: *default-logging
 
   loki:
-    image: grafana/loki:2.3.0
+    image: grafana/loki:2.7.3
     command:
       - -config.file=/etc/loki/local-config.yaml
       - -table-manager.retention-period=1d
       - -table-manager.retention-deletes-enabled=true
+    volumes:
+      - ./loki-config.yaml:/etc/loki/loki-config.yaml
     ports:
       - "3100:3100"
     labels:
