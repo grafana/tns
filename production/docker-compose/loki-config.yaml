@@ -33,5 +33,11 @@ schema_config:
         prefix: index_
         period: 24h
 
+ingester:
+  chunk_target_size: 1000
+  max_chunk_age: 10s
+  chunk_idle_period: 10s
+  flush_check_period: 10s
+
 ruler:
   alertmanager_url: http://localhost:9093
