@@ -137,7 +137,7 @@ services:
   loki:
     image: grafana/loki:2.7.3
     command:
-      - -config.file=/etc/loki/local-config.yaml
+      - -config.file=/etc/loki/loki-config.yaml
       - -table-manager.retention-period=1d
       - -table-manager.retention-deletes-enabled=true
     volumes:
