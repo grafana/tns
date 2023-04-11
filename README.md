@@ -49,7 +49,13 @@ If you wish to only deploy the TNS app to an existing K8s cluster using the `app
 
 ### Docker
 
-Verify you have Docker installed. For download and installation instructions, click [here](https://docs.docker.com/install/).
+Make sure you have Docker installed and verify it is running with `docker ps`. No errors mean it is running. For download and installation instructions, click [here](https://docs.docker.com/install/).
+
+If using Linux and you see an error similar to `permission denied while trying to connect to the Docker daemon socket at unix:///var/run/docker.sock` then make sure you are in the `docker` group. This will ensure that you are able to run Docker without using the `sudo` command.
+```sh
+$ sudo usermod -aG docker <username>
+```
+Logout and then login again for the changes to take effect.
 
 ### K3D
 
@@ -96,12 +102,6 @@ These instructions assume that you are using a local `k3d`. If you plan to use a
     $ ./create-k3d-cluster
     $ export KUBECONFIG=$(k3d kubeconfig write tns)
     ```
-
-    If you see an error similar to `permission denied while trying to connect to the Docker daemon socket at unix:///var/run/docker.sock`, then add yourself to the `docker` group. This will ensure that you are able to run Docker without using the `sudo` command.
-    ```sh
-    $ sudo usermod -aG docker <username>
-    ```
-    Logout and then login again for the changes to take effect.
 
 1. Install TNS demo application:
     ```sh
