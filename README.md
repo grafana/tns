@@ -17,7 +17,6 @@ This readme has the following sections:
   - [Explore logs to traces with LogQL v2](#explore-logs-to-traces-with-logql-v2)
   - [Disable TNS cluster](#disable-tns-cluster)
   - [Remove TNS cluster](#remove-tns-cluster)
-  - [Troubleshooting](#troubleshooting)
   - [Contributing guidelines](#contributing-guidelines)
     - [Modify TNS application:](#modify-tns-application)
     - [Update Grafana dashboards and kubernetes infrastructure:](#update-grafana-dashboards-and-kubernetes-infrastructure)
@@ -200,12 +199,6 @@ To remove your cluster, run this command:
 $ k3d cluster delete tns
 $ rm -rf tanka
 ```
-
-## Troubleshooting
-
-**Issue:** 404 error when trying to load Tempo traces.
-
-**Solution:** Your Jaeger agent is likely not running correctly. Check that all pods were successfully scheduled.
 
 ## Contributing guidelines
 
