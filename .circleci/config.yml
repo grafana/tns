@@ -40,7 +40,7 @@ jobs:
       - run:
           name: Lint Go
           command: |
-            go get -u golang.org/x/lint/golint
+            go get golang.org/x/lint/golint@v0.0.0-20201208152925-83fdc39ff7b5
             golint ./...
 
   lint-jsonnet:
