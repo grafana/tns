@@ -126,8 +126,6 @@ Note: If you need to re-do this process to get everything running, you can run `
 
 If you already have a K8s cluster *and* cloud metrics, logs, and traces services available to you, use the `app-only` option to deploy _only_ the instrumented TNS app to a Kubernetes cluster.
 
-A tutorial using this method will soon be available in Grafana Cloud's docs.
-
 1. Get Kubernetes context
     ```sh
     $ kubectl config get-contexts
@@ -147,6 +145,36 @@ A tutorial using this method will soon be available in Grafana Cloud's docs.
     $ kubectl get pods -n tns-cloud
     ```
     If all the pods are listed as either `running`, your app is ready for use.
+
+## Install TNS demo app connected to Grafana Cloud (`grafana-cloud` option)
+
+Note: this requires an existing K8S cluster.
+
+1. Get Kubernetes context
+    ```sh
+    $ kubectl config get-contexts
+    ```
+    Note down the context you'd like to use to deploy the app.
+
+1. Deploy the app
+    ```sh
+    $ ./install CONTEXT_YOU_NOTED grafana-cloud
+    ```
+
+1. This will ask you to enter your organization name, an API Key as well as the desired stack. You can get this information from your account page in the Grafana Cloud console.
+
+1. Confirm `yes` when prompted about applying changes to your cluster
+
+1. Verify the status of your cluster by running this command.
+
+    ```sh
+    $ kubectl get pods -n tns-cloud
+    ```
+	If all the pods are listed as either `running`, your app is ready for use.
+
+
+After a few minutes, you will see metrics arriving in your Grafana instance. At this point, you can also enable the [Kubernetes Integration](https://grafana.com/docs/grafana-cloud/kubernetes-monitoring/) - the agent is already configured for you!
+
 
 ## Explore metrics to logs to traces
 

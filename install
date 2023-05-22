@@ -10,10 +10,13 @@ function install_env {
     ENV=$1
     tk env add environments/$ENV --server-from-context $CONTEXT --namespace $ENV # Creates/configures the environment.
     ln -sf "$PROD/$ENV/main.jsonnet" environments/$ENV/main.jsonnet # Copies the base configuration for your env.
+    if [[ $# > 1 ]]; then
+        echo "$2" > environments/$ENV/config.jsonnet
+    fi
     tk apply environments/$ENV                                      # Installs everything for your environment.
 }
 
-if [[ "$MODE" != "app-only" ]] && [[ $(docker info --format "{{.MemTotal}}") -lt 2560000000 ]]; then
+if [[ "$MODE" != "app-only" ]] && [[ "$MODE" != "grafana-cloud" ]] && [[ $(docker info --format "{{.MemTotal}}") -lt 2560000000 ]]; then
   echo "WARNING: your docker daemon will likely need more memory in order to schedule all required pods"
 fi
 
@@ -45,6 +48,36 @@ jb install
 # Install apps into separate namespaces
 if [[ "$MODE" == "app-only" ]]; then
     install_env tns-cloud       # Only install (modified) TNS demo app into existing K8s cluster 
+elif [[ "$MODE" == "grafana-cloud" ]]; then
+		read -p "Please enter your org slug: " ORGSLUG
+		read -p "Please enter your API-Key: " APIKEY
+		INSTANCESFILE=$(mktemp)
+		curl --silent -H "Authorization: Bearer $APIKEY" "https://grafana.com/api/orgs/$ORGSLUG/instances" > $INSTANCESFILE
+		STACKS=$(jq -r '[.items[].slug] | join(",")' $INSTANCESFILE)
+		read -p "Please select your stack (available: $STACKS): " STACK
+
+		read -r -d '' GCLOUD_CONFIG <<EOF
+{
+  _config+:: {
+    apiKey: '$APIKEY',
+    prometheus+: {
+      endpoint: '$(jq -r --arg STACK $STACK '.items[] | select(.slug=$STACK) | .hmInstancePromUrl' $INSTANCESFILE)/api/prom/push',
+      user: $(jq --arg STACK $STACK '.items[] | select(.slug=$STACK) | .hmInstancePromId' $INSTANCESFILE),
+    },
+    loki+: {
+      endpoint: '$(jq -r --arg STACK $STACK '.items[] | select(.slug=$STACK) | .hlInstanceUrl' $INSTANCESFILE)/loki/api/v1/push',
+      user: $(jq --arg STACK $STACK '.items[] | select(.slug=$STACK) | .hlInstanceId' $INSTANCESFILE),
+    },
+    tempo+: {
+      endpoint: '$(jq -r --arg STACK $STACK '.items[] | select(.slug=$STACK) | .htInstanceUrl' $INSTANCESFILE):443',
+      user: $(jq --arg STACK $STACK '.items[] | select(.slug=$STACK) | .htInstanceId' $INSTANCESFILE),
+    },
+  },
+}
+EOF
+    install_env grafana-cloud "$GCLOUD_CONFIG"
+		rm $INSTANCESFILE
+    install_env tns-cloud
 else
     install_env loki            # Install loki logging app
     install_env tns             # Install TNS demo app
