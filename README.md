@@ -48,7 +48,7 @@ If you wish to only deploy the TNS app to an existing K8s cluster using the `app
 
 ### Go
 
-To run the TNS demo, you must have Go installed on your local machine since much of the program is written in Go. You may also use Go to install some of the following prerequisites as well. Click [here] (https://go.dev/doc/install) for installation instructions.
+Since much of the program is written in Go, you should have have Go installed on your local machine. Click [here] (https://go.dev/doc/install) for installation instructions.
 
 ### Docker
 
