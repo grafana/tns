@@ -46,6 +46,10 @@ If you are running the full metrics, logs and traces stack locally, install and 
 
 If you wish to only deploy the TNS app to an existing K8s cluster using the `app-only` option, install and configure `kubectl`, `tanka`, and `jsonnet-bundler`.
 
+### Go
+
+Since much of the program is written in Go, you should have have Go installed on your local machine. Click [here] (https://go.dev/doc/install) for installation instructions.
+
 ### Docker
 
 Make sure you have Docker installed and verify it is running with `docker ps`. No errors means it is running. For Docker download and installation instructions, click [here](https://docs.docker.com/install/).
@@ -73,7 +77,7 @@ The TNS demo uses `kubectl` to interact with the Kubernetes clusters. Click [her
 
 ### Tanka
 
-Tanka uses the Jsonnet language to interact with Kubernetes, via the `kubectl` tool. Click [here](https://github.com/grafana/tanka/releases) for installation instructions.
+Tanka uses the Jsonnet language to interact with Kubernetes, via the `kubectl` tool. Click [here](https://tanka.dev/install#tanka) for installation instructions.
 
 #### Reviewing the Tanka code
 
@@ -82,7 +86,7 @@ To find out more about Tanka, see https://tanka.dev.
 
 ### Jsonnet-bundler
 
-The Jsonnet bundler downloads Jsonnet dependencies. Click [here](https://github.com/jsonnet-bundler/jsonnet-bundler/tree/master#install) for installation instructions.
+The Jsonnet bundler downloads Jsonnet dependencies. Click [here](https://tanka.dev/install#jsonnet-bundler) for installation instructions.
 
 After the installation type ```jb``` in the terminal to make sure it is added to the system path and working.
 
