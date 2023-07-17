@@ -61,16 +61,16 @@ elif [[ "$MODE" == "grafana-cloud" ]]; then
   _config+:: {
     apiKey: '$APIKEY',
     prometheus+: {
-      endpoint: '$(jq -r --arg STACK $STACK '.items[] | select(.slug=$STACK) | .hmInstancePromUrl' $INSTANCESFILE)/api/prom/push',
-      user: $(jq --arg STACK $STACK '.items[] | select(.slug=$STACK) | .hmInstancePromId' $INSTANCESFILE),
+      endpoint: '$(jq -r --arg STACK $STACK '.items[] | select(.slug==$STACK) | .hmInstancePromUrl' $INSTANCESFILE)/api/prom/push',
+      user: $(jq --arg STACK $STACK '.items[] | select(.slug==$STACK) | .hmInstancePromId' $INSTANCESFILE),
     },
     loki+: {
-      endpoint: '$(jq -r --arg STACK $STACK '.items[] | select(.slug=$STACK) | .hlInstanceUrl' $INSTANCESFILE)/loki/api/v1/push',
-      user: $(jq --arg STACK $STACK '.items[] | select(.slug=$STACK) | .hlInstanceId' $INSTANCESFILE),
+      endpoint: '$(jq -r --arg STACK $STACK '.items[] | select(.slug==$STACK) | .hlInstanceUrl' $INSTANCESFILE)/loki/api/v1/push',
+      user: $(jq --arg STACK $STACK '.items[] | select(.slug==$STACK) | .hlInstanceId' $INSTANCESFILE),
     },
     tempo+: {
-      endpoint: '$(jq -r --arg STACK $STACK '.items[] | select(.slug=$STACK) | .htInstanceUrl' $INSTANCESFILE):443',
-      user: $(jq --arg STACK $STACK '.items[] | select(.slug=$STACK) | .htInstanceId' $INSTANCESFILE),
+      endpoint: '$(jq -r --arg STACK $STACK '.items[] | select(.slug==$STACK) | .htInstanceUrl' $INSTANCESFILE):443',
+      user: $(jq --arg STACK $STACK '.items[] | select(.slug==$STACK) | .htInstanceId' $INSTANCESFILE),
     },
   },
 }
