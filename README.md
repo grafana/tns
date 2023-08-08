@@ -188,12 +188,12 @@ The following instructions will help you go from metrics to logs to traces.
 1. Zoom in on a section of a panel with failed requests.
 1. From the panel drop-down, click Explore.
 1. In the Explore view, go to the data source drop-down and select Loki.
-1. Click to expand a logline with a `traceID` field.
-1. Click the Tempo button next to the `traceID` field to view the trace.
+1. Click to expand a logline with a `TraceID` field.
+1. Click the Tempo button next to the `TraceID` field to view the trace.
 
 ## Explore metrics to traces to logs
 
-The following instructions will help you go from metrics to logs to traces.
+The following instructions will help you go from metrics to traces to logs.
 
 1. In Grafana, go to the Explore view.
 1. From the data source drop-down, select Mimir.
@@ -206,8 +206,8 @@ The following instructions will help you go from metrics to logs to traces.
 1. In Grafana, go to the Explore view.
 1. From the data source drop-down, select Loki.
 1. Run the following query: `{job="tns/app"} | logfmt | level="info" | status>=500 and status <=599 and duration > 50ms`
-1. Click to expand a logline with a `traceID` field.
-1. Click the Tempo button next to the `traceID` field to view the trace.
+1. Click to expand a logline with a `TraceID` field.
+1. Click the Tempo button next to the `TraceID` field to view the trace.
 
 ## Disable TNS cluster
 
