@@ -111,7 +111,7 @@ These instructions assume that you are using a local `k3d`. If you plan to use a
     $ ./install
     ```
 
-1. Confirm `yes` when prompted. You will be prompted four times during the installation.
+1. Confirm `yes` when prompted. You will be prompted five times during the installation.
 
     Wait for the installation to finish. It can take over ten minutes for everything to download and then start up.
 

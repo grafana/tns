@@ -7,6 +7,7 @@
       http_listen_port: $._config.http.port,
       grpc_listen_port: $._config.grpc.port,
     },
+
     common: {
       storage: {
         filesystem: {
@@ -24,6 +25,9 @@
       tsdb: {
         dir: '%s/tsdb' % $._config.storage.path,
       },
+    },
+    limits: {
+      max_global_exemplars_per_user: 100000,
     },
   },
 
