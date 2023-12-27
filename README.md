@@ -165,7 +165,13 @@ Note: this requires an existing K8S cluster.
     $ ./install CONTEXT_YOU_NOTED grafana-cloud
     ```
 
-1. This will ask you to enter your organization name, an API Key as well as the desired stack. You can get this information from your account page in the Grafana Cloud console.
+1. You will need to provide your organization name (slug), API Token, and stack.
+
+    - To create an Access Policy and Token, go to https://grafana.com/orgs/<your_slug>/access-policies
+    - Create new access policy with the minimum privileges: 
+      - Realms: the stack you wish to send TNS data to
+      - Scopes: stacks:read, logs:write, metrics:write, profiles:write
+    - Create new access token for this policy
 
 1. Confirm `yes` when prompted about applying changes to your cluster
 
