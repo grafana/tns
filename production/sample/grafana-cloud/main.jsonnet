@@ -82,7 +82,7 @@ local tns_mixin = import 'tns-mixin/mixin.libsonnet';
               {
                 url: $._config.prometheus.endpoint,
                 basic_auth: {
-                  username: $._config.prometheus.user,
+                  username: std.toString($._config.prometheus.user),
                   password: $._config.apiKey,
                 },
                 send_exemplars: true,
@@ -108,7 +108,7 @@ local tns_mixin = import 'tns-mixin/mixin.libsonnet';
           clients: [{
             url: $._config.loki.endpoint,
             basic_auth: {
-              username: $._config.loki.user,
+              username: std.toString($._config.loki.user),
               password: $._config.apiKey,
             },
             external_labels: {
@@ -137,7 +137,7 @@ local tns_mixin = import 'tns-mixin/mixin.libsonnet';
               enabled: true,
             },
             basic_auth: {
-              username: $._config.tempo.user,
+              username: std.toString($._config.tempo.user),
               password: $._config.apiKey,
             },
           }],
