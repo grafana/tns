@@ -204,8 +204,8 @@ The following instructions will help you go from metrics to traces to logs.
 1. In Grafana, go to the Explore view.
 1. From the data source drop-down, select Mimir.
 1. Run the following query: `histogram_quantile(.99, sum(rate(tns_request_duration_seconds_bucket{}[1m])) by (le))`
-1. Click on a data point to see the exemplar data as a tooltip. (If no data points appear, make sure exemplars are enabled in the query options.)
-1. Click on the log icon on a span line to view the log details.
+1. Click on a data point to see the exemplar data in an overlay, then click "Query with Tempo" in the examplar overlay. (If no data points appear, make sure exemplars are enabled in the query options.)
+1. In the trace viewer, click the log icon of one of the span lines to view log details.
 
 ## Explore logs to traces with LogQL V2
 
@@ -243,7 +243,7 @@ $ rm -rf tanka
 ### Modify TNS application:
 
 - Run `make` to compile the code and tag new images in your local Docker image registry, after you have modified the source code of the TNS demo application,
-- Instruct `k3d` to pull the new images on a pod restart (and not use the image from it's local cache): `k3d image import -c tns grafana/tns-app  && k3d image import -c tns grafana/tns-db &&  k3d image import -c tns grafana/tns-loadgen`.
+- Instruct `k3d` to pull the new images on a pod restart (and not use the image from its local cache): `k3d image import -c tns grafana/tns-app && k3d image import -c tns grafana/tns-db && k3d image import -c tns grafana/tns-loadgen`.
 - Kill relevant pod(s) by running the following command: `kubectl delete pod app-69db48747b-s6qq6 --namespace=tns`.
 
 ### Update Grafana dashboards and kubernetes infrastructure:
@@ -253,4 +253,4 @@ $ rm -rf tanka
 
 ## Using TNS for Grafana Development
 
-The setup in this repo can help provide you with everything you need to use TNS' setup to work with local Grafana development. For more information, see the README in production/docker-compose
+The setup in this repo can help provide you with everything you need to use TNS' setup to work with local Grafana development. For more information, see the README in production/docker-compose.
