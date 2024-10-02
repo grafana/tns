@@ -19,7 +19,7 @@ workflows:
 
 defaults: &defaults
   docker:
-    - image: golang:1.15.3-buster
+    - image: golang:1.23.1-buster
   working_directory: /go/src/github.com/grafana/tns
 
 jobs:

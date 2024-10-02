@@ -9,7 +9,6 @@ import (
 	"flag"
 	"fmt"
 	"io"
-	"io/ioutil"
 	"math/rand"
 	"net/http"
 	"net/url"
@@ -112,7 +111,6 @@ func new(logger log.Logger, databases []*url.URL) (*app, error) {
 		return nil, err
 	}
 
-	rand.Seed(time.Now().UnixNano())
 	h := md5.New()
 	fmt.Fprintf(h, "%d", rand.Int63())
 	id := fmt.Sprintf("app-%x", h.Sum(nil))
@@ -148,7 +146,7 @@ func (a *app) Index(w http.ResponseWriter, r *http.Request) {
 	defer resp.Body.Close()
 
 	if resp.StatusCode/100 != 2 {
-		body, _ := ioutil.ReadAll(io.LimitReader(resp.Body, 1024))
+		body, _ := io.ReadAll(io.LimitReader(resp.Body, 1024))
 		level.Error(a.logger).Log("msg", "HTTP request failed", "status", resp.StatusCode, "body", body)
 		w.WriteHeader(http.StatusInternalServerError)
 		fmt.Fprintf(w, "%s\n", body)
@@ -253,7 +251,7 @@ func (a *app) Post(w http.ResponseWriter, r *http.Request) {
 	defer resp.Body.Close()
 
 	if resp.StatusCode/100 != 2 {
-		body, _ := ioutil.ReadAll(io.LimitReader(resp.Body, 1024))
+		body, _ := io.ReadAll(io.LimitReader(resp.Body, 1024))
 		level.Error(a.logger).Log("msg", "HTTP request failed", "status", resp.StatusCode, "body", body, "traceID", traceId)
 		w.WriteHeader(http.StatusInternalServerError)
 		fmt.Fprintf(w, "%s\n", body)
@@ -311,7 +309,7 @@ func (a *app) Vote(w http.ResponseWriter, r *http.Request) {
 	defer resp.Body.Close()
 
 	if resp.StatusCode/100 != 2 {
-		body, _ := ioutil.ReadAll(io.LimitReader(resp.Body, 1024))
+		body, _ := io.ReadAll(io.LimitReader(resp.Body, 1024))
 		level.Error(a.logger).Log("msg", "HTTP request failed", "status", resp.StatusCode, "body", body, "traceID", traceId)
 		w.WriteHeader(http.StatusInternalServerError)
 		fmt.Fprintf(w, "%s\n", body)
