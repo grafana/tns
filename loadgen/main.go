@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 	"flag"
 	"fmt"
-	"io/ioutil"
 	"math/rand"
 	"net/http"
 	"net/url"
@@ -47,8 +46,6 @@ func main() {
 		os.Exit(1)
 	}
 	defer s.Shutdown()
-
-	rand.Seed(time.Now().UnixNano())
 
 	apps, err := getApps(flag.Args())
 	if err != nil {
@@ -95,7 +92,7 @@ func main() {
 	go func() {
 		defer wg.Done()
 
-		buf, err := ioutil.ReadFile("/stories.json")
+		buf, err := os.ReadFile("/stories.json")
 		if err != nil {
 			level.Error(logger).Log("msg", "failed to read stories", "err", err)
 			return

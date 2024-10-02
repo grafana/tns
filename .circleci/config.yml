@@ -6,20 +6,20 @@ workflows:
     jobs:
     - test
     - build
-    - lint-go
+    - staticcheck-go
     - lint-jsonnet
     - publish:
         requires:
         - test
         - build
-        - lint-go
+        - staticcheck-go
         filters:
           branches:
             only: main
 
 defaults: &defaults
   docker:
-    - image: golang:1.15.3-buster
+    - image: golang:1.23.2-bullseye
   working_directory: /go/src/github.com/grafana/tns
 
 jobs:
@@ -33,15 +33,15 @@ jobs:
           command: |
             GO111MODULE=on go test ./...
 
-  lint-go:
+  staticcheck-go:
     <<: *defaults
     steps:
       - checkout
       - run:
-          name: Lint Go
+          name: staticcheck-go
           command: |
-            go get golang.org/x/lint/golint@v0.0.0-20201208152925-83fdc39ff7b5
-            golint ./...
+            go install honnef.co/go/tools/cmd/staticcheck@latest
+            staticcheck ./...
 
   lint-jsonnet:
     <<: *defaults

@@ -50,8 +50,6 @@ func main() {
 	}
 	defer s.Shutdown()
 
-	rand.Seed(time.Now().UnixNano())
-
 	s.HTTP.HandleFunc("/", db.Fetch)
 	s.HTTP.HandleFunc("/fail", db.Fail)
 	s.HTTP.HandleFunc("/post", db.Post)
