@@ -261,7 +261,6 @@ func (a *app) Post(w http.ResponseWriter, r *http.Request) {
 	// Implement PRG pattern to prevent double-POST.
 	newURL := strings.TrimSuffix(req.RequestURI, "/post")
 	http.Redirect(w, req, newURL, http.StatusFound)
-	return
 }
 
 func (a *app) Vote(w http.ResponseWriter, r *http.Request) {
@@ -319,5 +318,4 @@ func (a *app) Vote(w http.ResponseWriter, r *http.Request) {
 	// Implement PRG pattern to prevent double-POST.
 	newURL := strings.TrimSuffix(req.RequestURI, "/vote")
 	http.Redirect(w, req, newURL, http.StatusFound)
-	return
 }
