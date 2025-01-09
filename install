@@ -35,7 +35,7 @@ fi
 mkdir "$BASEDIR/tanka" && cd "$BASEDIR/tanka"
 
 # Initialise Tanka
-tk init --k8s=1.22
+tk init
 
 # Workaround for https://github.com/jsonnet-libs/k8s/issues/132
 echo "(import 'github.com/jsonnet-libs/k8s-libsonnet/1.22/main.libsonnet') + { extensions:: null }" > lib/k.libsonnet
