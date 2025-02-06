@@ -35,7 +35,7 @@ fi
 mkdir "$BASEDIR/tanka" && cd "$BASEDIR/tanka"
 
 # Initialise Tanka
-tk init --k8s=1.22
+tk init
 
 # Workaround for https://github.com/jsonnet-libs/k8s/issues/132
 echo "(import 'github.com/jsonnet-libs/k8s-libsonnet/1.22/main.libsonnet') + { extensions:: null }" > lib/k.libsonnet
@@ -58,8 +58,7 @@ elif [[ "$MODE" == "grafana-cloud" ]]; then
 		STACKS=$(jq -r '[.items[].slug] | join(",")' $INSTANCESFILE)
 		read -p "Please select your stack (available: $STACKS): " STACK
 
-		read -r -d '' GCLOUD_CONFIG <<EOF
-{
+GCLOUD_CONFIG="{
   _config+:: {
     apiKey: '$APIKEY',
     prometheus+: {
@@ -75,10 +74,9 @@ elif [[ "$MODE" == "grafana-cloud" ]]; then
       user: $(jq --arg STACK $STACK '.items[] | select(.slug==$STACK) | .htInstanceId' $INSTANCESFILE),
     },
   },
-}
-EOF
+}"
     install_env grafana-cloud "$GCLOUD_CONFIG"
-		rm $INSTANCESFILE
+	rm $INSTANCESFILE
     install_env tns-cloud
 else
     install_env loki            # Install loki logging app
