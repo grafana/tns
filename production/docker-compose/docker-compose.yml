@@ -2,6 +2,10 @@ x-logging: &default-logging
   driver: loki
   options:
     loki-url: 'http://localhost:3100/api/prom/push'
+    # Limit the number of retries to avoid issues during shutdown. A race
+    # condition between the driver and containers can cause Loki to stop before
+    # all logs are received, triggering excessive retries with a slow backoff.
+    loki-retries: 3
     labels: namespace
     loki-relabel-config: |
       - action: replace
