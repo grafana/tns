@@ -147,13 +147,13 @@ services:
     logging: *default-logging
 
   tempo:
-    image: grafana/tempo:1.1.0
+    image: grafana/tempo:2.8.0
     command:
       - --target=all
       - --storage.trace.backend=local
       - --storage.trace.local.path=/var/tempo
       - --auth.enabled=false
-      - --compactor.compaction.block-retention=24h
+      - --compactor.compaction.compaction.block-retention=24h
     ports:
       - "8004:80"
     labels:
