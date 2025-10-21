@@ -1,0 +1,57 @@
+storage:
+  trace:
+    backend: local # backend configuration to use
+    wal:
+      path: /var/tempo/wal # where to store the wal locally
+    local:
+      path: /var/tempo/blocks
+
+compactor:
+  compaction:
+    block_retention: 24h
+
+distributor:
+  receivers:
+    jaeger:
+      protocols:
+        thrift_http:
+          endpoint: "tempo:14268"
+        grpc:
+          endpoint: "tempo:14250"
+        thrift_binary:
+          endpoint: "tempo:6832"
+        thrift_compact:
+          endpoint: "tempo:6831"
+    zipkin:
+      endpoint: "tempo:9411"
+    otlp:
+      protocols:
+        grpc:
+          endpoint: "tempo:4317"
+        http:
+          endpoint: "tempo:4318"
+    opencensus:
+      endpoint: "tempo:55678"
+
+metrics_generator:
+  registry:
+    external_labels:
+      source: tempo
+      cluster: docker-compose
+  storage:
+    path: /var/tempo/generator/wal
+    remote_write:
+      - url: http://prometheus:9090/api/v1/write
+        send_exemplars: true
+  traces_storage:
+    path: /var/tempo/generator/traces
+  processor:
+    local_blocks:
+      filter_server_spans: false
+      flush_to_storage: true
+
+overrides:
+  defaults:
+    metrics_generator:
+      processors: [service-graphs, span-metrics, local-blocks] # enables metrics generator
+      generate_native_histograms: both

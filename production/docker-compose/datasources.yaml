@@ -32,7 +32,7 @@ datasources:
   - name: Tempo
     type: tempo
     uid: tempo
-    url: http://tempo/
+    url: http://tempo:3200/
     access: proxy
     editable: true
     isDefault: false

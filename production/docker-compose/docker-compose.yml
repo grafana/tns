@@ -71,7 +71,7 @@ services:
     logging: *default-logging
 
   grafana:
-    image: grafana/grafana:9.5.3
+    image: grafana/grafana:12.3.0-18392635519-ubuntu
     volumes:
       - ./datasources.yaml:/etc/grafana/provisioning/datasources/datasources.yaml
       - ./dashboards.yaml:/etc/grafana/provisioning/dashboards/dashboards.yaml
@@ -87,7 +87,7 @@ services:
     logging: *default-logging
 
   prometheus:
-    image: prom/prometheus:v2.30.3
+    image: prom/prometheus:v3.7.1
     user: root
     command:
       - --config.file=/etc/prometheus/prometheus.yml
@@ -109,7 +109,7 @@ services:
     logging: *default-logging
 
   cadvisor:
-    image: gcr.io/cadvisor/cadvisor:v0.38.7
+    image: gcr.io/cadvisor/cadvisor:v0.52.0
     container_name: cadvisor
     ports:
       - 8080:8080
@@ -123,7 +123,7 @@ services:
     logging: *default-logging
 
   node_exporter:
-    image: prom/node-exporter:v1.1.0
+    image: prom/node-exporter:v1.9.1
     container_name: node_exporter
     volumes:
       - /proc:/host/proc:ro
@@ -139,7 +139,7 @@ services:
     logging: *default-logging
 
   loki:
-    image: grafana/loki:2.3.0
+    image: grafana/loki:3.5.7
     command:
       - -config.file=/etc/loki/local-config.yaml
       - -table-manager.retention-period=1d
@@ -151,15 +151,13 @@ services:
     logging: *default-logging
 
   tempo:
-    image: grafana/tempo:1.1.0
+    image: grafana/tempo:2.8.0
     command:
-      - --target=all
-      - --storage.trace.backend=local
-      - --storage.trace.local.path=/var/tempo
-      - --auth.enabled=false
-      - --compactor.compaction.block-retention=24h
+      - --config.file=/etc/tempo.yaml
+    volumes:
+      - ./tempo.yaml:/etc/tempo.yaml
     ports:
-      - "8004:80"
+      - "8004:3200"
     labels:
       namespace: monitoring
     logging: *default-logging
