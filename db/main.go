@@ -86,6 +86,10 @@ func New(logger log.Logger, reg prometheus.Registerer) *db {
 		posts: promauto.With(reg).NewHistogram(prometheus.HistogramOpts{
 			Name: "tns_db_post_time_seconds",
 			Help: "Time taken to submit new links to the database",
+			Buckets: prometheus.DefBuckets,
+			NativeHistogramBucketFactor: 1.1,
+			NativeHistogramMaxBucketNumber: 100,
+			NativeHistogramMinResetDuration: 1*time.Hour,
 		}),
 		votes: promauto.With(reg).NewHistogram(prometheus.HistogramOpts{
 			Name: "tns_db_vote_time_seconds",

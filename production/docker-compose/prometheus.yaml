@@ -36,6 +36,7 @@ scrape_configs:
     static_configs:
     - targets: ['app:80']
   - job_name: 'tns/db'
+    always_scrape_classic_histograms: true
     static_configs:
     - targets: ['db:80']
   - job_name: 'tns/loadgen'

@@ -94,6 +94,7 @@ services:
       - --storage.tsdb.path=/prometheus
       - --storage.tsdb.retention.time=1d
       - --enable-feature=exemplar-storage
+      - --enable-feature=native-histograms
       - --log.level=debug
       - --web.enable-admin-api
     volumes:
