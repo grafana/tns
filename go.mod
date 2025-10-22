@@ -4,7 +4,7 @@ require (
 	github.com/go-kit/log v0.2.0
 	github.com/opentracing-contrib/go-stdlib v1.0.0
 	github.com/opentracing/opentracing-go v1.2.0
-	github.com/prometheus/client_golang v1.11.0
+	github.com/prometheus/client_golang v1.11.1
 	github.com/weaveworks/common v0.0.0-20211109170639-0684aab3d884
 )
 
