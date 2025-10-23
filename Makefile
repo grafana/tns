@@ -6,7 +6,7 @@ MAKEFLAGS   += --no-builtin-rule
 
 
 build: db/.uptodate app/.uptodate loadgen/.uptodate lint-image/.uptodate
-publish: lint-image/.published
+publish: db/.published app/.published loadgen/.published lint-image/.published
 
 IMAGE_TAG?=$(shell git rev-parse --short HEAD)
 DOCKER_IMAGE_BASE?=grafana
@@ -39,6 +39,15 @@ loadgen/.uptodate: loadgen/loadgen loadgen/Dockerfile
 lint-image/.uptodate: lint-image/Dockerfile
 	docker build -t $(DOCKER_IMAGE_BASE)/tns-lint:$(IMAGE_TAG) lint-image/
 	touch $@
+
+db/.published: db/.uptodate
+	docker push $(DOCKER_IMAGE_BASE)/tns-db:$(IMAGE_TAG)
+
+app/.published: app/.uptodate
+	docker push $(DOCKER_IMAGE_BASE)/tns-app:$(IMAGE_TAG)
+
+loadgen/.published: loadgen/.uptodate
+	docker push $(DOCKER_IMAGE_BASE)/tns-loadgen:$(IMAGE_TAG)
 
 lint-image/.published: lint-image/.uptodate
 	docker push $(DOCKER_IMAGE_BASE)/tns-lint:$(IMAGE_TAG)
