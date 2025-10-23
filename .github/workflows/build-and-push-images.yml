@@ -27,7 +27,7 @@ jobs:
       uses: docker/setup-buildx-action@1583c0f09d26c58c59d25b0eef29792b7ce99d9a
 
     - name: Login to DockerHub (from Vault)
-      uses: grafana/shared-workflows/actions/dockerhub-login@fa48192dac470ae356b3f7007229f3ac28c48a25
+      uses: grafana/shared-workflows/actions/dockerhub-login@4f3dec7a77bb3146c07c54642189261ca211373f
 
     - name: Build
       run: make build
