@@ -20,7 +20,7 @@ version: '3.4'
 services:
 
   db:
-    image: grafana/tns-db:842bd3b
+    image: grafana/tns-db:47b160f
     command:
       - '-log.level=debug'
     ports:
@@ -35,7 +35,7 @@ services:
     logging: *default-logging
 
   app:
-    image: grafana/tns-app:842bd3b
+    image: grafana/tns-app:47b160f
     command:
       - '-log.level=debug'
       - 'http://db'
@@ -53,7 +53,7 @@ services:
     logging: *default-logging
 
   loadgen:
-    image: grafana/tns-loadgen:842bd3b
+    image: grafana/tns-loadgen:47b160f
     command:
       - '-log.level=debug'
       - 'http://app'
