@@ -14,6 +14,16 @@
     {
       "source": {
         "git": {
+          "remote": "https://github.com/grafana/alloy.git",
+          "subdir": "operations/helm"
+        }
+      },
+      "version": "dfb75ba78830265e02f536e982d9d1bbd414acd9",
+      "sum": "tmBVAiKHzz4Qqz2FoHRH3a2A1gxA+kzJDAr0Cv73LjU="
+    },
+    {
+      "source": {
+        "git": {
           "remote": "https://github.com/grafana/grafana.git",
           "subdir": "grafana-mixin"
         }
@@ -144,12 +154,32 @@
     {
       "source": {
         "git": {
+          "remote": "https://github.com/grafana/jsonnet-libs.git",
+          "subdir": "tanka-util"
+        }
+      },
+      "version": "e6f3db92b7d61f348aed812087f2865b207d7148",
+      "sum": "ShSIissXdvCy1izTCDZX6tY7qxCoepE5L+WJ52Hw7ZQ="
+    },
+    {
+      "source": {
+        "git": {
           "remote": "https://github.com/grafana/loki.git",
           "subdir": "production/ksonnet/promtail"
         }
       },
       "version": "f22dbc2190921e70d38e8b915aa64964879b6b78",
       "sum": "d7azenENzcvtlgkTeDFWk2tL1QXPSiYRhrGc1Klroa8="
+    },
+    {
+      "source": {
+        "git": {
+          "remote": "https://github.com/jsonnet-libs/docsonnet.git",
+          "subdir": "doc-util"
+        }
+      },
+      "version": "6ac6c69685b8c29c54515448eaca583da2d88150",
+      "sum": "BrAL/k23jq+xy9oA7TWIhUx07dsA/QLm3g7ktCwe//U="
     },
     {
       "source": {

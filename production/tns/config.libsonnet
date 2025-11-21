@@ -2,7 +2,7 @@
   _config+:: {
     tns+: {
       jaeger: {
-        host: 'grafana-agent.default.svc.cluster.local',
+        host: 'alloy.default.svc.cluster.local',
         tags: 'cluster=tns,namespace=tns',
         sampler_type: 'const',
         sampler_param: '1',

@@ -75,6 +75,10 @@ You can also run the TNS demo without Kubernetes. Click [here](https://github.co
 
 The TNS demo uses `kubectl` to interact with the Kubernetes clusters. Click [here](https://kubernetes.io/docs/tasks/tools/install-kubectl/) for `kubectl` installation instructions.
 
+### Helm
+
+Helm is required by Tanka for using the Grafana Alloy helm chart in the TNS demo. Click [here](https://helm.sh/docs/intro/install/) for `helm` installation instructions.
+
 ### Tanka
 
 Tanka uses the Jsonnet language to interact with Kubernetes, via the `kubectl` tool. Click [here](https://tanka.dev/install#tanka) for installation instructions.
