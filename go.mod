@@ -22,7 +22,6 @@ require (
 	github.com/golang/protobuf v1.5.3 // indirect
 	github.com/gorilla/mux v1.8.0 // indirect
 	github.com/jpillora/backoff v1.0.0 // indirect
-	github.com/konsorten/go-windows-terminal-sequences v1.0.3 // indirect
 	github.com/munnerz/goautoneg v0.0.0-20191010083416-a7dc8b61c822 // indirect
 	github.com/mwitkow/go-conntrack v0.0.0-20190716064945-2f068394615f // indirect
 	github.com/opentracing-contrib/go-grpc v0.0.0-20210225150812-73cb765af46e // indirect
@@ -32,7 +31,7 @@ require (
 	github.com/prometheus/exporter-toolkit v0.8.2 // indirect
 	github.com/prometheus/procfs v0.16.1 // indirect
 	github.com/sercand/kuberesolver/v4 v4.0.0 // indirect
-	github.com/sirupsen/logrus v1.6.0 // indirect
+	github.com/sirupsen/logrus v1.8.3 // indirect
 	github.com/soheilhy/cmux v0.1.5 // indirect
 	github.com/stretchr/objx v0.5.2 // indirect
 	github.com/uber/jaeger-client-go v2.29.1+incompatible // indirect
