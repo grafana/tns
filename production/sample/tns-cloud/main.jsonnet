@@ -5,7 +5,7 @@ tns {
     namespace: 'tns-cloud',
     tns+: {
       jaeger+: {
-        host: 'grafana-agent.grafana-cloud.svc.cluster.local',
+        host: 'alloy.grafana-cloud.svc.cluster.local',
         tags: 'cluster=tns-cluster,namespace=tns-cloud',
       },
     },

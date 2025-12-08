@@ -71,7 +71,7 @@ spec:
         - http://db
         env:
         - name: JAEGER_AGENT_HOST
-          value: grafana-agent-traces.default.svc.cluster.local
+          value: alloy.default.svc.cluster.local
         - name: JAEGER_TAGS
           value: cluster=cloud,namespace=tns-cloud
         - name: JAEGER_SAMPLER_TYPE
@@ -107,7 +107,7 @@ spec:
         - -log.level=debug
         env:
         - name: JAEGER_AGENT_HOST
-          value: grafana-agent-traces.default.svc.cluster.local
+          value: alloy.default.svc.cluster.local
         - name: JAEGER_TAGS
           value: cluster=cloud,namespace=tns-cloud
         - name: JAEGER_SAMPLER_TYPE
@@ -144,7 +144,7 @@ spec:
         - http://app
         env:
         - name: JAEGER_AGENT_HOST
-          value: grafana-agent-traces.default.svc.cluster.local
+          value: alloy.default.svc.cluster.local
         - name: JAEGER_TAGS
           value: cluster=cloud,namespace=tns-cloud
         - name: JAEGER_SAMPLER_TYPE
