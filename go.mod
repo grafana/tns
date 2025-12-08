@@ -2,7 +2,7 @@ module github.com/grafana/tns
 
 require (
 	github.com/go-kit/log v0.2.1
-	github.com/opentracing-contrib/go-stdlib v1.0.0
+	github.com/opentracing-contrib/go-stdlib v1.1.0
 	github.com/opentracing/opentracing-go v1.2.0
 	github.com/prometheus/client_golang v1.23.2
 	github.com/weaveworks/common v0.0.0-20230728070032-dd9e68f319d5
