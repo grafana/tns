@@ -124,7 +124,7 @@ services:
     logging: *default-logging
 
   node_exporter:
-    image: prom/node-exporter:v1.9.1
+    image: prom/node-exporter:v1.10.2@sha256:3ac34ce007accad95afed72149e0d2b927b7e42fd1c866149b945b84737c62c3
     container_name: node_exporter
     volumes:
       - /proc:/host/proc:ro
