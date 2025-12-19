@@ -87,7 +87,7 @@ services:
     logging: *default-logging
 
   prometheus:
-    image: prom/prometheus:v3.7.1
+    image: prom/prometheus:v3.8.1@sha256:2b6f734e372c1b4717008f7d0a0152316aedd4d13ae17ef1e3268dbfaf68041b
     user: root
     command:
       - --config.file=/etc/prometheus/prometheus.yml
