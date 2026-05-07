@@ -1,7 +1,7 @@
 {
   _images+:: {
-    tempo: 'grafana/tempo:latest',
-    tempo_vulture: 'grafana/tempo-vulture:latest',
+    tempo: 'grafana/tempo:2.9.2',
+    tempo_vulture: 'grafana/tempo-vulture:2.9.2',
   },
 
   _config+:: {
