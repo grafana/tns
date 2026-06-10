@@ -148,7 +148,7 @@ If you already have a K8s cluster *and* cloud metrics, logs, and traces services
     ```sh
     kubectl get pods -n tns-cloud
     ```
-    If all the pods are listed as either `running`, your app is ready for use.
+    If all the pods are listed as either `running` or `completed`, your app is ready for use.
 
 ## Install TNS demo app connected to Grafana Cloud (`grafana-cloud` option)
 
@@ -180,7 +180,7 @@ Note: this requires an existing K8S cluster.
     ```sh
     kubectl get pods -n tns-cloud
     ```
-	If all the pods are listed as either `running`, your app is ready for use.
+	If all the pods are listed as either `running` or `completed`, your app is ready for use.
 
 
 After a few minutes, you will see metrics arriving in your Grafana instance. At this point, you can also enable the [Kubernetes Integration](https://grafana.com/docs/grafana-cloud/kubernetes-monitoring/) - the agent is already configured for you!
