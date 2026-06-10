@@ -1,6 +1,7 @@
 .ONESHELL:
 .DELETE_ON_ERROR:
 SHELL       := sh
+.SHELLFLAGS  := -ec
 MAKEFLAGS   += --warn-undefined-variables
 MAKEFLAGS   += --no-builtin-rule
 
