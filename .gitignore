@@ -7,3 +7,4 @@ vendor
 .volume
 production/tns-mixin/jsonnetfile.lock.json
 .DS_Store
+.idea
