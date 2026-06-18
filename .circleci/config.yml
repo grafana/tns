@@ -38,7 +38,7 @@ jobs:
   lint-jsonnet:
     <<: *defaults
     docker:
-      - image: grafana/tns-lint:6daf0b2
+      - image: grafana/tns-lint:ae5c2f3@sha256:0644574a7b32fa53d54ae9a1dc1ecf652ea14418adc188ee4cd631018fc38d3e
     steps:
       - checkout
       - run:
