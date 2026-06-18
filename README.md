@@ -20,6 +20,7 @@ This readme has the following sections:
   - [Contributing guidelines](#contributing-guidelines)
     - [Modify TNS application:](#modify-tns-application)
     - [Update Grafana dashboards and kubernetes infrastructure:](#update-grafana-dashboards-and-kubernetes-infrastructure)
+    - [Releasing changes:](#releasing-changes)
 
 ## Overview
 
@@ -252,6 +253,13 @@ rm -rf tanka
 
 - Update the manifests by running the following tanka command: `tk apply --force environments/<ENV>/main.jsonnet`.
 - Update Grafana, for example, when changing dashboards by running the following tanka command: `tk apply --force environments/default/main.jsonnet`.
+
+### Releasing changes:
+
+The deployed Docker images are pinned by digest, so a code change reaches the demo in two PRs:
+
+1. Open a PR with the desired change and get it merged. On merge to `main`, CI builds and publishes new images tagged with the commit SHA (and updates `:latest`).
+2. Once that merge build completes cleanly, open a second PR that updates the pinned image digests for the four TNS images — `tns-app`, `tns-db`, and `tns-loadgen` in `production/tns/config.libsonnet`, and `tns-lint` in `.circleci/config.yml` — to the digests of the freshly published build.
 
 ## Using TNS for Grafana Development
 

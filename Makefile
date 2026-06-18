@@ -43,12 +43,15 @@ lint-image/.uptodate: lint-image/Dockerfile
 
 db/.published: db/.uptodate
 	docker push $(DOCKER_IMAGE_BASE)/tns-db:$(IMAGE_TAG)
+	docker push $(DOCKER_IMAGE_BASE)/tns-db:latest
 
 app/.published: app/.uptodate
 	docker push $(DOCKER_IMAGE_BASE)/tns-app:$(IMAGE_TAG)
+	docker push $(DOCKER_IMAGE_BASE)/tns-app:latest
 
 loadgen/.published: loadgen/.uptodate
 	docker push $(DOCKER_IMAGE_BASE)/tns-loadgen:$(IMAGE_TAG)
+	docker push $(DOCKER_IMAGE_BASE)/tns-loadgen:latest
 
 lint-image/.published: lint-image/.uptodate
 	docker push $(DOCKER_IMAGE_BASE)/tns-lint:$(IMAGE_TAG)
