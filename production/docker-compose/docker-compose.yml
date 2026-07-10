@@ -153,7 +153,7 @@ services:
     logging: *default-logging
 
   tempo:
-    image: grafana/tempo:3.0.0@sha256:78439f7f7cf3c97122846c13a832e060c6c7ef67dcc814dccf0a5f3f78393a93
+    image: grafana/tempo:3.0.2@sha256:cda87c212d8c584dc0b89e337e7ed648a5100feb657e5d528480ee4fa03dbbe3
     command:
       - --config.file=/etc/tempo.yaml
     volumes:
