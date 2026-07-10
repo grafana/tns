@@ -11,8 +11,8 @@
   },
 
   _images+:: {
-    tns_app: 'grafana/tns-app:ae5c2f3@sha256:9891c964d6d76d7504dd72732181e73ad04b774d3b8bb9d558afa809a98c5f65',
-    loadgen: 'grafana/tns-loadgen:ae5c2f3@sha256:ccfcb20a3551349fa7a79dbc7848e75729c4f149b56258e7bd7846451152cf2f',
-    db: 'grafana/tns-db:ae5c2f3@sha256:cf5136b25e6b09024f50681e57e3c11564c1f37c46714ef070f714d9347fa85b',
+    tns_app: 'grafana/tns-app:cad1c20@sha256:0627e75b80d592584670b4850c64894edb2aee089e6004d7bc10b13194dac86a',
+    loadgen: 'grafana/tns-loadgen:cad1c20@sha256:418afcf181df189fe55167bc5190ff024b015c32589d71a56d41db78c5fed063',
+    db: 'grafana/tns-db:cad1c20@sha256:e2d95dd34d6bafd2a68f6614216d82d4d46af8d8b9f7baa3857287d53e40b5f7',
   },
 }
