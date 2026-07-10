@@ -95,6 +95,7 @@ services:
       - --storage.tsdb.retention.time=1d
       - --enable-feature=exemplar-storage
       - --enable-feature=native-histograms
+      - --web.enable-remote-write-receiver
       - --log.level=debug
       - --web.enable-admin-api
     volumes:

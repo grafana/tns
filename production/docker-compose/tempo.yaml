@@ -6,10 +6,6 @@ storage:
     local:
       path: /var/tempo/blocks
 
-compactor:
-  compaction:
-    block_retention: 24h
-
 distributor:
   receivers:
     jaeger:
@@ -30,8 +26,6 @@ distributor:
           endpoint: "tempo:4317"
         http:
           endpoint: "tempo:4318"
-    opencensus:
-      endpoint: "tempo:55678"
 
 metrics_generator:
   registry:
@@ -43,15 +37,11 @@ metrics_generator:
     remote_write:
       - url: http://prometheus:9090/api/v1/write
         send_exemplars: true
-  traces_storage:
-    path: /var/tempo/generator/traces
-  processor:
-    local_blocks:
-      filter_server_spans: false
-      flush_to_storage: true
 
 overrides:
   defaults:
+    compaction:
+      block_retention: 24h
     metrics_generator:
-      processors: [service-graphs, span-metrics, local-blocks] # enables metrics generator
+      processors: [service-graphs, span-metrics] # enables metrics generator
       generate_native_histograms: both
