@@ -141,7 +141,7 @@ services:
     logging: *default-logging
 
   loki:
-    image: grafana/loki:3.7.2@sha256:191d4fdfb7264f16989f0a57f320872620a5a7c2ceeec6229212c4190ec49b86
+    image: grafana/loki:3.7.7@sha256:d70e4659623f3e109af669cae76fe2a5dd5be54e2298fe8aed380d982fbc2500
     command:
       - -config.file=/etc/loki/local-config.yaml
       - -table-manager.retention-period=1d
