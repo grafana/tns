@@ -49,7 +49,7 @@ If you wish to only deploy the TNS app to an existing K8s cluster using the `app
 
 ### Go
 
-Since much of the program is written in Go, you should have have Go installed on your local machine. Click [here] (https://go.dev/doc/install) for installation instructions.
+Since much of the program is written in Go, you should have Go installed on your local machine. Click [here](https://go.dev/doc/install) for installation instructions.
 
 ### Docker
 
