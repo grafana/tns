@@ -11,7 +11,7 @@ workflows:
 
 defaults: &defaults
   docker:
-    - image: golang:1.23.2-bullseye
+    - image: golang:1.23.2-bullseye@sha256:ecb3fe70e1fd6cef4c5c74246a7525c3b7d59c48ea0589bbb0e57b1b37321fb9
   working_directory: /go/src/github.com/grafana/tns
 
 jobs:
