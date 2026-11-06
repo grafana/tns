@@ -1,5 +1,5 @@
 # Build jsonnet
-FROM alpine:3.23@sha256:8169a308ae899f69285e7214b3c2de1c1f0f091ab228b87a58040c49d8cc2b0d AS jsonnet-builder
+FROM alpine:3.23@sha256:f3d55900449227ae9e237ede521e7b665d53a253b42065ba90b9db9275e198ad AS jsonnet-builder
 RUN apk add --no-cache git make g++
 RUN git clone https://github.com/google/jsonnet && \
     git  -C jsonnet checkout v0.14.0 && \
@@ -15,7 +15,7 @@ RUN git clone https://github.com/jsonnet-bundler/jsonnet-bundler /jsonnet-bundle
     git checkout v0.2.0 && \
     make install
 
-FROM alpine:3.23@sha256:8169a308ae899f69285e7214b3c2de1c1f0f091ab228b87a58040c49d8cc2b0d
+FROM alpine:3.23@sha256:f3d55900449227ae9e237ede521e7b665d53a253b42065ba90b9db9275e198ad
 RUN apk add --no-cache git make zip
 COPY --from=jsonnet-builder /usr/bin/jsonnetfmt /usr/bin
 COPY --from=jsonnet-builder /usr/bin/jsonnet /usr/bin
