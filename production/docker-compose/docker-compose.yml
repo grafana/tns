@@ -20,7 +20,7 @@ version: '3.4'
 services:
 
   db:
-    image: grafana/tns-db:47b160f
+    image: grafana/tns-db:47b160f@sha256:420cb10ff63bf2de2ec5447c88ffa0cd1aa0c8ae0c28dda3fbda6b9ac7e98648
     command:
       - '-log.level=debug'
     ports:
@@ -35,7 +35,7 @@ services:
     logging: *default-logging
 
   app:
-    image: grafana/tns-app:47b160f
+    image: grafana/tns-app:47b160f@sha256:0e346c874c3986cd4b4bd3dfabcb51f22e148b296e65dff1cc59e7d18436ed51
     command:
       - '-log.level=debug'
       - 'http://db'
@@ -53,7 +53,7 @@ services:
     logging: *default-logging
 
   loadgen:
-    image: grafana/tns-loadgen:47b160f
+    image: grafana/tns-loadgen:47b160f@sha256:ecdaa703e71269d4674f3fc325dfbc18879eae592e4bccb8ae2a0277cc5bfec7
     command:
       - '-log.level=debug'
       - 'http://app'
@@ -71,7 +71,7 @@ services:
     logging: *default-logging
 
   grafana:
-    image: grafana/grafana:12.3.0-18392635519-ubuntu
+    image: grafana/grafana:12.3.0-18392635519-ubuntu@sha256:961df5aff6074da33a205dc5313347c87a879a92cae48b890fa1cd9191e29baa
     volumes:
       - ./datasources.yaml:/etc/grafana/provisioning/datasources/datasources.yaml
       - ./dashboards.yaml:/etc/grafana/provisioning/dashboards/dashboards.yaml
